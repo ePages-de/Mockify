@@ -3,16 +3,30 @@
 package t::yourTest;
 use base t::TestBase;
 use strict;
+use TypeTests;
 use Test::More;
 
 #------------------------------------------------------------------------
 sub testPlan{
     my $self = shift;
-    $self->testSomething();
+    $self->isObjectReference_positivPath();
+    $self->isObjectReference_negativPath();
     return;
 }
+
+
 #------------------------------------------------------------------------
-sub testSomething {
+sub isObjectReference_positivPath {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    ok(1,"$SubTestName - tests if ...");
+
+    return;
+}
+
+#------------------------------------------------------------------------
+sub isObjectReference_negativPath {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
