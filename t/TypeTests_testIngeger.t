@@ -30,6 +30,7 @@ sub testInteger {
     is($TypeTests->testInteger('a'), $False, "$SubTestName - tests string - false");
     is($TypeTests->testInteger({'some' => 'thing'}), $False, "$SubTestName - tests hash pointer - false");
     is($TypeTests->testInteger(['some', 'thing']), $False, "$SubTestName - tests array pointer - false");
+    is($TypeTests->testInteger(bless({},'object')), $False, "$SubTestName - tests object pointer - false");
 
     return;
 }

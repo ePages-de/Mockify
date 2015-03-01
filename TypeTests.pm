@@ -6,6 +6,7 @@ sub new {
     my $self = bless({},$Class);
     return $self;
 }
+#------------------------------------------------------------------------
 sub testInteger {
     my $self = shift;
     my ( $Value ) = @_;
@@ -19,8 +20,8 @@ sub testInteger {
     #Float 0.0 and integer 0 can't be distinguished in perl.
     #But since '0.0' (as String) would't be accepted as integer, I have to straighten this behavior in testInteger to ensure stable results.
     my $Sign = '[-+]?'; # + or - or nothing
-    my $MandatoryLeadingZero = '[0]+.[0]*';
-    my $MandatoryDecimalZero = '[0]*.[0]+';
+    my $MandatoryLeadingZero = '0+.0*';
+    my $MandatoryDecimalZero = '0*.0+';
     my $FloatZero = "($MandatoryLeadingZero|$MandatoryDecimalZero)";
 
     if( $Value =~ /^$Sign$FloatZero$/ ) {
@@ -29,4 +30,37 @@ sub testInteger {
 
     return $IsInteger;
 }
+
+#------------------------------------------------------------------------
+sub testString {
+    my $self = shift;
+    my ( $Value ) = @_;
+
+    my $IsString = 1;
+
+    # exclude empty string
+    if ( $Value eq ''){
+        $IsString = 0;
+    }
+    # exclude if only control characters
+    if ( $Value =~ /^[\t|\r|\n|\f]+$/){
+        $IsString = 0;
+    }
+    # exclude integer
+    if ( $Value =~ /^[-+]?[0-9]+$/){
+        $IsString = 0;
+    }
+    # exclude float
+    if ( $Value =~ /^[-+]?[0-9]*\.[0-9]*$/){
+        $IsString = 0;
+    }
+    # exclude complex types
+    my $ValueRefenceType = ref($Value);
+    if ( defined($ValueRefenceType) && $ValueRefenceType ne ''){
+        $IsString = 0;
+    }
+
+    return $IsString;
+}
+
 1;
