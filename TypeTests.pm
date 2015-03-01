@@ -77,4 +77,18 @@ sub isArrayReference {
     return $IsArray;
 }
 
+#------------------------------------------------------------------------
+sub isHashReference {
+    my $self = shift;
+    my ( $hValue ) = @_;
+
+    my $IsHash = 0;
+
+    if ( ref($hValue) eq 'HASH' ) {
+        $IsHash = 1;
+    }
+
+    return $IsHash;
+}
+
 1;
