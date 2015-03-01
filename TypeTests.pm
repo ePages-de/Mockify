@@ -33,6 +33,20 @@ sub isInteger {
 }
 
 #------------------------------------------------------------------------
+sub isFloat {
+    my $self = shift;
+    my ( $Value ) = @_;
+
+    my $IsFloat = 0;
+
+    my $RegExFloat = $self->_regExFloat();
+    if ( $Value =~ /^$RegExFloat$/ ){
+        $IsFloat = 1;
+    }
+
+    return $IsFloat;
+}
+#------------------------------------------------------------------------
 sub isString {
     my $self = shift;
     my ( $Value ) = @_;
@@ -48,11 +62,13 @@ sub isString {
         $IsString = 0;
     }
     # exclude integer
-    if ( $Value =~ /^[-+]?[0-9]+$/){
+    my $RegExInteger = $self->_regExInteger();
+    if ( $Value =~ /^$RegExInteger$/){
         $IsString = 0;
     }
     # exclude float
-    if ( $Value =~ /^[-+]?[0-9]*\.[0-9]*$/){
+    my $RegExFloat = $self->_regExFloat();
+    if ( $Value =~ /^$RegExFloat$/){
         $IsString = 0;
     }
     # exclude complex types
@@ -104,5 +120,29 @@ sub isObjectReference {
     }
 
     return $IsObject;
+}
+
+#------------------------------------------------------------------------
+sub _regExFloat {
+    my $self = shift;
+
+    my $OptionalSign = '[-+]?';
+    my $NumberOptions = '(?=\d|\.\d)\d*(\.\d*)?';
+    my $OptionalExponent = '([eE][-+]?\d+)?';
+    my $FloatRegex = sprintf('%s%s%s', $OptionalSign, $NumberOptions, $OptionalExponent);
+
+    return $FloatRegex;
+}
+
+#------------------------------------------------------------------------
+sub _regExInteger {
+    my $self = shift;
+
+    my $OptionalSign = '[-+]?';
+    my $Numbers = '[0-9]+';
+
+    my $FloatRegex = sprintf('%s%s', $OptionalSign, $Numbers );
+
+    return $FloatRegex;
 }
 1;
