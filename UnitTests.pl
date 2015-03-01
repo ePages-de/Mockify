@@ -6,7 +6,7 @@ my $TestDirectory = 't';
 my @UnitTestsModules = glob("$TestDirectory/*.t");
 
 foreach my $UnitTestModul (@UnitTestsModules){
-	system('perl', ($UnitTestModul));
+    system('perl', ($UnitTestModul));
 }
 
 1;
