@@ -4,30 +4,43 @@ use strict;
 use TypeTests;
 use Test::More;
 
+#------------------------------------------------------------------------
 sub testPlan{
     my $self = shift;
-    $self->testInteger();
+    $self->testInteger_positivPath();
+    $self->testInteger_negativPath();
     $self->testInteger_specialIssues();
     return;
 }
 
-sub testInteger {
+#------------------------------------------------------------------------
+sub testInteger_positivPath {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $TypeTests = TypeTests->new();
+
+    ok($TypeTests->testInteger(2), "$SubTestName - tests positiv integer - true");
+    ok($TypeTests->testInteger(-2), "$SubTestName - tests negativ integer - true");
+    ok($TypeTests->testInteger(0), "$SubTestName - tests zero - true");
+    ok($TypeTests->testInteger(-0), "$SubTestName - tests negativ zero - true");
+ 
+    return;
+}
+
+#------------------------------------------------------------------------
+sub testInteger_negativPath {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
     my $TypeTests = TypeTests->new();
     my $False = 0;
 
-    #positiv path
-    ok($TypeTests->testInteger(2), "$SubTestName - tests positiv integer - true");
-    ok($TypeTests->testInteger(-2), "$SubTestName - tests negativ integer - true");
-    ok($TypeTests->testInteger(0), "$SubTestName - tests zero - true");
-    ok($TypeTests->testInteger(-0), "$SubTestName - tests negativ zero - true");
- 
-    #negativ path
+    is($TypeTests->testInteger(), $False, "$SubTestName - tests empty parameter - false");
     is($TypeTests->testInteger(4.123), $False, "$SubTestName - tests positiv float - false");
     is($TypeTests->testInteger(-0.123), $False, "$SubTestName - tests negativ float - false");
     is($TypeTests->testInteger('a'), $False, "$SubTestName - tests string - false");
+    is($TypeTests->testInteger(''), $False, "$SubTestName - tests empty string - false");
     is($TypeTests->testInteger({'some' => 'thing'}), $False, "$SubTestName - tests hash pointer - false");
     is($TypeTests->testInteger(['some', 'thing']), $False, "$SubTestName - tests array pointer - false");
     is($TypeTests->testInteger(bless({},'object')), $False, "$SubTestName - tests object pointer - false");
@@ -35,6 +48,7 @@ sub testInteger {
     return;
 }
 
+#------------------------------------------------------------------------
 sub testInteger_specialIssues {
     my $self = shift;
     my $SubTestName = (caller(0))[3];

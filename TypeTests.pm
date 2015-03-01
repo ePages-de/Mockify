@@ -1,6 +1,6 @@
 package TypeTests;
 use strict;
-
+#------------------------------------------------------------------------
 sub new {
     my $Class = shift;
     my $self = bless({},$Class);

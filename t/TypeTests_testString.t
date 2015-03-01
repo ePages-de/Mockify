@@ -4,6 +4,7 @@ use strict;
 use TypeTests;
 use Test::More;
 
+#------------------------------------------------------------------------
 sub testPlan{
     my $self = shift;
     $self->testString_positivPath();
@@ -11,6 +12,7 @@ sub testPlan{
     return;
 }
 
+#------------------------------------------------------------------------
 sub testString_positivPath {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
@@ -32,6 +34,7 @@ sub testString_positivPath {
     return;
 }
 
+#------------------------------------------------------------------------
 sub testString_negativPath {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
@@ -39,6 +42,7 @@ sub testString_negativPath {
     my $TypeTests = TypeTests->new();
     my $False = 0;
 
+    is($TypeTests->testString(), $False,"$SubTestName - tests empty parameter - false");
     is($TypeTests->testString(''), $False,"$SubTestName - tests empty string - false");
     is($TypeTests->testString("\n"), $False,"$SubTestName - tests only linux line break - false");
     is($TypeTests->testString("\r"), $False,"$SubTestName - tests only CR - false");
