@@ -42,7 +42,7 @@ sub testString {
     if ( $Value eq ''){
         $IsString = 0;
     }
-    # exclude if only control characters
+    # exclude if there only control characters
     if ( $Value =~ /^[\t|\r|\n|\f]+$/){
         $IsString = 0;
     }
@@ -61,6 +61,20 @@ sub testString {
     }
 
     return $IsString;
+}
+
+#------------------------------------------------------------------------
+sub isArrayReference {
+    my $self = shift;
+    my ( $aValue ) = @_;
+
+    my $IsArray = 0;
+
+    if ( ref($aValue) eq 'ARRAY' ) {
+        $IsArray = 1;
+    }
+
+    return $IsArray;
 }
 
 1;
