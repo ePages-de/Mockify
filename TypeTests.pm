@@ -7,7 +7,7 @@ sub new {
     return $self;
 }
 #------------------------------------------------------------------------
-sub testInteger {
+sub isInteger {
     my $self = shift;
     my ( $Value ) = @_;
 
