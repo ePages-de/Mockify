@@ -1,5 +1,6 @@
 package TypeTests;
 use strict;
+use Scalar::Util qw ( blessed );
 #------------------------------------------------------------------------
 sub new {
     my $Class = shift;
@@ -91,4 +92,17 @@ sub isHashReference {
     return $IsHash;
 }
 
+#------------------------------------------------------------------------
+sub isObjectReference {
+    my $self = shift;
+    my ( $Value ) = @_;
+
+    my $IsObject = 0;
+
+    if( blessed( $Value ) ) {
+        $IsObject = 1;
+    }
+
+    return $IsObject;
+}
 1;
