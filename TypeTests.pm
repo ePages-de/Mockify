@@ -32,7 +32,7 @@ sub testInteger {
 }
 
 #------------------------------------------------------------------------
-sub testString {
+sub isString {
     my $self = shift;
     my ( $Value ) = @_;
 
