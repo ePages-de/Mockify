@@ -7,7 +7,7 @@ sub new {
     return $self;
 }
 #------------------------------------------------------------------------
-sub testInteger {
+sub isInteger {
     my $self = shift;
     my ( $Value ) = @_;
 
@@ -32,7 +32,7 @@ sub testInteger {
 }
 
 #------------------------------------------------------------------------
-sub testString {
+sub isString {
     my $self = shift;
     my ( $Value ) = @_;
 
@@ -75,6 +75,20 @@ sub isArrayReference {
     }
 
     return $IsArray;
+}
+
+#------------------------------------------------------------------------
+sub isHashReference {
+    my $self = shift;
+    my ( $hValue ) = @_;
+
+    my $IsHash = 0;
+
+    if ( ref($hValue) eq 'HASH' ) {
+        $IsHash = 1;
+    }
+
+    return $IsHash;
 }
 
 1;
