@@ -56,6 +56,7 @@ sub isString_negativPath {
     is($TypeTests->isString(-12.3), $False,"$SubTestName - tests negativ float - false");
     is($TypeTests->isString('12.3'), $False,"$SubTestName - tests float - false");
     is($TypeTests->isString('-12.3'), $False,"$SubTestName - tests negativ float as string  - false");
+    is($TypeTests->isString(-1.12E-34), $False,"$SubTestName - tests negativ float with exponent  - false");
     is($TypeTests->isString({'some' => 'thing'}), $False,"$SubTestName - tests hash pointer - false");
     is($TypeTests->isString(['some' , 'thing']), $False,"$SubTestName - tests array pointer - false");
     is($TypeTests->isString(bless({},'object')), $False, "$SubTestName - tests object pointer - false");
