@@ -1,4 +1,4 @@
-package t::TypeTests;
+package t::TypeTests_testIngeger;
 use base t::TestBase;
 use strict;
 use TypeTests;
@@ -51,7 +51,7 @@ sub testInteger_specialIssues {
     ok($TypeTests->testInteger(00.0000), "$SubTestName - tests multiple zeros float - true");
     ok($TypeTests->testInteger(-0.0), "$SubTestName - tests negativ zero float - true");
 
-    # BUT since '0.0' (as String) would't be accepted as integer, I have to straighten this behavior in testInteger to ensure stable results
+    # BUT since '0.0' (as String) would't be accepted as integer, I have to straighten this behavior in testInteger to ensure stable results.
     ok($TypeTests->testInteger('0.0'), "$SubTestName - tests zero float as string - true");
     ok($TypeTests->testInteger('-0.0'), "$SubTestName - tests negativ zero float as string- true");
     ok($TypeTests->testInteger('.0'), "$SubTestName - tests zero float as string without leading 0 - true");
