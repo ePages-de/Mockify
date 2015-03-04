@@ -1,6 +1,7 @@
 package Tools;
 use Module::Load;
 use strict;
+use Data::Dumper;
 
 #------------------------------------------------------------------------
 sub new {
@@ -31,15 +32,39 @@ sub isValid {
             if( scalar keys %{$Value} == 0 ){
                 $IsValid = 0;
             }
-            # do compare with { '' => undef } ???
-            use Data::Dumper;
-            print Dumper values $Value;
+            my %CompareHash = undef; 
+            if ($self->_compareComplexType($Value, \%CompareHash)){
+                $IsValid = 0;
+            }
         } 
         #exclude empty array
-        if( ref($Value) eq 'ARRAY' && (scalar @{$Value}) == 0){
-            $IsValid = 0;
+        if( ref($Value) eq 'ARRAY'){
+            if(scalar @{$Value} == 0){
+                $IsValid = 0;
+            }
+            my @CompareArray = undef; 
+            if ($self->_compareComplexType($Value, \@CompareArray)){
+                $IsValid = 0;
+            }
         }
     }
 	return $IsValid;
 }
+
+#------------------------------------------------------------------------
+sub _compareComplexType {
+    my $self = shift;
+    my ( $ValueA, $ValueB  ) = @_;
+
+    my $IsTheSame = 0;
+    my $SerializedHashA = Dumper($ValueA);
+    my $SerializedHashB = Dumper($ValueB);
+
+    if ( $SerializedHashA eq $SerializedHashB ){
+        $IsTheSame = 1;
+    }
+
+    return $IsTheSame;
+}
+
 1;
