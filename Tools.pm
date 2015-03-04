@@ -57,10 +57,10 @@ sub _compareComplexType {
     my ( $ValueA, $ValueB  ) = @_;
 
     my $IsTheSame = 0;
-    my $SerializedHashA = Dumper($ValueA);
-    my $SerializedHashB = Dumper($ValueB);
+    my $SerializedValueA = Dumper($ValueA);
+    my $SerializedValueB = Dumper($ValueB);
 
-    if ( $SerializedHashA eq $SerializedHashB ){
+    if ( $SerializedValueA eq $SerializedValueB ){
         $IsTheSame = 1;
     }
 
