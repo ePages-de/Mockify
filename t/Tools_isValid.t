@@ -39,14 +39,6 @@ sub isObjectReference_negativPath {
     is($Tools->isValid(), $False,"$SubTestName - tests if no parameter is not valid");
     is($Tools->isValid(''), $False,"$SubTestName - tests if empty string is not valid");
     is($Tools->isValid(undef), $False,"$SubTestName - tests if undef is not valid");
-    is($Tools->isValid({}), $False,"$SubTestName - tests if empty hash is not valid");
-    is($Tools->isValid([]), $False,"$SubTestName - tests if empty array is not valid");
-    my @TestArray = undef;
-    is($Tools->isValid(\@TestArray), $False,"$SubTestName - tests if undef array is not valid");
-    my %TestHash = undef;
-    is($Tools->isValid(\%TestHash), $False,"$SubTestName - tests if undef hash is not valid");
-    my $TestScalar = undef;
-    is($Tools->isValid($TestScalar), $False,"$SubTestName - tests if undef scalar is not valid");
     return;
 }
 
