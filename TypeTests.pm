@@ -13,14 +13,14 @@ sub isInteger {
     my ( $Value ) = @_;
 
     my $IsInteger = 0;
+    my $Sign = '[-+]?'; # + or - or nothing
 
-    if( $Value =~ /^[-+]?\d+$/ ) {
+    if( $Value =~ /^$Sign\d+$/ ) {
         $IsInteger = 1;
     }
 
     #Float 0.0 and integer 0 can't be distinguished in perl.
     #But since '0.0' (as String) would't be accepted as integer, I have to straighten this behavior in testInteger to ensure stable results.
-    my $Sign = '[-+]?'; # + or - or nothing
     my $MandatoryLeadingZero = '0+.0*';
     my $MandatoryDecimalZero = '0*.0+';
     my $FloatZero = "($MandatoryLeadingZero|$MandatoryDecimalZero)";
@@ -61,12 +61,12 @@ sub isString {
     if ( $Value =~ /^[\t|\r|\n|\f]+$/){
         $IsString = 0;
     }
-    # exclude integer
+    # exclude integer todo remove?
     my $RegExInteger = $self->_regExInteger();
     if ( $Value =~ /^$RegExInteger$/){
         $IsString = 0;
     }
-    # exclude float
+    # exclude float todo remove?
     my $RegExFloat = $self->_regExFloat();
     if ( $Value =~ /^$RegExFloat$/){
         $IsString = 0;

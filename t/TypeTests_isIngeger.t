@@ -24,7 +24,6 @@ sub isInteger_positivPath {
     ok($TypeTests->isInteger(-2), "$SubTestName - tests negativ integer - true");
     ok($TypeTests->isInteger(0), "$SubTestName - tests zero - true");
     ok($TypeTests->isInteger(-0), "$SubTestName - tests negativ zero - true");
- 
     return;
 }
 
@@ -67,6 +66,10 @@ sub isInteger_specialIssues {
     ok($TypeTests->isInteger(-0.0), "$SubTestName - tests negativ zero float - true");
 
     # BUT since '0.0' (as String) would't be accepted as integer, I have to straighten this behavior in isInteger to ensure stable results.
+    my $ZeroFloatTestResult = '0.0' + '.0' + '0.';
+    is($ZeroFloatTestResult,'0',"$SubTestName - tests perl tranlation from zero float to integer float - true");
+    ok($TypeTests->isInteger($ZeroFloatTestResult), "$SubTestName - tests negativ zero - true");
+
     ok($TypeTests->isInteger('0.0'), "$SubTestName - tests zero float as string - true");
     ok($TypeTests->isInteger('-0.0'), "$SubTestName - tests negativ zero float as string- true");
     ok($TypeTests->isInteger('.0'), "$SubTestName - tests zero float as string without leading 0 - true");
