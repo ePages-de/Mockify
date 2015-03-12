@@ -21,14 +21,28 @@ sub loadPackage {
 }
 #------------------------------------------------------------------------
 sub isValid {
-	my $self = shift;
+    my $self = shift;
     my ($Value) = @_;
 
     my $IsValid = 0;
     if( defined($Value) && $Value ne '' ){
         $IsValid = 1;
     }
-	return $IsValid;
+    return $IsValid;
 }
+#------------------------------------------------------------------------
+sub existsMethod {
+	my $self = shift;
+    my ($PathOrObject, $MethodName) = @_;
 
+    if( not $PathOrObject->can( $MethodName ) ){
+        if( isValid( ref( $PathOrObject ) ) ){
+            die( ref( $PathOrObject )." donsn't have a method like: $MethodName" );
+        }else{
+            die( $PathOrObject." donsn't have a method like: $MethodName" );
+        }
+    }
+
+    return;
+}
 1;
