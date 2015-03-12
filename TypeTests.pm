@@ -61,12 +61,12 @@ sub isString {
     if ( $Value =~ /^[\t|\r|\n|\f]+$/){
         $IsString = 0;
     }
-    # exclude integer
+    # exclude integer todo remove?
     my $RegExInteger = $self->_regExInteger();
     if ( $Value =~ /^$RegExInteger$/){
         $IsString = 0;
     }
-    # exclude float
+    # exclude float todo remove?
     my $RegExFloat = $self->_regExFloat();
     if ( $Value =~ /^$RegExFloat$/){
         $IsString = 0;
