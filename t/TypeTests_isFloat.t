@@ -64,29 +64,20 @@ sub _isFloat_positivPath {
     ok($TypeTests->isFloat(1.e+34),"$SubTestName - tests if 1.e+34 is a float - true");
 
     ok($TypeTests->isFloat(-1.12),"$SubTestName - tests if -1.12 is a float - true");
-    ok($TypeTests->isFloat(-1.12),"$SubTestName - tests if -1.12 is a float - true");
     ok($TypeTests->isFloat(+1.12),"$SubTestName - tests if +1.12 is a float - true");
-    ok($TypeTests->isFloat(+1.12),"$SubTestName - tests if +1.12 is a float - true");
-    ok($TypeTests->isFloat(1.12),"$SubTestName - tests if 1.12 is a float - true");
     ok($TypeTests->isFloat(1.12),"$SubTestName - tests if 1.12 is a float - true");
 
     ok($TypeTests->isFloat(-.12),"$SubTestName - tests if -.12 is a float - true");
-    ok($TypeTests->isFloat(-.12),"$SubTestName - tests if -.12 is a float - true");
     ok($TypeTests->isFloat(+.12),"$SubTestName - tests if +.12 is a float - true");
-    ok($TypeTests->isFloat(+.12),"$SubTestName - tests if +.12 is a float - true");
-    ok($TypeTests->isFloat(.12),"$SubTestName - tests if .12 is a float - true");
     ok($TypeTests->isFloat(.12),"$SubTestName - tests if .12 is a float - true");
 
     ok($TypeTests->isFloat(-1.),"$SubTestName - tests if -1. is a float - true");
-    ok($TypeTests->isFloat(-1.),"$SubTestName - tests if -1. is a float - true");
     ok($TypeTests->isFloat(+1.),"$SubTestName - tests if +1. is a float - true");
-    ok($TypeTests->isFloat(+1.),"$SubTestName - tests if +1. is a float - true");
-    ok($TypeTests->isFloat(1.),"$SubTestName - tests if 1. is a float - true");
     ok($TypeTests->isFloat(1.),"$SubTestName - tests if 1. is a float - true");
     #brute force testing OFF ;-)
 
-    ok($TypeTests->isFloat(1),"$SubTestName - tests the integer 1 is also a float - true");
-    ok($TypeTests->isFloat(-1),"$SubTestName - tests the integer -1 is also a float - true");
+    ok($TypeTests->isFloat(1),"$SubTestName - tests the integer is also a float - true");
+    ok($TypeTests->isFloat(-1),"$SubTestName - tests the integer is also a float - true");
 
     return;
 }
