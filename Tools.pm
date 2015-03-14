@@ -32,7 +32,7 @@ sub isValid {
 }
 #------------------------------------------------------------------------
 sub existsMethod {
-	my $self = shift;
+    my $self = shift;
     my ($PathOrObject, $MethodName) = @_;
 
     if( not $PathOrObject->can( $MethodName ) ){
@@ -44,5 +44,12 @@ sub existsMethod {
     }
 
     return;
+}
+#------------------------------------------------------------------------
+sub checkIsa {
+    my $self = shift;
+    my ($Object, $ClassName) = @_;
+    return 0 unless blessed( $Object );
+    return $Object->isa( $ClassName );
 }
 1;
