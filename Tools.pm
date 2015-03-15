@@ -2,6 +2,7 @@ package Tools;
 use Module::Load;
 use strict;
 use Data::Dumper;
+use Scalar::Util qw( blessed );
 use base qw( Exporter );
 our @EXPORT_OK = qw (
         Error
@@ -54,11 +55,17 @@ sub Isa {
 sub Error {
     my ($Message, $hData) = @_;
 
-    my ($package, $filename, $line) = caller(3);
+    my ($package, $filename, $line) = caller(5);
+    
     local $Data::Dumper::Terse = 1;
+    local $Data::Dumper::Indent = 0;
+    local $Data::Dumper::Pair = '=';
+    local $Data::Dumper::Quotekeys = 0;
+    my $MockedMethod = delete $hData->{'Method'} if defined $hData->{'Method'};
+
     my $DumpedData = Dumper($hData);
-    die("$Message: $DumpedData $filename at line $line \n");
+    die("$Message:$DumpedData\nMockedMethod=$MockedMethod\nat $filename line $line \n");
     return;
-}
+}   
 
 1;
