@@ -54,7 +54,7 @@ sub isString {
     my $IsString = 1;
 
     # exclude empty string
-    if ( $Value eq ''){
+    if ( not defined $Value ){
         $IsString = 0;
     }
     # exclude if there only control characters
