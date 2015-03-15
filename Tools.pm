@@ -33,10 +33,10 @@ sub isValid {
 #------------------------------------------------------------------------
 sub existsMethod {
     my $self = shift;
-    my ($PathOrObject, $MethodName) = @_;
+    my ( $PathOrObject, $MethodName ) = @_;
 
     if( not $PathOrObject->can( $MethodName ) ){
-        if( isValid( ref( $PathOrObject ) ) ){
+        if( $self->isValid( ref( $PathOrObject ) ) ){
             die( ref( $PathOrObject )." donsn't have a method like: $MethodName" );
         }else{
             die( $PathOrObject." donsn't have a method like: $MethodName" );

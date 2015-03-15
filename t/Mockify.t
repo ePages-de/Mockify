@@ -8,12 +8,12 @@ use strict;
 sub testPlan {
     my $self = shift;
     $self->test_MockModule();
-#$self->test_MockModule_withParameter();
-#$self->test_MockModule_addMock();
-#$self->test_MockModule_addMock_overrideNotExistingMethod();
-#$self->test_MockModule_AddMockWithReturnValue();
-#$self->test_MockModule_AddMockWithReturnValue_UnexpectedParameterInCall();
-#$self->test_MockModule_AddMockWithReturnValueAndParameterCheck();
+    $self->test_MockModule_withParameter();
+    $self->test_MockModule_addMock();
+    $self->test_MockModule_addMock_overrideNotExistingMethod();
+    $self->test_MockModule_AddMockWithReturnValue();
+    $self->test_MockModule_AddMockWithReturnValue_UnexpectedParameterInCall();
+    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck();
 #$self->test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedString();
 #$self->test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedInteger();
 #$self->test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedHash();
@@ -52,77 +52,100 @@ sub test_MockModule {
 }
 #----------------------------------------------------------------------------------------
 sub test_MockModule_withParameter {
-my $self = shift;
-my $SubTestName = (caller(0))[3];
-my $aParameterList = ['one', 'two'];
-my $MockObject = $self->_createMockObject($aParameterList);
-my $MockedFakeModule = $MockObject->getMockObject();
-is_deeply($MockedFakeModule->returnParameterListNew(), $aParameterList, "$SubTestName - test if the parameter for the constuctor are handover correctly");
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = ['one', 'two'];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    my $MockedFakeModule = $MockObject->getMockObject();
+    is_deeply($MockedFakeModule->returnParameterListNew(), $aParameterList, "$SubTestName - test if the parameter for the constuctor are handover correctly");
+
+    return;    
 }
 #----------------------------------------------------------------------------------------
 sub test_MockModule_addMock {
-my $self = shift;
-my $SubTestName = (caller(0))[3];
-my $aParameterList = [];
-my $MockObject = $self->_createMockObject($aParameterList);
-my $TestMethodPointer = sub {
-return 'return value of overridden Method';
-};
-$MockObject->addMock('DummmyMethodForTestOverriding', $TestMethodPointer );
-my $MockedFakeModule = $MockObject->getMockObject();
-is($MockedFakeModule->DummmyMethodForTestOverriding(),'return value of overridden Method',"$SubTestName - test if the loaded module can be overridden and the return value will be returned");
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = [];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    my $TestMethodPointer = sub {
+        return 'return value of overridden Method';
+    };
+    $MockObject->addMock('DummmyMethodForTestOverriding', $TestMethodPointer );
+    my $MockedFakeModule = $MockObject->getMockObject();
+    is($MockedFakeModule->DummmyMethodForTestOverriding(),'return value of overridden Method',"$SubTestName - test if the loaded module can be overridden and the return value will be returned");
+
+    return;
 }
 #----------------------------------------------------------------------------------------
 sub test_MockModule_addMock_overrideNotExistingMethod {
-my $self = shift;
-my $SubTestName = (caller(0))[3];
-my $aParameterList = [];
-my $MockObject = $self->_createMockObject($aParameterList);
-throws_ok( sub { $MockObject->addMockWithReturnValue('aNotExistingMethod', sub {}); },
-qr/t::FakeModuleForMockifyTest don't have a method like: aNotExistingMethod/,## no critic (ProhibitComplexRegexes)
-"$SubTestName - test if the mocked method throw an Error if the method don't exists in the module"
-);
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = [];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    throws_ok(
+        sub { $MockObject->addMockWithReturnValue('aNotExistingMethod', sub {}); },
+        qr/t::FakeModuleForMockifyTest donsn't have a method like: aNotExistingMethod/,
+        "$SubTestName - test if the mocked method throw an Error if the method don't exists in the module"
+    );
+
+    return;
 }
 #----------------------------------------------------------------------------------------
 sub test_MockModule_AddMockWithReturnValue {
-my $self = shift;
-my $SubTestName = (caller(0))[3];
-my $aParameterList = [];
-my $MockObject = $self->_createMockObject($aParameterList);
-$MockObject->addMockWithReturnValue('DummmyMethodForTestOverriding', 'This is a return value');
-my $MockedFakeModule = $MockObject->getMockObject();
-is($MockedFakeModule->DummmyMethodForTestOverriding(),'This is a return value',"$SubTestName - test if the loaded module can be overridden and the return value will be returned");
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = [];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    $MockObject->addMockWithReturnValue('DummmyMethodForTestOverriding', 'This is a return value');
+    my $MockedFakeModule = $MockObject->getMockObject();
+    is($MockedFakeModule->DummmyMethodForTestOverriding(),'This is a return value',"$SubTestName - test if the loaded module can be overridden and the return value will be returned");
+
+    return
 }
 #----------------------------------------------------------------------------------------
 sub test_MockModule_AddMockWithReturnValue_UnexpectedParameterInCall {
-my $self = shift;
-my $SubTestName = (caller(0))[3];
-my $aParameterList = [];
-my $MockObject = $self->_createMockObject($aParameterList);
-$MockObject->addMockWithReturnValue('DummmyMethodForTestOverriding', 'SomeReturnValue');
-my $MockedFakeModule = $MockObject->getMockObject();
-throws_ok( sub { $MockedFakeModule->DummmyMethodForTestOverriding('anUnexpectedParameter') },
-qr/UnexpectedParameter/,
-"$SubTestName - test if the mocked method was called with the wrong amount of parameters"
-);
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = [];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    $MockObject->addMockWithReturnValue('DummmyMethodForTestOverriding', 'SomeReturnValue');
+    my $MockedFakeModule = $MockObject->getMockObject();
+    throws_ok(
+        sub { $MockedFakeModule->DummmyMethodForTestOverriding('anUnexpectedParameter') },
+        qr/UnexpectedParameter/,
+        "$SubTestName - test if the mocked method was called with the wrong amount of parameters"
+    );
+
+    return;
 }
 #----------------------------------------------------------------------------------------
 sub test_MockModule_AddMockWithReturnValueAndParameterCheck {
-my $self = shift;
-my $SubTestName = (caller(0))[3];
-my $aParameterList = [];
-my $MockObject = $self->_createMockObject($aParameterList);
-my $ParameterCheckList = ['string','int','undef','hashref', 'arrayref', 'object',];
-$MockObject->addMockWithReturnValueAndParameterCheck('DummmyMethodForTestOverriding', 'This is a return value', $ParameterCheckList);
-my $MockedFakeModule = $MockObject->getMockObject();
-my $TestObject = bless({}, 'Test::Object');
-my @Parameters = ('Hello', 12389, undef, {}, [], $TestObject); ## no critic (ProhibitMagicNumbers RequireNumberSeparators)
-is($MockedFakeModule->DummmyMethodForTestOverriding( @Parameters ),
-'This is a return value',"$SubTestName - tests if the parameter list check is working");
-is_deeply( GetParametersFromMockifyCall($MockedFakeModule,'DummmyMethodForTestOverriding'),
-\@Parameters,
-"$SubTestName - tests if the parameter is stored correct in the mock object"
-);
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = [];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    my $aParameterCheckList = ['string','int','undef','hashref', 'arrayref', 'object',];
+    $MockObject->addMockWithReturnValueAndParameterCheck('DummmyMethodForTestOverriding', 'This is a return value', $aParameterCheckList);
+    my $MockedFakeModule = $MockObject->getMockObject();
+    my $TestObject = bless({}, 'Test::Object');
+    my @Parameters = ('Hello', 12389, undef, {}, [], $TestObject); ## no critic (ProhibitMagicNumbers RequireNumberSeparators)
+    is(
+        $MockedFakeModule->DummmyMethodForTestOverriding( @Parameters ),
+        'This is a return value',"$SubTestName - tests if the parameter list check is working"
+    );
+    is_deeply(
+        GetParametersFromMockifyCall($MockedFakeModule,'DummmyMethodForTestOverriding'),
+        \@Parameters,
+        "$SubTestName - tests if the parameter is stored correct in the mock object"
+    );
+
+    return;
 }
 #----------------------------------------------------------------------------------------
 sub test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedString {
@@ -461,12 +484,11 @@ qr/FakeModuleForMockifyTest donsn't have a method like: __getParametersFromMocki
 }
 #----------------------------------------------------------------------------------------
 sub _createMockObject {
-my $self = shift;
-my ($aParameterList) = @_;
-my $MockObject = Mockify->new(
-'t::FakeModuleForMockifyTest',
-$aParameterList
-);
-return $MockObject;
+    my $self = shift;
+    my ($aParameterList) = @_;
+
+    my $MockObject = Mockify->new( 't::FakeModuleForMockifyTest', $aParameterList );
+
+    return $MockObject;
 }
 __PACKAGE__->RunTest();

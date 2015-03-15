@@ -7,6 +7,7 @@ use Data::Dumper;
 use feature qw ( switch );
 use strict;
 our @EXPORT_OK = qw ( GetParametersFromMockifyCall );
+use Test::More;
 
 #----------------------------------------------------------------------------------------
 sub new {
@@ -53,7 +54,7 @@ sub addMock {
     my $self = shift;
     my ( $MethodName, $rSub ) = @_;
 
-    $self->{'Tools'}->existsMethod( $self->{'MockedModule'}, $MethodName );
+    $self->{'Tools'}->existsMethod( $self->{'MockedModulePath'}, $MethodName );# todo why $self->{'MockedModule'} don't work anymore
     $self->{'MockedModule'}->mock( $MethodName, $rSub );
 
     return;
@@ -87,9 +88,10 @@ sub addMockWithReturnValueAndParameterCheck {
     my $self = shift;
     my ( $MethodName, $ReturnValue, $aParameterTypes ) = @_;
 
-    if ( $self->{'TypeTests'}->isArrayReference( $aParameterTypes ) ){
-        die( 'ParameterTypesNotProvided', {
-            'Method' => $self->{'MockedModulePath'}."->.$MethodName.(???)",
+    if ( not $self->{'TypeTests'}->isArrayReference( $aParameterTypes ) ){
+        die( 'ParameterTypesNotProvided', Dumper {
+            'Method' => $self->{'MockedModulePath'}."->.$MethodName.(???)", # do error handler
+            'ParameterList' => $aParameterTypes,
         } );
     }
 
@@ -243,7 +245,7 @@ sub _testExpectedString {
     my $self = shift;
     my ( $Name, $Value, $TestParameterType, $MethodName ) = @_;
 
-    if ( $self->{'TypeTests'}->isString( $Value ) ) {
+    if ( not $self->{'TypeTests'}->isString( $Value ) ) {
         die( "$Name is not a String", {
             'Method' => $self->{'MockedModulePath'}."->.$MethodName.(???)",
             'Value' => $Value
@@ -269,7 +271,7 @@ sub _testExpectedInt {
     my $self = shift;
     my ( $Name, $Value, $hTestParameterType, $MethodName ) = @_;
 
-    if ( $self->{'TypeTests'}->isInteger( $Value ) ) {
+    if ( not $self->{'TypeTests'}->isInteger( $Value ) ) {
         die( "$Name is not a Integer", {
             'Method' => $self->{'MockedModulePath'}."->.$MethodName.(???)",
             'Value' => $Value
@@ -310,7 +312,7 @@ sub _testExpectedHashRef {
     my $self = shift;
     my ( $Name, $Value, $TestParameterType, $MethodName ) = @_;
 
-    if ( $self->{'TypeTests'}->isHashReference( $Value ) ) {
+    if ( not $self->{'TypeTests'}->isHashReference( $Value ) ) {
         die( "$Name is not a HashRef", {
             'Method' => $self->{'MockedModulePath'}."->.$MethodName.(???)",
             'Value' => $Value
@@ -338,7 +340,7 @@ sub _testExpectedArrayRef {
     my $self = shift;
     my ( $Name, $Value, $TestParameterType, $MethodName ) = @_;
 
-    if ( $self->{'TypeTests'}->isArrayReference( $Value ) ) {
+    if ( not $self->{'TypeTests'}->isArrayReference( $Value ) ) {
         die( "$Name is not a ArrayRef", {
         'Method' => $self->{'MockedModulePath'}."->.$MethodName.(???)",
         'Value' => $Value
@@ -367,13 +369,13 @@ sub _testExpectedObject {
     my $self = shift;
     my ( $Name, $Value, $TestParameterType, $MethodName ) = @_;
 
-    if ( $self->{'TypeTests'}->isObjectReference($Value) ) {
+    if ( not $self->{'TypeTests'}->isObjectReference($Value) ) {
         die( "$Name is not a Object", {
             'Method' => $self->{'MockedModulePath'}."->.$MethodName.(???)",
             'Value' => $Value
         } );
     }
-    if( $self->_isHash( $TestParameterType ) ){
+    if( $self->{'TypeTests'}->isHashReference( $TestParameterType ) ){
         my @Values = values %{$TestParameterType};
         my $ExpectedValue = $Values[0];
         if( not $self->{'Tools'}->checkIsa( $Value, $ExpectedValue ) ){
@@ -393,7 +395,7 @@ sub _checkParameterTypesForMethod {
     my $self = shift;
     my ( $MethodName, $aParameterTypes ) = @_;
 
-    if ( not ( defined $aParameterTypes ) or $self->{'TypeTests'}->isArrayReference( $aParameterTypes )){
+    if ( not ( defined $aParameterTypes ) or not $self->{'TypeTests'}->isArrayReference( $aParameterTypes )){
         die( 'ParameterTypesNotProvided', {
             'Method' => $self->{'MockedModulePath'}."->.$MethodName.(???)",
         } );
