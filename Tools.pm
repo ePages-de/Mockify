@@ -2,17 +2,17 @@ package Tools;
 use Module::Load;
 use strict;
 use Data::Dumper;
+use base qw( Exporter );
+our @EXPORT_OK = qw (
+        Error
+        ExistsMethod
+        IsValid
+        LoadPackage
+        Isa
+    );
 
 #------------------------------------------------------------------------
-sub new {
-    my $Class = shift;
-    my $self = bless({},$Class);
-    return $self;
-}
-
-#------------------------------------------------------------------------
-sub loadPackage {
-    my $self = shift;
+sub LoadPackage {
     my ($Package) = @_;
 
     my $PackageFileName = join( '/', split /::/, $Package ) . '.pm';
@@ -20,8 +20,7 @@ sub loadPackage {
     return;
 }
 #------------------------------------------------------------------------
-sub isValid {
-    my $self = shift;
+sub IsValid {
     my ($Value) = @_;
 
     my $IsValid = 0;
@@ -31,25 +30,35 @@ sub isValid {
     return $IsValid;
 }
 #------------------------------------------------------------------------
-sub existsMethod {
-    my $self = shift;
+sub ExistsMethod {
     my ( $PathOrObject, $MethodName ) = @_;
 
     if( not $PathOrObject->can( $MethodName ) ){
-        if( $self->isValid( ref( $PathOrObject ) ) ){
-            die( ref( $PathOrObject )." donsn't have a method like: $MethodName" );
+        if( IsValid( ref( $PathOrObject ) ) ){
+            Error( ref( $PathOrObject )." donsn't have a method like: $MethodName" );
         }else{
-            die( $PathOrObject." donsn't have a method like: $MethodName" );
+            Error( $PathOrObject." donsn't have a method like: $MethodName" );
         }
     }
 
     return;
 }
 #------------------------------------------------------------------------
-sub checkIsa {
-    my $self = shift;
+sub Isa {
     my ($Object, $ClassName) = @_;
     return 0 unless blessed( $Object );
     return $Object->isa( $ClassName );
 }
+
+#------------------------------------------------------------------------
+sub Error {
+    my ($Message, $hData) = @_;
+
+    my ($package, $filename, $line) = caller(3);
+    local $Data::Dumper::Terse = 1;
+    my $DumpedData = Dumper($hData);
+    die("$Message: $DumpedData $filename at line $line \n");
+    return;
+}
+
 1;
