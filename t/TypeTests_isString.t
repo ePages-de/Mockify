@@ -25,6 +25,7 @@ sub isString_positivPath {
     ok($TypeTests->isString('abc12.3'), "$SubTestName - tests string with float in the end- true");
     ok($TypeTests->isString('123 abc'), "$SubTestName - tests string with space and with leading numbers - true");
     ok($TypeTests->isString('abc 123'), "$SubTestName - tests string with space and numbers in the end- true");
+    ok($TypeTests->isString(''),"$SubTestName - tests empty string - false");
     ok($TypeTests->isString(' '), "$SubTestName - tests white space - true");
     ok($TypeTests->isString('  '), "$SubTestName - tests multiple white spaces - true");
     ok($TypeTests->isString(' abc'), "$SubTestName - tests string leading white space - true");
@@ -43,7 +44,6 @@ sub isString_negativPath {
     my $False = 0;
 
     is($TypeTests->isString(), $False,"$SubTestName - tests empty parameter - false");
-    is($TypeTests->isString(''), $False,"$SubTestName - tests empty string - false");
     is($TypeTests->isString("\n"), $False,"$SubTestName - tests only linux line break - false");
     is($TypeTests->isString("\r"), $False,"$SubTestName - tests only CR - false");
     is($TypeTests->isString("\t"), $False,"$SubTestName - tests only tabulator - false");
