@@ -1,7 +1,7 @@
 package t::Tools_isValid;
 use base t::TestBase;
 use strict;
-use Tools;
+use Tools qw ( IsValid );
 use Test::More;
 
 #------------------------------------------------------------------------
@@ -18,13 +18,12 @@ sub isObjectReference_positivPath {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $Tools = Tools->new();
-    ok($Tools->isValid('abc'),"$SubTestName - tests if string is valid");
-    ok($Tools->isValid(123),"$SubTestName - tests if int is valid");
-    ok($Tools->isValid(1.23),"$SubTestName - tests if float is valid");
-    ok($Tools->isValid({'key'=> 'value'}),"$SubTestName - tests if hash pointer is valid");
-    ok($Tools->isValid(['element1','element2']),"$SubTestName - tests if array pointer is valid");
-    ok($Tools->isValid(bless({},'Class')),"$SubTestName - tests if object pointer is valid");
+    ok(IsValid('abc'),"$SubTestName - tests if string is valid");
+    ok(IsValid(123),"$SubTestName - tests if int is valid");
+    ok(IsValid(1.23),"$SubTestName - tests if float is valid");
+    ok(IsValid({'key'=> 'value'}),"$SubTestName - tests if hash pointer is valid");
+    ok(IsValid(['element1','element2']),"$SubTestName - tests if array pointer is valid");
+    ok(IsValid(bless({},'Class')),"$SubTestName - tests if object pointer is valid");
 
     return;
 }
@@ -34,11 +33,10 @@ sub isObjectReference_negativPath {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $Tools = Tools->new();
     my $False = 0;
-    is($Tools->isValid(), $False,"$SubTestName - tests if no parameter is not valid");
-    is($Tools->isValid(''), $False,"$SubTestName - tests if empty string is not valid");
-    is($Tools->isValid(undef), $False,"$SubTestName - tests if undef is not valid");
+    is(IsValid(), $False,"$SubTestName - tests if no parameter is not valid");
+    is(IsValid(''), $False,"$SubTestName - tests if empty string is not valid");
+    is(IsValid(undef), $False,"$SubTestName - tests if undef is not valid");
     return;
 }
 
