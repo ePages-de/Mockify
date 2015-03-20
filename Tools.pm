@@ -49,7 +49,11 @@ sub ExistsMethod {
 sub Isa {
     my ($Object, $ClassName) = @_;
     return 0 unless blessed( $Object );
-    return $Object->isa( $ClassName );
+    my $ResultIsaCheck = $Object->isa( $ClassName );
+    if($ResultIsaCheck eq ''){
+        return 0;
+    }
+    return $ResultIsaCheck;
 }
 #------------------------------------------------------------------------
 sub Error {
