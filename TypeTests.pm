@@ -5,7 +5,10 @@ use base qw( Exporter );
 our @EXPORT_OK = qw (
         IsInteger
         IsFloat
+        IsString
     );
+
+use Test::More;
 #------------------------------------------------------------------------
 sub new {
     my $Class = shift;
@@ -43,34 +46,20 @@ sub IsFloat {
     return $IsFloat;
 }
 #------------------------------------------------------------------------
-sub isString {
-    my $self = shift;
+sub IsString {
     my ( $Value ) = @_;
 
-    my $IsString = 1;
+    my $IsString = 0;
 
-    # exclude empty string
-    if ( not defined $Value ){
-        $IsString = 0;
-    }
-    # exclude if there only control characters
-    if ( $Value =~ /^[\t|\r|\n|\f]+$/){
-        $IsString = 0;
-    }
-    # exclude integer todo remove?
-    my $RegExInteger = $self->_regExInteger();
-    if ( $Value =~ /^$RegExInteger$/){
-        $IsString = 0;
-    }
-    # exclude float todo remove?
-    my $RegExFloat = $self->_regExFloat();
-    if ( $Value =~ /^$RegExFloat$/){
-        $IsString = 0;
-    }
-    # exclude complex types
-    my $ValueRefenceType = ref($Value);
-    if ( defined($ValueRefenceType) && $ValueRefenceType ne ''){
-        $IsString = 0;
+    if ( defined $Value ){ 
+        if( $Value =~ /[\w\s]/ || $Value eq ''){
+            $IsString = 1;
+        }
+        # exclude all "types"
+        my $ValueType = ref($Value);
+        if( defined $ValueType && $ValueType ne '' )  {
+            $IsString = 0;
+        }
     }
 
     return $IsString;
