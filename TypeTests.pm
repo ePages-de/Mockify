@@ -7,6 +7,7 @@ our @EXPORT_OK = qw (
         IsFloat
         IsString
         IsArrayReference
+        IsHashReference
     );
 
 use Test::More;
@@ -78,8 +79,7 @@ sub IsArrayReference {
     return $IsArray;
 }
 #------------------------------------------------------------------------
-sub isHashReference {
-    my $self = shift;
+sub IsHashReference {
     my ( $hValue ) = @_;
 
     my $IsHash = 0;
