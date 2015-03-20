@@ -1,9 +1,8 @@
 package t::TypeTests_isArrayReference;
 use base t::TestBase;
 use strict;
-use TypeTests;
+use TypeTests qw ( IsArrayReference );
 use Test::More;
-
 #------------------------------------------------------------------------
 sub testPlan{
     my $self = shift;
@@ -11,37 +10,33 @@ sub testPlan{
     $self->isArrayReference_negativPath();
     return;
 }
-
 #------------------------------------------------------------------------
 sub isArrayReference_positivPath {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $TypeTests = TypeTests->new();
-
-    ok($TypeTests->isArrayReference([]),"$SubTestName - tests with empty array ref - true");
-    ok($TypeTests->isArrayReference(['some', 'elments']),"$SubTestName - tests array ref with some elments - true");
+    ok(IsArrayReference([]),"$SubTestName - tests with empty array ref - true");
+    ok(IsArrayReference(['some', 'elments']),"$SubTestName - tests array ref with some elments - true");
     my @TestArray = qw (one two);
-    ok($TypeTests->isArrayReference(\@TestArray),"$SubTestName - tests direct de-referencing of array - true");
+    ok(IsArrayReference(\@TestArray),"$SubTestName - tests direct de-referencing of array - true");
     return;
 }
-
 #------------------------------------------------------------------------
 sub isArrayReference_negativPath {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $TypeTests = TypeTests->new();
     my $False = 0;
 
-    is($TypeTests->isArrayReference(), $False, "$SubTestName - tests empty parameter - false");
-    is($TypeTests->isArrayReference(123), $False, "$SubTestName - tests with integer - false");
-    is($TypeTests->isArrayReference(12.3), $False, "$SubTestName - tests with float - false");
-    is($TypeTests->isArrayReference('string'), $False, "$SubTestName - tests with string - false");
-    is($TypeTests->isArrayReference({'some' => 'thing'}), $False, "$SubTestName - tests with hash ref - false");
-    is($TypeTests->isArrayReference(bless({},'object')), $False, "$SubTestName - tests with object ref - false");
+    is(IsArrayReference(), $False, "$SubTestName - tests empty parameter - false");
+    is(IsArrayReference(123), $False, "$SubTestName - tests with integer - false");
+    is(IsArrayReference(12.3), $False, "$SubTestName - tests with float - false");
+    is(IsArrayReference('string'), $False, "$SubTestName - tests with string - false");
+    is(IsArrayReference({'some' => 'thing'}), $False, "$SubTestName - tests with hash ref - false");
+    is(IsArrayReference(bless({},'object')), $False, "$SubTestName - tests with object ref - false");
+    is(IsArrayReference(sub{}), $False, "$SubTestName - tests with function ref - false");
     my @TestArray = qw (one two);
-    is($TypeTests->isArrayReference(@TestArray), $False, "$SubTestName - tests with direct array - false");
+    is(IsArrayReference(@TestArray), $False, "$SubTestName - tests with direct array - false");
 
     return;
 }

@@ -50,7 +50,6 @@ sub Isa {
     return 0 unless blessed( $Object );
     return $Object->isa( $ClassName );
 }
-
 #------------------------------------------------------------------------
 sub Error {
     my ($Message, $hData) = @_;

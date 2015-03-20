@@ -39,6 +39,7 @@ sub isInteger_negativPath {
     is(IsInteger({'some' => 'thing'}), $False, "$SubTestName - tests hash pointer - false");
     is(IsInteger(['some', 'thing']), $False, "$SubTestName - tests array pointer - false");
     is(IsInteger(bless({},'object')), $False, "$SubTestName - tests object pointer - false");
+    is(IsInteger(sub{}), $False, "$SubTestName - tests function pointer - false");
 
     return;
 }
