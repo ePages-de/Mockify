@@ -1,6 +1,11 @@
 package TypeTests;
 use strict;
 use Scalar::Util qw ( blessed );
+use base qw( Exporter );
+our @EXPORT_OK = qw (
+        IsInteger
+        IsFloat
+    );
 #------------------------------------------------------------------------
 sub new {
     my $Class = shift;
@@ -8,8 +13,7 @@ sub new {
     return $self;
 }
 #------------------------------------------------------------------------
-sub isInteger {
-    my $self = shift;
+sub IsInteger {
     my ( $Value ) = @_;
 
     my $IsInteger = 0;
@@ -19,28 +23,20 @@ sub isInteger {
         $IsInteger = 1;
     }
 
-    #Float 0.0 and integer 0 can't be distinguished in perl.
-    #But since '0.0' (as String) would't be accepted as integer, I have to straighten this behavior in testInteger to ensure stable results.
-    my $MandatoryLeadingZero = '0+.0*';
-    my $MandatoryDecimalZero = '0*.0+';
-    my $FloatZero = "($MandatoryLeadingZero|$MandatoryDecimalZero)";
-
-    if( $Value =~ /^$Sign$FloatZero$/ ) {
-        $IsInteger = 1;
-    }
-
     return $IsInteger;
 }
-
 #------------------------------------------------------------------------
-sub isFloat {
-    my $self = shift;
+sub IsFloat {
     my ( $Value ) = @_;
 
     my $IsFloat = 0;
 
-    my $RegExFloat = $self->_regExFloat();
-    if ( $Value =~ /^$RegExFloat$/ ){
+    my $OptionalSign = '[-+]?';
+    my $NumberOptions = '(?=\d|\.\d)\d*(\.\d*)?';
+    my $OptionalExponent = '([eE][-+]?\d+)?';
+    my $FloatRegex = sprintf('%s%s%s', $OptionalSign, $NumberOptions, $OptionalExponent);
+
+    if ( $Value =~ /^$FloatRegex$/ ){
         $IsFloat = 1;
     }
 
