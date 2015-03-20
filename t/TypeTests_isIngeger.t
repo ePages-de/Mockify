@@ -1,7 +1,7 @@
 package t::TypeTests_isInteger;
 use base t::TestBase;
 use strict;
-use TypeTests qw (IsInteger);
+use TypeTests qw ( IsInteger );
 use Test::More;
 
 #------------------------------------------------------------------------
@@ -28,7 +28,6 @@ sub isInteger_negativPath {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $TypeTests = TypeTests->new();
     my $False = 0;
 
     is(IsInteger(), $False, "$SubTestName - tests empty parameter - false");

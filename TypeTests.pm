@@ -13,12 +13,6 @@ our @EXPORT_OK = qw (
 
 use Test::More;
 #------------------------------------------------------------------------
-sub new {
-    my $Class = shift;
-    my $self = bless({},$Class);
-    return $self;
-}
-#------------------------------------------------------------------------
 sub IsInteger {
     my ( $Value ) = @_;
 
@@ -102,27 +96,5 @@ sub IsObjectReference {
     }
 
     return $IsObject;
-}
-#------------------------------------------------------------------------
-sub _regExFloat {
-    my $self = shift;
-
-    my $OptionalSign = '[-+]?';
-    my $NumberOptions = '(?=\d|\.\d)\d*(\.\d*)?';
-    my $OptionalExponent = '([eE][-+]?\d+)?';
-    my $FloatRegex = sprintf('%s%s%s', $OptionalSign, $NumberOptions, $OptionalExponent);
-
-    return $FloatRegex;
-}
-#------------------------------------------------------------------------
-sub _regExInteger {
-    my $self = shift;
-
-    my $OptionalSign = '[-+]?';
-    my $Numbers = '[0-9]+';
-
-    my $FloatRegex = sprintf('%s%s', $OptionalSign, $Numbers );
-
-    return $FloatRegex;
 }
 1;
