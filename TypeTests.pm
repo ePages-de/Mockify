@@ -6,6 +6,7 @@ our @EXPORT_OK = qw (
         IsInteger
         IsFloat
         IsString
+        IsArrayReference
     );
 
 use Test::More;
@@ -64,10 +65,8 @@ sub IsString {
 
     return $IsString;
 }
-
 #------------------------------------------------------------------------
-sub isArrayReference {
-    my $self = shift;
+sub IsArrayReference {
     my ( $aValue ) = @_;
 
     my $IsArray = 0;
@@ -78,7 +77,6 @@ sub isArrayReference {
 
     return $IsArray;
 }
-
 #------------------------------------------------------------------------
 sub isHashReference {
     my $self = shift;
@@ -92,7 +90,6 @@ sub isHashReference {
 
     return $IsHash;
 }
-
 #------------------------------------------------------------------------
 sub isObjectReference {
     my $self = shift;
@@ -106,7 +103,6 @@ sub isObjectReference {
 
     return $IsObject;
 }
-
 #------------------------------------------------------------------------
 sub _regExFloat {
     my $self = shift;
@@ -118,7 +114,6 @@ sub _regExFloat {
 
     return $FloatRegex;
 }
-
 #------------------------------------------------------------------------
 sub _regExInteger {
     my $self = shift;
