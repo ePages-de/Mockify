@@ -34,15 +34,16 @@ sub IsValid {
 sub ExistsMethod {
     my ( $PathOrObject, $MethodName ) = @_;
 
+    die('Path or Object is needed') unless defined $PathOrObject;
+    die('Method name is needed') unless defined $MethodName;
     if( not $PathOrObject->can( $MethodName ) ){
         if( IsValid( ref( $PathOrObject ) ) ){
-            Error( ref( $PathOrObject )." donsn't have a method like: $MethodName" );
-        }else{
-            Error( $PathOrObject." donsn't have a method like: $MethodName" );
+            $PathOrObject = ref( $PathOrObject );
         }
+        die( $PathOrObject." donsn't have a method like: $MethodName" );
     }
 
-    return;
+    return 1;
 }
 #------------------------------------------------------------------------
 sub Isa {
