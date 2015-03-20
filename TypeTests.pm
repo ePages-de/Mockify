@@ -8,6 +8,7 @@ our @EXPORT_OK = qw (
         IsString
         IsArrayReference
         IsHashReference
+        IsObjectReference
     );
 
 use Test::More;
@@ -58,7 +59,7 @@ sub IsString {
             $IsString = 1;
         }
         # exclude all "types"
-        my $ValueType = ref($Value);
+        my $ValueType = ref( $Value );
         if( defined $ValueType && $ValueType ne '' )  {
             $IsString = 0;
         }
@@ -91,8 +92,7 @@ sub IsHashReference {
     return $IsHash;
 }
 #------------------------------------------------------------------------
-sub isObjectReference {
-    my $self = shift;
+sub IsObjectReference {
     my ( $Value ) = @_;
 
     my $IsObject = 0;
