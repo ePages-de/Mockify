@@ -59,17 +59,42 @@ sub Isa {
 sub Error {
     my ($Message, $hData) = @_;
 
-    my ($package, $filename, $line) = caller(5);
-    
+    die('Message is needed')unless(defined $Message);
+    # print hData
     local $Data::Dumper::Terse = 1;
     local $Data::Dumper::Indent = 0;
     local $Data::Dumper::Pair = '=';
     local $Data::Dumper::Quotekeys = 0;
     my $MockedMethod = delete $hData->{'Method'} if defined $hData->{'Method'};
-
+    $MockedMethod //= '-not set-';
     my $DumpedData = Dumper($hData);
-    die("$Message:$DumpedData\nMockedMethod=$MockedMethod\nat $filename line $line \n");
+    # print Callerstack
+    my $CallerStack = '';
+    my $CallerStackPosition = 1; # 0 would be this function
+    while (my @Caller = caller($CallerStackPosition++) ) {
+        my $FileName = $Caller[1];
+        my $LineNumber = $Caller[2];
+        my $FunctionName = $Caller[3];
+        $CallerStack .= sprintf(
+            "%s in line %s, %s\n",
+            $FileName,
+            $LineNumber,
+            $FunctionName
+        );
+       
+    }
+    # if the last element is a newline the "at Xxxx.pm line XX" will not be printed
+    my $ErrorOutput = sprintf(
+        "%s:\nMockedMethod: %s\nData:%s\n%s\n",
+        $Message,
+        $MockedMethod,
+        $DumpedData,
+        $CallerStack,   
+    );
+    
+    die($ErrorOutput);
     return;
 }   
+
 
 1;
