@@ -1,14 +1,7 @@
 package Mockify;
 use base qw ( Exporter );
 use Tools qw ( Error ExistsMethod IsValid LoadPackage Isa );
-use TypeTests qw (
-        IsInteger
-        IsFloat
-        IsString
-        IsArrayReference
-        IsHashReference
-        IsObjectReference
-    ); 
+use TypeTests qw ( IsInteger IsFloat IsString IsArrayReference IsHashReference IsObjectReference );
 use Test::MockObject::Extends;
 use Data::Dumper;
 use feature qw ( switch );
@@ -37,12 +30,18 @@ sub new {
 sub GetParametersFromMockifyCall {
     my ( $MockifiedMockedObject, $MethodName, $Position ) = @_;
 
-
-    ExistsMethod( $MockifiedMockedObject, '__getParametersFromMockifyCall' );
-    if( not IsValid( $Position ) ){
+    if( not blessed $MockifiedMockedObject){
+        Error('The first argument must be blessed');
+    }
+    my $PackageName = ref($MockifiedMockedObject);
+    if( not IsValid( $MethodName )){
+        Error('Method name must be specified', {'Position'=>$Position, 'Package' => $PackageName});
+    }
+    if ( not $MockifiedMockedObject->can('__getParametersFromMockifyCall') ){
+        Error("$PackageName was not mockified", {'Method' => $MethodName, 'Position'=>$Position});
+    }
+    if( not IsValid( $Position ) || not IsInteger( $Position )){
         $Position = 0;
-    } else {
-        Error( 'Position must be an integer',{'Actual position value' => $Position, 'Method' => $MethodName} ) if( not IsInteger( $Position ));
     }
 
     return $MockifiedMockedObject->__getParametersFromMockifyCall( $MethodName, $Position );
