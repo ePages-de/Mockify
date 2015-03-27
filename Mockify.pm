@@ -25,7 +25,6 @@ sub new {
 
     return $self;
 }
-
 #----------------------------------------------------------------------------------------
 sub GetParametersFromMockifyCall {
     my ( $MockifiedMockedObject, $MethodName, $Position ) = @_;
@@ -38,7 +37,7 @@ sub GetParametersFromMockifyCall {
         Error('Method name must be specified', {'Position'=>$Position, 'Package' => $PackageName});
     }
     if ( not $MockifiedMockedObject->can('__getParametersFromMockifyCall') ){
-        Error("$PackageName was not mockified", {'Method' => $MethodName, 'Position'=>$Position});
+        Error("$PackageName was not mockified", { 'Position'=>$Position, 'Method' => $MethodName});
     }
     if( not IsValid( $Position ) || not IsInteger( $Position )){
         $Position = 0;
@@ -46,13 +45,11 @@ sub GetParametersFromMockifyCall {
 
     return $MockifiedMockedObject->__getParametersFromMockifyCall( $MethodName, $Position );
 }
-
 #----------------------------------------------------------------------------------------
 sub getMockObject {
     my $self = shift;
     return $self->{'MockedModule'};
 }
-
 #----------------------------------------------------------------------------------------
 sub addMock {
     my $self = shift;
@@ -63,7 +60,6 @@ sub addMock {
 
     return;
 }
-
 #----------------------------------------------------------------------------------------
 sub addMockWithReturnValue {
     my $self = shift;
@@ -86,7 +82,6 @@ sub addMockWithReturnValue {
 
     return;
 }
-
 #----------------------------------------------------------------------------------------
 sub addMockWithReturnValueAndParameterCheck {
     my $self = shift;
@@ -115,7 +110,6 @@ sub addMockWithReturnValueAndParameterCheck {
 
     return;
 }
-
 #----------------------------------------------------------------------------------------
 sub _storeParameters {
 my $self = shift;
@@ -123,9 +117,8 @@ my $self = shift;
     my ( $MethodName, $MockedSelf, $aMockedParameters ) = @_;
     push( @{$MockedSelf->{$MethodName.'_MockifyParams'}}, $aMockedParameters );
 
-return;
+    return;
 }
-
 #----------------------------------------------------------------------------------------
 sub _testParameterTypes {
     my $self = shift;
@@ -147,7 +140,6 @@ sub _testParameterTypes {
 
     return;
 }
-
 #----------------------------------------------------------------------------------------
 sub _testParameterType {
     my $self = shift;
@@ -180,7 +172,6 @@ sub _testParameterType {
 
     return 1;
 }
-
 #----------------------------------------------------------------------------------------
 sub _addGetParameterFromMockifyCall {
     my $self = shift;
@@ -225,7 +216,6 @@ sub _getParameterType {
 
     return $TestParameterType;
 }
-
 #----------------------------------------------------------------------------------------
 sub _testParameterAmount {
     my $self = shift;
@@ -243,7 +233,6 @@ sub _testParameterAmount {
 
     return;
 }
-
 #----------------------------------------------------------------------------------------
 sub _testExpectedString {
     my $self = shift;
@@ -269,7 +258,6 @@ sub _testExpectedString {
 
     return;
 }
-
 #----------------------------------------------------------------------------------------
 sub _testExpectedInt {
     my $self = shift;
@@ -295,7 +283,6 @@ sub _testExpectedInt {
 
     return;
 }
-
 #----------------------------------------------------------------------------------------
 sub _testUndefind {
     my $self = shift;
@@ -310,7 +297,6 @@ sub _testUndefind {
 
     return;
 }
-
 #----------------------------------------------------------------------------------------
 sub _testExpectedHashRef {
     my $self = shift;
@@ -338,7 +324,6 @@ sub _testExpectedHashRef {
 
     return;
 }
-
 #----------------------------------------------------------------------------------------
 sub _testExpectedArrayRef {
     my $self = shift;
@@ -366,8 +351,6 @@ sub _testExpectedArrayRef {
 
     return;
 }
-
-
 #----------------------------------------------------------------------------------------
 sub _testExpectedObject {
     my $self = shift;
@@ -393,7 +376,6 @@ sub _testExpectedObject {
 
     return;
 }
-
 #----------------------------------------------------------------------------------------
 sub _checkParameterTypesForMethod {
     my $self = shift;
@@ -407,6 +389,5 @@ sub _checkParameterTypesForMethod {
 
     return;
 }
-
 
 1;
