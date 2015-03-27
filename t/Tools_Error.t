@@ -79,10 +79,10 @@ sub _getErrorRegEx_ErrorWithoutMockedMethod {
 AnErrorMessage:
 MockedMethod: -not set-
 Data:{}
-t/Tools_Error.t in line \d+, Test::Exception::throws_ok
-t/Tools_Error.t in line \d+, t::Tools_Error::test_ErrorWithoutMockedMethod
-t/TestBase.pm in line \d+, t::Tools_Error::testPlan
-t/Tools_Error.t in line \d+, t::TestBase::RunTest
+Test::Exception::throws_ok,t/Tools_Error.t\(line \d+\)
+t::Tools_Error::test_ErrorWithoutMockedMethod,t/Tools_Error.t\(line \d+\)
+t::Tools_Error::testPlan,t/TestBase.pm\(line \d+\)
+t::TestBase::RunTest,t/Tools_Error.t\(line \d+\)
 END_REGEX
 END;
 }
@@ -92,10 +92,10 @@ sub _getErrorRegEx_ErrorWithMockedMethod {
 AnErrorMessage:
 MockedMethod: aMockedMethod
 Data:{}
-t/Tools_Error.t in line \d+, Test::Exception::throws_ok
-t/Tools_Error.t in line \d+, t::Tools_Error::test_ErrorWithMockedMethod
-t/TestBase.pm in line \d+, t::Tools_Error::testPlan
-t/Tools_Error.t in line \d+, t::TestBase::RunTest
+Test::Exception::throws_ok,t/Tools_Error.t\(line \d+\)
+t::Tools_Error::test_ErrorWithMockedMethod,t/Tools_Error.t\(line \d+\)
+t::Tools_Error::testPlan,t/TestBase.pm\(line \d+\)
+t::TestBase::RunTest,t/Tools_Error.t\(line \d+\)
 END_REGEX
 END;
 }
@@ -105,10 +105,10 @@ sub _getErrorRegEx_ErrorWithoutMockedMethodAndDataBlock {
 AnErrorMessage:
 MockedMethod: -not set-
 Data:{key='value'}
-t/Tools_Error.t in line \d+, Test::Exception::throws_ok
-t/Tools_Error.t in line \d+, t::Tools_Error::test_ErrorWithoutMockedMethodAndDataBlock
-t/TestBase.pm in line \d+, t::Tools_Error::testPlan
-t/Tools_Error.t in line \d+, t::TestBase::RunTest
+Test::Exception::throws_ok,t/Tools_Error.t\(line \d+\)
+t::Tools_Error::test_ErrorWithoutMockedMethodAndDataBlock,t/Tools_Error.t\(line \d+\)
+t::Tools_Error::testPlan,t/TestBase.pm\(line \d+\)
+t::TestBase::RunTest,t/Tools_Error.t\(line \d+\)
 END_REGEX
 END;
 }
