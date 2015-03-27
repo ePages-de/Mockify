@@ -34,8 +34,8 @@ sub IsValid {
 sub ExistsMethod {
     my ( $PathOrObject, $MethodName ) = @_;
 
-    die('Path or Object is needed') unless defined $PathOrObject;
-    die('Method name is needed') unless defined $MethodName;
+    Error('Path or Object is needed') unless defined $PathOrObject;
+    Error('Method name is needed') unless defined $MethodName;
     if( not $PathOrObject->can( $MethodName ) ){
         if( IsValid( ref( $PathOrObject ) ) ){
             $PathOrObject = ref( $PathOrObject );
@@ -76,20 +76,20 @@ sub Error {
         my $LineNumber = $Caller[2];
         my $FunctionName = $Caller[3];
         $CallerStack .= sprintf(
-            "%s in line %s, %s\n",
+            "%s,%s(line %s)\n",
+            $FunctionName,
             $FileName,
             $LineNumber,
-            $FunctionName
         );
        
     }
-    # if the last element is a newline the "at Xxxx.pm line XX" will not be printed
+    # If the last element is a newline, the "at Xxxx.pm line XX" will not be printed
     my $ErrorOutput = sprintf(
         "%s:\nMockedMethod: %s\nData:%s\n%s\n",
         $Message,
         $MockedMethod,
         $DumpedData,
-        $CallerStack,   
+        $CallerStack,
     );
     
     die($ErrorOutput);
