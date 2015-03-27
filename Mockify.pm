@@ -51,6 +51,25 @@ sub getMockObject {
     return $self->{'MockedModule'};
 }
 #----------------------------------------------------------------------------------------
+sub mock {
+    my $self = shift;
+    my @Parameters = @_;
+    my $ParameterAmount = scalar @Parameters;
+    if($ParameterAmount == 2){
+        my ( $MethodName, $ReturnValueOrFunctionPointer ) = @Parameters;
+        if( ref($ReturnValueOrFunctionPointer) eq 'CODE' ){
+            $self->addMock($MethodName, $ReturnValueOrFunctionPointer);
+        }else{
+            $self->addMockWithReturnValue($MethodName, $ReturnValueOrFunctionPointer);
+        }
+    }
+    if($ParameterAmount == 3){
+        my ( $MethodName, $ReturnValue, $aParameterTypes ) = @_;
+        $self->addMockWithReturnValueAndParameterCheck($MethodName, $ReturnValue, $aParameterTypes);
+    }
+    return;
+}
+#----------------------------------------------------------------------------------------
 sub addMock {
     my $self = shift;
     my ( $MethodName, $rSub ) = @_;
