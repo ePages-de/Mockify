@@ -35,7 +35,9 @@ sub testPlan {
     $self->test_MockModule_GetParametersFromMockifyCall_MultiParams();
     $self->test_MockModule_GetParametersFromMockifyCall_Multicalls_MultiParams();
     $self->test_MockModule_GetParametersFromMockifyCall_WithoutCallingTheMethod();
+    $self->test_MockModule_GetParametersFromMockifyCall_ForNotblessedObject();
     $self->test_MockModule_GetParametersFromMockifyCall_ForNotMockifyObject();
+    $self->test_MockModule_GetParametersFromMockifyCall_NoMethodName();
 
 }
 #----------------------------------------------------------------------------------------
@@ -560,15 +562,11 @@ sub test_MockModule_GetParametersFromMockifyCall_Multicalls_PositionNotInteger {
     $MockObject->addMockWithReturnValueAndParameterCheck('DummmyMethodForTestOverriding', undef, [{'string' => 'InputValueToBeCheckAfterwords'}]);
     my $MockedFakeModule = $MockObject->getMockObject();
     $MockedFakeModule->DummmyMethodForTestOverriding('InputValueToBeCheckAfterwords');
-    my $ErrorMessageRegEx = <<'END';
-Position must be an integer:
-MockedMethod: DummmyMethodForTestOverriding
-Data:{'Actual position value'='NotANumber'}
-END
-    throws_ok(
-        sub { GetParametersFromMockifyCall($MockedFakeModule,'DummmyMethodForTestOverriding', 'NotANumber') },
-        qr/$ErrorMessageRegEx/,
-        "$SubTestName - test the Error if function was call and we didn't use the mocked method before"
+    my $ExpectedParameterList = ['InputValueToBeCheckAfterwords'];
+    is_deeply(
+        GetParametersFromMockifyCall($MockedFakeModule,'DummmyMethodForTestOverriding', 'NotANumber'),
+        $ExpectedParameterList,
+        "$SubTestName - tests if a not integer will become positon 0"
     );
 
     return;
@@ -674,18 +672,56 @@ sub test_MockModule_GetParametersFromMockifyCall_WithoutCallingTheMethod {
     return;
 }
 #----------------------------------------------------------------------------------------
+sub test_MockModule_GetParametersFromMockifyCall_ForNotblessedObject {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $NotObject = 'NotBlessed';
+    my $ErrorMessageRegEx = <<'END';
+The first argument must be blessed:
+MockedMethod: -not set-
+Data:{}
+END
+    throws_ok(
+        sub { GetParametersFromMockifyCall($NotObject,'DummmyMethodForTestOverriding') },
+        qr/$ErrorMessageRegEx/,
+        "$SubTestName - test the Error if function was call and the first argument is not blessed"
+    );
+
+    return;
+}
+#----------------------------------------------------------------------------------------
 sub test_MockModule_GetParametersFromMockifyCall_ForNotMockifyObject {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
     my $NotMockifyObject = t::FakeModuleForMockifyTest->new();
     my $ErrorMessageRegEx = <<'END';
-t::FakeModuleForMockifyTest donsn't have a method like: __getParametersFromMockifyCall:
-MockedMethod: __getParametersFromMockifyCall
-Data:{}
+t::FakeModuleForMockifyTest was not mockified:
+MockedMethod: DummmyMethodForTestOverriding
+Data:{Position=undef}
 END
     throws_ok(
         sub { GetParametersFromMockifyCall($NotMockifyObject,'DummmyMethodForTestOverriding') },
+        qr/$ErrorMessageRegEx/,
+        "$SubTestName - test the Error if function was call and we didn't use the mocked method before"
+    );
+
+    return;
+}
+#----------------------------------------------------------------------------------------
+sub test_MockModule_GetParametersFromMockifyCall_NoMethodName {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $NotMockifyObject = t::FakeModuleForMockifyTest->new();
+    my $ErrorMessageRegEx = <<'END';
+Method name must be specified:
+MockedMethod: -not set-
+Data:{Position=undef,Package='t::FakeModuleForMockifyTest'}
+END
+    throws_ok(
+        sub { GetParametersFromMockifyCall( $NotMockifyObject ) },
         qr/$ErrorMessageRegEx/,
         "$SubTestName - test the Error if function was call and we didn't use the mocked method before"
     );
