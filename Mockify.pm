@@ -1,7 +1,14 @@
 package Mockify;
 use base qw ( Exporter );
 use Tools qw ( Error ExistsMethod IsValid LoadPackage Isa );
-use TypeTests; 
+use TypeTests qw (
+        IsInteger
+        IsFloat
+        IsString
+        IsArrayReference
+        IsHashReference
+        IsObjectReference
+    ); 
 use Test::MockObject::Extends;
 use Data::Dumper;
 use feature qw ( switch );
@@ -16,7 +23,6 @@ sub new {
     my ( $FakeModulePath, $aFakeParams ) = @_;
 
     my $self = bless {}, $class;
-    $self->{'TypeTests'} = TypeTests->new();
 
     LoadPackage( $FakeModulePath );
     my $FakeClass = $FakeModulePath->new( @{$aFakeParams} );
@@ -36,8 +42,7 @@ sub GetParametersFromMockifyCall {
     if( not IsValid( $Position ) ){
         $Position = 0;
     } else {
-        my $TypeTests = TypeTests->new();
-        Error( 'Position must be an integer',{'Position' => $Position} ) if( not $TypeTests->isInteger( $Position ));
+        Error( 'Position must be an integer',{'Actual position value' => $Position, 'Method' => $MethodName} ) if( not IsInteger( $Position ));
     }
 
     return $MockifiedMockedObject->__getParametersFromMockifyCall( $MethodName, $Position );
@@ -88,7 +93,7 @@ sub addMockWithReturnValueAndParameterCheck {
     my $self = shift;
     my ( $MethodName, $ReturnValue, $aParameterTypes ) = @_;
 
-    if ( not $self->{'TypeTests'}->isArrayReference( $aParameterTypes ) ){
+    if ( not IsArrayReference( $aParameterTypes ) ){
         Error( 'ParameterTypesNotProvided', {
             'Method' => $self->{'MockedModulePath'}."::$MethodName",
             'ParameterList' => $aParameterTypes,
@@ -212,7 +217,7 @@ sub _getParameterType {
     my ( $TestParameter ) = @_;
 
     my $TestParameterType = undef;
-    if( $self->{'TypeTests'}->isHashReference( $TestParameter ) ){
+    if( IsHashReference( $TestParameter ) ){
         my @Keys = keys %{$TestParameter};
         $TestParameterType = $Keys[0];
     } else {
@@ -245,13 +250,13 @@ sub _testExpectedString {
     my $self = shift;
     my ( $Name, $Value, $TestParameterType, $MethodName ) = @_;
 
-    if ( not $self->{'TypeTests'}->isString( $Value ) ) {
+    if ( not IsString( $Value ) ) {
         Error( "$Name is not a String", {
             'Method' => $self->{'MockedModulePath'}."::$MethodName",
             'Value' => $Value
         });
     }
-    if( $self->{'TypeTests'}->isHashReference( $TestParameterType ) ){
+    if( IsHashReference( $TestParameterType ) ){
         my @Values = values %{$TestParameterType};
         my $ExpectedValue = $Values[0];
         if( $Value ne $ExpectedValue ){
@@ -271,13 +276,13 @@ sub _testExpectedInt {
     my $self = shift;
     my ( $Name, $Value, $hTestParameterType, $MethodName ) = @_;
 
-    if ( not $self->{'TypeTests'}->isInteger( $Value ) ) {
+    if ( not IsInteger( $Value ) ) {
         Error( "$Name is not an Integer", {
             'Method' => $self->{'MockedModulePath'}."::$MethodName",
             'Value' => $Value
             });
     }
-    if( $self->{'TypeTests'}->isHashReference( $hTestParameterType ) ){
+    if( IsHashReference( $hTestParameterType ) ){
         my @Values = values %{$hTestParameterType};
         my $ExpectedValue = $Values[0];
         if( $Value != $ExpectedValue ){
@@ -312,13 +317,13 @@ sub _testExpectedHashRef {
     my $self = shift;
     my ( $Name, $Value, $TestParameterType, $MethodName ) = @_;
 
-    if ( not $self->{'TypeTests'}->isHashReference( $Value ) ) {
+    if ( not IsHashReference( $Value ) ) {
         Error( "$Name is not a HashRef", {
             'Method' => $self->{'MockedModulePath'}."::$MethodName",
             'Value' => $Value
         });
     }
-    if( $self->{'TypeTests'}->isHashReference( $TestParameterType ) ){
+    if( IsHashReference( $TestParameterType ) ){
         my @Values = values %{$TestParameterType};
         my $ExpectedValue = $Values[0];
         my $DumpedValue = Dumper( $Value ); # todo complexCompare
@@ -340,13 +345,13 @@ sub _testExpectedArrayRef {
     my $self = shift;
     my ( $Name, $Value, $TestParameterType, $MethodName ) = @_;
 
-    if ( not $self->{'TypeTests'}->isArrayReference( $Value ) ) {
+    if ( not IsArrayReference( $Value ) ) {
         Error( "$Name is not an ArrayRef", {
         'Method' => $self->{'MockedModulePath'}."::$MethodName",
         'Value' => $Value
         } );
     }
-    if( $self->{'TypeTests'}->isHashReference( $TestParameterType ) ){
+    if( IsHashReference( $TestParameterType ) ){
         my @Values = values %{$TestParameterType};
         my $ExpectedValue = $Values[0];
         my $DumpedValue = Dumper( $Value );
@@ -369,13 +374,13 @@ sub _testExpectedObject {
     my $self = shift;
     my ( $Name, $Value, $TestParameterType, $MethodName ) = @_;
 
-    if ( not $self->{'TypeTests'}->isObjectReference($Value) ) {
+    if ( not IsObjectReference($Value) ) {
         Error( "$Name is not a Object", {
             'Method' => $self->{'MockedModulePath'}."::$MethodName",
             'Value' => $Value
         } );
     }
-    if( $self->{'TypeTests'}->isHashReference( $TestParameterType ) ){
+    if( IsHashReference( $TestParameterType ) ){
         my @Values = values %{$TestParameterType};
         my $ExpectedValue = $Values[0];
         if( not Isa( $Value, $ExpectedValue ) ){
@@ -395,7 +400,7 @@ sub _checkParameterTypesForMethod {
     my $self = shift;
     my ( $MethodName, $aParameterTypes ) = @_;
 
-    if ( not ( defined $aParameterTypes ) or not $self->{'TypeTests'}->isArrayReference( $aParameterTypes )){
+    if ( not ( defined $aParameterTypes ) or not IsArrayReference( $aParameterTypes )){
         Error( 'ParameterTypesNotProvided', {
             'Method' => $self->{'MockedModulePath'}."::MethodName",
         } );
