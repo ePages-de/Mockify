@@ -3,11 +3,15 @@ use base qw ( Exporter );
 use Tools qw ( Error ExistsMethod IsValid LoadPackage Isa );
 use TypeTests qw ( IsInteger IsFloat IsString IsArrayReference IsHashReference IsObjectReference );
 use Test::MockObject::Extends;
-use DE_EPAGES::Test::Mock::Mockify::MethodCallCounter;
+use MethodCallCounter;
 use Data::Dumper;
 use feature qw ( switch );
 use strict;
-our @EXPORT_OK = qw ( GetParametersFromMockifyCall );
+our @EXPORT_OK = qw (
+    GetParametersFromMockifyCall
+    WasCalled
+    GetCallCount
+);
 use Scalar::Util qw( blessed );
 use Test::More;
 use Data::Compare;
@@ -20,8 +24,8 @@ sub new {
 
     LoadPackage( $FakeModulePath );
     my $FakeClass = $FakeModulePath->new( @{$aFakeParams} );
-    $self->{'MockedModulePath'} = $FakeModulePath;
-    $self->{'MockedModule'} = Test::MockObject::Extends->new( $FakeClass );
+    $self->{'__MockedModulePath'} = $FakeModulePath;
+    $self->{'__MockedModule'} = Test::MockObject::Extends->new( $FakeClass );
     $self->_initMockedModule();
 
     return $self;
@@ -30,7 +34,7 @@ sub new {
 sub _initMockedModule {
     my $self = shift;
 
-    $self->{'__MockedModule'}->{'__MethodCallCounter'} = DE_EPAGES::Test::Mock::Mockify::MethodCallCounter->new();
+    $self->{'__MockedModule'}->{'__MethodCallCounter'} = MethodCallCounter->new();
     $self->{'__MockedModule'}->{'__isMockified'} = 1;
     $self->_addGetParameterFromMockifyCall();
 
@@ -68,7 +72,8 @@ sub GetParametersFromMockifyCall {
     if ( not $MockifiedMockedObject->can('__getParametersFromMockifyCall') ){
         Error("$PackageName was not mockified", { 'Position'=>$Position, 'Method' => $MethodName});
     }
-    if( not IsValid( $Position ) || not IsInteger( $Position )){
+    if( not 
+( $Position ) || not IsInteger( $Position )){
         $Position = 0;
     }
 
@@ -121,14 +126,14 @@ sub GetCallCount {
 #----------------------------------------------------------------------------------------
 sub getMockObject {
     my $self = shift;
-    return $self->{'MockedModule'};
+    return $self->{'__MockedModule'};
 }
 #----------------------------------------------------------------------------------------
 sub _TestMockifyObject {
     my ( $MockifiedMockedObject ) = @_;
 
     my $ObjectPath = ref( $MockifiedMockedObject );
-    if( not isValid( $ObjectPath ) ){
+    if( not IsValid( $ObjectPath ) ){
         Error( 'Object is not defined' );
     }
     if ( $MockifiedMockedObject->{'__isMockified'} != 1){
@@ -235,8 +240,12 @@ sub addMock {
     my $self = shift;
     my ( $MethodName, $rSub ) = @_;
 
-    ExistsMethod( $self->{'MockedModulePath'}, $MethodName );
-    $self->{'MockedModule'}->mock( $MethodName, $rSub );
+    ExistsMethod( $self->{'__MockedModulePath'}, $MethodName );
+    $self->{'__MockedModule'}->{'__MethodCallCounter'}->addMethod( $MethodName );
+    $self->{'__MockedModule'}->mock( $MethodName, sub {
+        $self->{'__MockedModule'}->{'__MethodCallCounter'}->increment( $MethodName );
+        return $rSub->( @_ );
+    } );
 
     return;
 }
@@ -251,7 +260,7 @@ sub addMockWithReturnValue {
 
         if ( $ParameterListSize > 0 ){
             Error('UnexpectedParameter',{
-            'Method' => "$self->{'MockedModulePath'}::$MethodName",
+            'Method' => "$self->{'__MockedModulePath'}->$MethodName",
             'ParameterList' => "(@_)",
             'AmountOfUnexpectedParameters' => $ParameterListSize,
             } );
@@ -269,7 +278,7 @@ sub addMockWithReturnValueAndParameterCheck {
 
     if ( not IsArrayReference( $aParameterTypes ) ){
         Error( 'ParameterTypesNotProvided', {
-            'Method' => $self->{'MockedModulePath'}."::$MethodName",
+            'Method' => $self->{'__MockedModulePath'}."->$MethodName",
             'ParameterList' => $aParameterTypes,
         } );
     }
@@ -311,7 +320,7 @@ sub _testParameterTypes {
         my $TypeTestResult = $self->_testParameterType("Parameter[$i]", $MockedParameters[$i], $TestParameters[$i], $MethodName );
         if ( ! $TypeTestResult ){
             Error( 'UnknownParametertype', {
-            'Method' => $self->{'MockedModulePath'}."::$MethodName",
+            'Method' => $self->{'__MockedModulePath'}."->$MethodName",
             'UnknownParameterType' => $self->_getParameterType( $TestParameters[$i] ),
             'ParameterNumber'=> $i,
             } );
@@ -359,7 +368,7 @@ sub _testParameterType {
 sub _addGetParameterFromMockifyCall {
     my $self = shift;
 
-    $self->{'MockedModule'}->mock('__getParametersFromMockifyCall',
+    $self->{'__MockedModule'}->mock('__getParametersFromMockifyCall',
         sub{
             my $MockedSelf = shift;
             my ( $MethodName, $Position ) = @_;
@@ -408,7 +417,7 @@ sub _testParameterAmount {
     my $AmountActualInputParameters = scalar @{$aActualInputParameters};
     if( $AmountActualInputParameters != $AmountExpectedParameterTypes ){
         Error( 'WrongAmountOfParameters', {
-            'Method' => $self->{'MockedModulePath'}."::$MethodName",
+            'Method' => $self->{'__MockedModulePath'}."->$MethodName",
             'ExpectedAmount' => $AmountExpectedParameterTypes,
             'ActualAmount' => $AmountActualInputParameters,
         } );
@@ -423,7 +432,7 @@ sub _testExpectedString {
 
     if ( not IsString( $Value ) ) {
         Error( "$Name is not a String", {
-            'Method' => $self->{'MockedModulePath'}."::$MethodName",
+            'Method' => $self->{'__MockedModulePath'}."->$MethodName",
             'Value' => $Value
         });
     }
@@ -432,7 +441,7 @@ sub _testExpectedString {
         my $ExpectedValue = $Values[0];
         if( $Value ne $ExpectedValue ){
             Error( "$Name unexpected value", {
-                'Method' => $self->{'MockedModulePath'}."::$MethodName",
+                'Method' => $self->{'__MockedModulePath'}."->$MethodName",
                 'ActualValue' => $Value,
                 'ExpectedValue' => $ExpectedValue,
             });
@@ -448,7 +457,7 @@ sub _testExpectedInt {
 
     if ( not IsInteger( $Value ) ) {
         Error( "$Name is not an Integer", {
-            'Method' => $self->{'MockedModulePath'}."::$MethodName",
+            'Method' => $self->{'__MockedModulePath'}."->$MethodName",
             'Value' => $Value
             });
     }
@@ -457,7 +466,7 @@ sub _testExpectedInt {
         my $ExpectedValue = $Values[0];
         if( $Value != $ExpectedValue ){
             Error( "$Name unexpected value", {
-                'Method' => $self->{'MockedModulePath'}."::$MethodName",
+                'Method' => $self->{'__MockedModulePath'}."->$MethodName",
                 'ActualValue' => $Value,
                 'ExpectedValue' => $ExpectedValue,
             });
@@ -473,7 +482,7 @@ sub _testUndefind {
 
     if ( IsValid( $Value ) ) {
         Error( "$Name is not undefined", {
-            'Method' => $self->{'MockedModulePath'}."::$MethodName",
+            'Method' => $self->{'__MockedModulePath'}."->$MethodName",
             'Value' => $Value
         });
     }
@@ -487,7 +496,7 @@ sub _testExpectedHashRef {
 
     if ( not IsHashReference( $Value ) ) {
         Error( "$Name is not a HashRef", {
-            'Method' => $self->{'MockedModulePath'}."::$MethodName",
+            'Method' => $self->{'__MockedModulePath'}."->$MethodName",
             'Value' => $Value
         });
     }
@@ -515,7 +524,7 @@ sub _testExpectedArrayRef {
 
     if ( not IsArrayReference( $Value ) ) {
         Error( "$Name is not an ArrayRef", {
-        'Method' => $self->{'MockedModulePath'}."::$MethodName",
+        'Method' => $self->{'__MockedModulePath'}."->$MethodName",
         'Value' => $Value
         } );
     }
@@ -543,7 +552,7 @@ sub _testExpectedObject {
 
     if ( not IsObjectReference($Value) ) {
         Error( "$Name is not a Object", {
-            'Method' => $self->{'MockedModulePath'}."::$MethodName",
+            'Method' => $self->{'__MockedModulePath'}."->$MethodName",
             'Value' => $Value
         } );
     }
@@ -552,7 +561,7 @@ sub _testExpectedObject {
         my $ExpectedValue = $Values[0];
         if( not Isa( $Value, $ExpectedValue ) ){
             Error( "$Name unexpected value", {
-                'Method' => $self->{'MockedModulePath'}."::MethodName",
+                'Method' => $self->{'__MockedModulePath'}."::MethodName",
                 'ActualObjectType' => blessed($Value),
                 'ExpectedObjectType' => $ExpectedValue,
             });
@@ -568,7 +577,7 @@ sub _checkParameterTypesForMethod {
 
     if ( not ( defined $aParameterTypes ) or not IsArrayReference( $aParameterTypes )){
         Error( 'ParameterTypesNotProvided', {
-            'Method' => $self->{'MockedModulePath'}."::MethodName",
+            'Method' => $self->{'__MockedModulePath'}."::MethodName",
         } );
     }
 

@@ -1,6 +1,6 @@
 package t::Mockify;
 use base t::TestBase;
-use Mockify qw (GetParametersFromMockifyCall);
+use Mockify qw (GetParametersFromMockifyCall WasCalled GetCallCount);
 use Test::More;
 use Test::Exception;
 use strict;
@@ -29,15 +29,33 @@ sub testPlan {
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Undef();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_withoutParameterTypes();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongParameterName();
+
     $self->test_MockModule_GetParametersFromMockifyCall();
-    $self->test_MockModule_GetParametersFromMockifyCall_Multicalls_PositionBiggerThenRealCalls();
-    $self->test_MockModule_GetParametersFromMockifyCall_Multicalls_PositionNotInteger();
+    $self->test_MockModule_GetParametersFromMockifyCall_WithoutCallingTheMethod();
+    $self->test_MockModule_GetParametersFromMockifyCall_ForNotMockifyObject();
+
     $self->test_MockModule_GetParametersFromMockifyCall_MultiParams();
     $self->test_MockModule_GetParametersFromMockifyCall_Multicalls_MultiParams();
-    $self->test_MockModule_GetParametersFromMockifyCall_WithoutCallingTheMethod();
+    $self->test_MockModule_GetParametersFromMockifyCall_Multicalls_PositionBiggerThenRealCalls();
+    $self->test_MockModule_GetParametersFromMockifyCall_Multicalls_PositionNotInteger();
     $self->test_MockModule_GetParametersFromMockifyCall_ForNotblessedObject();
-    $self->test_MockModule_GetParametersFromMockifyCall_ForNotMockifyObject();
     $self->test_MockModule_GetParametersFromMockifyCall_NoMethodName();
+
+    $self->test_MockModule_CallCounter_GetCallCount_addMock_positive();
+    $self->test_MockModule_CallCounter_GetCallCount_addMock_MultipleCalles();
+    $self->test_MockModule_CallCounter_GetCallCount_addMock_negative();
+    $self->test_MockModule_CallCounter_GetCallCount_addMock_negative_unMockedMethods();
+    $self->test_MockModule_CallCounter_GetCallCount_addMockWithReturnValue();
+    $self->test_MockModule_CallCounter_GetCallCount_addMockWithReturnValueAndParameterCheck();
+
+    $self->test_MockModule_CallCounter_WasCalled_addMock_positive();
+    $self->test_MockModule_CallCounter_WasCalled_addMock_negative();
+
+    $self->test_MockModule_CallCounter_addMethodSpy();
+    $self->test_MockModule_CallCounter_addMethodSpy_WithParameters();
+    $self->test_MockModule_CallCounter_addMethodSpyWithParameterCheck();
+    $self->test_MockModule_CallCounter_addMethodSpyWithParameterCheck_negativ();
+
     $self->test_MockModule_ShortCut_addmock();
     $self->test_MockModule_ShortCut_AddMockWithReturnValue();
     $self->test_MockModule_ShortCut_AddMockWithReturnValueAndParameterCheck();
@@ -80,6 +98,228 @@ sub test_MockModule_addMock {
     $MockObject->addMock('DummmyMethodForTestOverriding', $TestMethodPointer );
     my $MockedFakeModule = $MockObject->getMockObject();
     is($MockedFakeModule->DummmyMethodForTestOverriding(),'return value of overridden Method',"$SubTestName - test if the loaded module can be overridden and the return value will be returned");
+
+    return;
+}
+#----------------------------------------------------------------------------------------
+sub test_MockModule_CallCounter_GetCallCount_addMock_positive {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = [];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    $MockObject->addMock('DummmyMethodForTestOverriding', sub { return 'This is a return value'; } );
+    my $MockedFakeModule = $MockObject->getMockObject();
+    my $Result = $MockedFakeModule->DummmyMethodForTestOverriding();
+
+    my $AmountOfCalls = GetCallCount( $MockedFakeModule, 'DummmyMethodForTestOverriding' );
+
+    is($Result, 'This is a return value', "$SubTestName - tests if the return value is correct");
+    my $ExpectedCalles = 1;
+    is ($AmountOfCalls, $ExpectedCalles, "$SubTestName - tests if DummmyMethodForTestOverriding was called one time" );
+
+    return;
+}
+#----------------------------------------------------------------------------------------
+sub test_MockModule_CallCounter_GetCallCount_addMock_negative {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = [];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    $MockObject->addMock('DummmyMethodForTestOverriding', sub { return 'This iParameter[0] is not a HashRef:s a return value'; } );
+    my $MockedFakeModule = $MockObject->getMockObject();
+
+    my $AmountOfCalls = GetCallCount( $MockedFakeModule, 'DummmyMethodForTestOverriding' );
+
+    my $ExpectedCalles = 0;
+    is ($AmountOfCalls, $ExpectedCalles, "$SubTestName - tests if DummmyMethodForTestOverriding was called one time" );
+
+    return;
+}
+#----------------------------------------------------------------------------------------
+sub test_MockModule_CallCounter_GetCallCount_addMock_negative_unMockedMethods {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = [];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    my $MockedFakeModule = $MockObject->getMockObject();
+
+    throws_ok( sub { GetCallCount( $MockedFakeModule, 'DummmyMethodForTestOverriding' ) },
+       qr/The Method: 'DummmyMethodForTestOverriding' was not added to Mockify/,
+       "$SubTestName - test the Error if a not mockified method name was used"
+    );
+
+    return;
+}
+#----------------------------------------------------------------------------------------
+sub test_MockModule_CallCounter_GetCallCount_addMock_MultipleCalles {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = [];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    $MockObject->addMock('DummmyMethodForTestOverriding', sub { return 'This is a return value'; } );
+    my $MockedFakeModule = $MockObject->getMockObject();
+    $MockedFakeModule->DummmyMethodForTestOverriding();
+    $MockedFakeModule->secondDummmyMethodForTestOverriding(); #Call something else in the middle
+    $MockedFakeModule->DummmyMethodForTestOverriding();
+    $MockedFakeModule->DummmyMethodForTestOverriding();
+
+    my $AmountOfCalls = GetCallCount( $MockedFakeModule, 'DummmyMethodForTestOverriding' );
+
+    my $ExpectedCalles = 3;
+    is ( $AmountOfCalls, $ExpectedCalles, "$SubTestName - tests if DummmyMethodForTestOverriding was called three times" );
+
+    return;
+}
+#----------------------------------------------------------------------------------------
+sub test_MockModule_CallCounter_GetCallCount_addMockWithReturnValue {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = [];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    $MockObject->addMockWithReturnValue('DummmyMethodForTestOverriding', 'This is a return value');
+    my $MockedFakeModule = $MockObject->getMockObject();
+    my $Result = $MockedFakeModule->DummmyMethodForTestOverriding();
+
+    my $AmountOfCalls = GetCallCount( $MockedFakeModule, 'DummmyMethodForTestOverriding' );
+
+    is($Result, 'This is a return value', "$SubTestName - tests if the return value is correct");
+    my $ExpectedCalles = 1;
+    is ($AmountOfCalls, $ExpectedCalles, "$SubTestName - tests if DummmyMethodForTestOverriding was called one time" );
+}
+#----------------------------------------------------------------------------------------
+sub test_MockModule_CallCounter_GetCallCount_addMockWithReturnValueAndParameterCheck {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = [];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    $MockObject->addMockWithReturnValueAndParameterCheck('DummmyMethodForTestOverriding', 'This is a return value', ['string'] );
+    my $MockedFakeModule = $MockObject->getMockObject();
+
+    my $Result = $MockedFakeModule->DummmyMethodForTestOverriding('TestString');
+    my $AmountOfCalls = GetCallCount( $MockedFakeModule, 'DummmyMethodForTestOverriding' );
+
+    is($Result, 'This is a return value', "$SubTestName - tests if the return value is correct");
+    my $ExpectedCalles = 1;
+    is ($AmountOfCalls, $ExpectedCalles, "$SubTestName - tests if DummmyMethodForTestOverriding was called one time" );
+}
+
+#----------------------------------------------------------------------------------------
+sub test_MockModule_CallCounter_WasCalled_addMock_positive {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = [];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    $MockObject->addMock('DummmyMethodForTestOverriding', sub { return 'This is a return value'; } );
+    my $MockedFakeModule = $MockObject->getMockObject();
+    $MockedFakeModule->DummmyMethodForTestOverriding();
+
+    my $WasCalled = WasCalled( $MockedFakeModule, 'DummmyMethodForTestOverriding' );
+
+    ok( $WasCalled, "$SubTestName - check if the method was called" );
+
+    return;
+}
+#----------------------------------------------------------------------------------------
+sub test_MockModule_CallCounter_WasCalled_addMock_negative {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = [];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    $MockObject->addMock('DummmyMethodForTestOverriding', sub { return 'This is a return value'; } );
+    my $MockedFakeModule = $MockObject->getMockObject();
+
+    my $WasCalled = WasCalled( $MockedFakeModule, 'DummmyMethodForTestOverriding' );
+
+    is( $WasCalled, 0, "$SubTestName - check if the method was not called" );
+
+    return;
+}
+#----------------------------------------------------------------------------------------
+sub test_MockModule_CallCounter_addMethodSpy {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = ['ATestValue'];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    $MockObject->addMethodSpy('returnParameterListNew');
+    my $MockedFakeModule = $MockObject->getMockObject();
+
+    my $Result = $MockedFakeModule->returnParameterListNew();
+
+    my $AmountOfCalls = GetCallCount( $MockedFakeModule, 'returnParameterListNew' );
+
+    my $FirstParameter = $Result->[0];
+    is($FirstParameter, 'ATestValue', "$SubTestName - tests if the return value is the original Method so the self context is working");
+    my $ExpectedCalles = 1;
+    is ($AmountOfCalls, $ExpectedCalles, "$SubTestName - tests if returnParameterListNew was called one time" );
+    return;
+}
+#----------------------------------------------------------------------------------------
+sub test_MockModule_CallCounter_addMethodSpy_WithParameters {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = ['ATestValue'];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    $MockObject->addMethodSpy('dummmyMethodWithParameterReturn');
+    my $MockedFakeModule = $MockObject->getMockObject();
+
+    my $Result = $MockedFakeModule->dummmyMethodWithParameterReturn('TestParameter');
+
+    my $AmountOfCalls = GetCallCount( $MockedFakeModule, 'dummmyMethodWithParameterReturn' );
+
+    is( $Result, 'TestParameter', "$SubTestName - tests if the return value is the original Method so the self context is working");
+    my $ExpectedCalles = 1;
+    is ($AmountOfCalls, $ExpectedCalles, "$SubTestName - tests if dummmyMethodWithParameterReturn was called one time" );
+    return;
+}
+#----------------------------------------------------------------------------------------
+sub test_MockModule_CallCounter_addMethodSpyWithParameterCheck {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = ['TestParameter'];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    $MockObject->addMethodSpyWithParameterCheck('returnParameterListNew', [{'string'=>'StringParameter'}] );
+    my $MockedFakeModule = $MockObject->getMockObject();
+
+    my $Result = $MockedFakeModule->returnParameterListNew('StringParameter');
+    my $AmountOfCalls = GetCallCount( $MockedFakeModule, 'returnParameterListNew' );
+
+    my $FirstParameter = $Result->[0];
+    is($FirstParameter, 'TestParameter', "$SubTestName - tests if the return value is the original Method");
+    my $ExpectedCalles = 1;
+    is ($AmountOfCalls, $ExpectedCalles, "$SubTestName - tests if returnParameterListNew was called one time" );
+
+    return;
+}
+#----------------------------------------------------------------------------------------
+sub test_MockModule_CallCounter_addMethodSpyWithParameterCheck_negativ {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = [];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    $MockObject->addMethodSpyWithParameterCheck('dummmyMethodWithParameterReturn',[{'hashref'=>{'key'=>'value'}}]);
+    my $MockedFakeModule = $MockObject->getMockObject();
+    my $ErrorMessageRegEx = <<'End';
+Parameter\[0\] is not a HashRef:
+MockedMethod: t::FakeModuleForMockifyTest->dummmyMethodWithParameterReturn
+Data:{Value='NotAHashRef'}
+.*
+End
+    throws_ok( sub { $MockedFakeModule->dummmyMethodWithParameterReturn('NotAHashRef') },
+               qr/$ErrorMessageRegEx/,
+               "$SubTestName - test the Error if method is called with wrong type"
+     );
 
     return;
 }
@@ -151,7 +391,7 @@ sub test_MockModule_AddMockWithReturnValue_UnexpectedParameterInCall {
     my $MockedFakeModule = $MockObject->getMockObject();
     throws_ok(
         sub { $MockedFakeModule->DummmyMethodForTestOverriding('anUnexpectedParameter') },
-        qr/UnexpectedParameter:\nMockedMethod: t::FakeModuleForMockifyTest::DummmyMethodForTestOverriding\nData:{ParameterList='\(anUnexpectedParameter\)',AmountOfUnexpectedParameters=1}/,
+        qr/UnexpectedParameter:\nMockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding\nData:{ParameterList='\(anUnexpectedParameter\)',AmountOfUnexpectedParameters=1}/,
         "$SubTestName - test if the mocked method was called with the wrong amount of parameters"
     );
 
@@ -203,7 +443,17 @@ sub test_MockModule_ShortCut_AddMockWithReturnValueAndParameterCheck {
         "$SubTestName - tests if the parameter is stored correct in the mock object"
     );
 
-    return;
+    return;    my $ErrorMessageRegEx = <<'End';
+Parameter\[0\] unexpected value:
+MockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding\(\?\?\?\)
+Data:{'expected value'='\$VAR1 = {
+          \\'eins\\' => \\'value\\'
+        };
+','got value'='\$VAR1 = {
+          \\'zwei\\' => \\'value\\'
+        };
+'}
+End
 }
 #----------------------------------------------------------------------------------------
 sub test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedString {
@@ -221,7 +471,7 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedString {
     );
     throws_ok(
         sub { $MockedFakeModule->DummmyMethodForTestOverriding( 'wrong String' ) },
-        qr/Parameter\[0\] unexpected value:\nMockedMethod: t::FakeModuleForMockifyTest::DummmyMethodForTestOverriding\nData:{ExpectedValue='ABC123',ActualValue='wrong String'}/,
+        qr/Parameter\[0\] unexpected value:\nMockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding\nData:{ExpectedValue='ABC123',ActualValue='wrong String'}/,
         "$SubTestName - test if a wrong value will be found."
     );
 
@@ -243,7 +493,7 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedInteger {
     );
     throws_ok(
         sub { $MockedFakeModule->DummmyMethodForTestOverriding( 123456 ) },
-        qr/Parameter\[0\] unexpected value:\nMockedMethod: t::FakeModuleForMockifyTest::DummmyMethodForTestOverriding\nData:{ExpectedValue=666,ActualValue=123456}/,
+        qr/Parameter\[0\] unexpected value:\nMockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding\nData:{ExpectedValue=666,ActualValue=123456}/,
         "$SubTestName - test if a wrong value will be found."
     );
 
@@ -267,7 +517,7 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedHash {
     my $hWrongParameter = {'zwei'=>'value'};
     my $ErrorMessageRegEx = <<'End';
 Parameter\[0\] unexpected value:
-MockedMethod: t::FakeModuleForMockifyTest::DummmyMethodForTestOverriding
+MockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding\(\?\?\?\)
 Data:{'expected value'='\$VAR1 = {
           \\'eins\\' => \\'value\\'
         };
@@ -300,12 +550,12 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedArray {
     my $aWrongParameter = ['eins'];
     my $ErrorMessageRegEx = <<'END';
 Parameter\[0\] unexpected value:
-MockedMethod: t::FakeModuleForMockifyTest::DummmyMethodForTestOverriding
-Data:{ExpectedValue='\$VAR1 = \[
+MockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding\(\?\?\?\)
+Data:{'expected value'='\$VAR1 = \[
           \\'eins\\',
           \\'zwei\\'
         \];
-',ActualValue='\$VAR1 = \[
+','got value'='\$VAR1 = \[
           \\'eins\\'
         \];
 '}
@@ -378,7 +628,7 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongAmountOfParamet
     my $MockedFakeModule = $MockObject->getMockObject();
     my $ErrorMessageRegEx = <<'END';
 WrongAmountOfParameters:
-MockedMethod: t::FakeModuleForMockifyTest::DummmyMethodForTestOverriding
+MockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding
 Data:{ActualAmount=1,ExpectedAmount=2}
 END
     throws_ok(
@@ -401,7 +651,7 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Int
     my $MockedFakeModule = $MockObject->getMockObject();
     my $ErrorMessageRegEx = <<'END';
 Parameter\[0\] is not an Integer:
-MockedMethod: t::FakeModuleForMockifyTest::DummmyMethodForTestOverriding
+MockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding
 Data:{Value='123NotANumber321'}
 END
     throws_ok(
@@ -424,7 +674,7 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Str
     my $MockedFakeModule = $MockObject->getMockObject();
     my $ErrorMessageRegEx = <<'END';
 Parameter\[0\] is not a String:
-MockedMethod: t::FakeModuleForMockifyTest::DummmyMethodForTestOverriding
+MockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding
 Data:{Value=\['Not','aString'\]}
 END
     throws_ok(
@@ -447,7 +697,7 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Has
     my $MockedFakeModule = $MockObject->getMockObject();
     my $ErrorMessageRegEx = <<'END';
 Parameter\[0\] is not a HashRef:
-MockedMethod: t::FakeModuleForMockifyTest::DummmyMethodForTestOverriding
+MockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding
 Data:{Value='NotAHashRef'}
 END
     throws_ok(
@@ -470,7 +720,7 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Arr
     my $MockedFakeModule = $MockObject->getMockObject();
     my $ErrorMessageRegEx = <<'END';
 Parameter\[0\] is not an ArrayRef:
-MockedMethod: t::FakeModuleForMockifyTest::DummmyMethodForTestOverriding
+MockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding
 Data:{Value='NotAnArrayRef'}
 END
     throws_ok(
@@ -493,7 +743,7 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Obj
     my $MockedFakeModule = $MockObject->getMockObject();
     my $ErrorMessageRegEx = <<'END';
 Parameter\[0\] is not a Object:
-MockedMethod: t::FakeModuleForMockifyTest::DummmyMethodForTestOverriding
+MockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding
 Data:{Value='NotAObject'}
 END
     throws_ok(
@@ -516,7 +766,7 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Und
     my $MockedFakeModule = $MockObject->getMockObject();
     my $ErrorMessageRegEx = <<'END';
 Parameter\[0\] is not undefined:
-MockedMethod: t::FakeModuleForMockifyTest::DummmyMethodForTestOverriding
+MockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding
 Data:{Value='NotUndef'}
 END
     throws_ok(
@@ -536,7 +786,7 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_withoutParameterType
     my $MockObject = $self->_createMockObject($aParameterList);
     my $ErrorMessageRegEx = <<'END';
 ParameterTypesNotProvided:
-MockedMethod: t::FakeModuleForMockifyTest::DummmyMethodForTestOverriding
+MockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding
 Data:{ParameterList=undef}
 END
     throws_ok( sub {
@@ -560,7 +810,7 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongParameterName {
     #TODO: better Errormessage ParameterPosition
     my $ErrorMessageRegEx = <<'END';
 UnknownParametertype:
-MockedMethod: t::FakeModuleForMockifyTest::DummmyMethodForTestOverriding
+MockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding
 Data:{UnknownParameterType='WrongType',ParameterNumber=1}
 END
     throws_ok(
