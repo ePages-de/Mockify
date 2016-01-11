@@ -26,9 +26,6 @@ sub isString_positivPath {
     ok(IsString(''),"$SubTestName - tests empty string - true");
     ok(IsString(' '), "$SubTestName - tests white space - true");
     ok(IsString('  '), "$SubTestName - tests multiple white spaces - true");
-    #ok(IsString(' abc'), "$SubTestName - tests string leading white space - true");
-    #ok(IsString('abc '), "$SubTestName - tests string trailing white space - true");
-    #ok(IsString('-+;,.:#"\'!§%&()/öäüß€@'), "$SubTestName - tests special characters - true");
 
     return;
 }
