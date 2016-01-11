@@ -17,30 +17,30 @@ sub testPlan {
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedString();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedInteger();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedHash();
-    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedArray();
-    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedObject();
-    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_EmptyString();
-    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongAmountOfParameters();
-    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Int();
-    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_String();
-    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_HashRef();
-    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_ArrayRef();
-    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Object();
-    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Undef();
-    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_withoutParameterTypes();
-    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongParameterName();
-    $self->test_MockModule_GetParametersFromMockifyCall();
-    $self->test_MockModule_GetParametersFromMockifyCall_Multicalls_PositionBiggerThenRealCalls();
-    $self->test_MockModule_GetParametersFromMockifyCall_Multicalls_PositionNotInteger();
-    $self->test_MockModule_GetParametersFromMockifyCall_MultiParams();
-    $self->test_MockModule_GetParametersFromMockifyCall_Multicalls_MultiParams();
-    $self->test_MockModule_GetParametersFromMockifyCall_WithoutCallingTheMethod();
-    $self->test_MockModule_GetParametersFromMockifyCall_ForNotblessedObject();
-    $self->test_MockModule_GetParametersFromMockifyCall_ForNotMockifyObject();
-    $self->test_MockModule_GetParametersFromMockifyCall_NoMethodName();
-    $self->test_MockModule_ShortCut_addmock();
-    $self->test_MockModule_ShortCut_AddMockWithReturnValue();
-    $self->test_MockModule_ShortCut_AddMockWithReturnValueAndParameterCheck();
+#    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedArray();
+#    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedObject();
+#    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_EmptyString();
+#    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongAmountOfParameters();
+#    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Int();
+#    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_String();
+#    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_HashRef();
+#    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_ArrayRef();
+#    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Object();
+#    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Undef();
+#    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_withoutParameterTypes();
+#    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongParameterName();
+#    $self->test_MockModule_GetParametersFromMockifyCall();
+#    $self->test_MockModule_GetParametersFromMockifyCall_Multicalls_PositionBiggerThenRealCalls();
+#    $self->test_MockModule_GetParametersFromMockifyCall_Multicalls_PositionNotInteger();
+#    $self->test_MockModule_GetParametersFromMockifyCall_MultiParams();
+#    $self->test_MockModule_GetParametersFromMockifyCall_Multicalls_MultiParams();
+#    $self->test_MockModule_GetParametersFromMockifyCall_WithoutCallingTheMethod();
+#    $self->test_MockModule_GetParametersFromMockifyCall_ForNotblessedObject();
+#    $self->test_MockModule_GetParametersFromMockifyCall_ForNotMockifyObject();
+#    $self->test_MockModule_GetParametersFromMockifyCall_NoMethodName();
+#    $self->test_MockModule_ShortCut_addmock();
+#    $self->test_MockModule_ShortCut_AddMockWithReturnValue();
+#    $self->test_MockModule_ShortCut_AddMockWithReturnValueAndParameterCheck();
 
 }
 #----------------------------------------------------------------------------------------
@@ -267,7 +267,7 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedHash {
     my $hWrongParameter = {'zwei'=>'value'};
     my $ErrorMessageRegEx = <<'End';
 Parameter\[0\] unexpected value:
-MockedMethod: t::FakeModuleForMockifyTest::DummmyMethodForTestOverriding
+MockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding
 Data:{'expected value'='\$VAR1 = {
           \\'eins\\' => \\'value\\'
         };
