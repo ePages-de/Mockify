@@ -1,10 +1,10 @@
 #========================================================================================
-# §package      DE_EPAGES::Test::Mock::Mockify::MethodCallCounter
+# §package      MethodCallCounter
 # §state        public
 #----------------------------------------------------------------------------------------
 # §description  encapsulate the Call Counter for Mockify
 #========================================================================================
-package DE_EPAGES::Test::Mock::Mockify::MethodCallCounter;
+package MethodCallCounter;
 
 use DE_EPAGES::Core::API::Error qw ( Error );
 
@@ -17,7 +17,7 @@ use strict;
 #----------------------------------------------------------------------------------------
 # §description  constructor
 #----------------------------------------------------------------------------------------
-# §return       $self | self | DE_EPAGES::Test::Mock::MethodCallCounter
+# §return       $self | self | MethodCallCounter
 #========================================================================================
 sub new {
     my $class = shift;
@@ -82,17 +82,7 @@ sub getAmountOfCalls {
 
     return $AmountOfCalls;
 }
-#========================================================================================
-# §function     _testIfMethodWasAdded
-# §state        private
 #----------------------------------------------------------------------------------------
-# §syntax       _testIfMethodWasAdded( $MethodName );
-#----------------------------------------------------------------------------------------
-# §description  tests if the method was added
-#               Dies if the method was not added to mockify
-#----------------------------------------------------------------------------------------
-# §input        $MethodName | name of method | string
-#========================================================================================
 sub _testIfMethodWasAdded {
     my $self = shift;
     my ( $MethodName ) = @_;

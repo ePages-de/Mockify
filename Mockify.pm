@@ -3,11 +3,15 @@ use base qw ( Exporter );
 use Tools qw ( Error ExistsMethod IsValid LoadPackage Isa );
 use TypeTests qw ( IsInteger IsFloat IsString IsArrayReference IsHashReference IsObjectReference );
 use Test::MockObject::Extends;
-use DE_EPAGES::Test::Mock::Mockify::MethodCallCounter;
+use MethodCallCounter;
 use Data::Dumper;
 use feature qw ( switch );
 use strict;
-our @EXPORT_OK = qw ( GetParametersFromMockifyCall );
+our @EXPORT_OK = qw (
+    GetParametersFromMockifyCall
+    WasCalled
+    GetCallCount
+);
 use Scalar::Util qw( blessed );
 use Test::More;
 use Data::Compare;
@@ -30,7 +34,7 @@ sub new {
 sub _initMockedModule {
     my $self = shift;
 
-    $self->{'__MockedModule'}->{'__MethodCallCounter'} = DE_EPAGES::Test::Mock::Mockify::MethodCallCounter->new();
+    $self->{'__MockedModule'}->{'__MethodCallCounter'} = MethodCallCounter->new();
     $self->{'__MockedModule'}->{'__isMockified'} = 1;
     $self->_addGetParameterFromMockifyCall();
 
@@ -68,7 +72,8 @@ sub GetParametersFromMockifyCall {
     if ( not $MockifiedMockedObject->can('__getParametersFromMockifyCall') ){
         Error("$PackageName was not mockified", { 'Position'=>$Position, 'Method' => $MethodName});
     }
-    if( not IsValid( $Position ) || not IsInteger( $Position )){
+    if( not 
+( $Position ) || not IsInteger( $Position )){
         $Position = 0;
     }
 
@@ -128,7 +133,7 @@ sub _TestMockifyObject {
     my ( $MockifiedMockedObject ) = @_;
 
     my $ObjectPath = ref( $MockifiedMockedObject );
-    if( not isValid( $ObjectPath ) ){
+    if( not IsValid( $ObjectPath ) ){
         Error( 'Object is not defined' );
     }
     if ( $MockifiedMockedObject->{'__isMockified'} != 1){
@@ -236,7 +241,11 @@ sub addMock {
     my ( $MethodName, $rSub ) = @_;
 
     ExistsMethod( $self->{'__MockedModulePath'}, $MethodName );
-    $self->{'__MockedModule'}->mock( $MethodName, $rSub );
+    $self->{'__MockedModule'}->{'__MethodCallCounter'}->addMethod( $MethodName );
+    $self->{'__MockedModule'}->mock( $MethodName, sub {
+        $self->{'__MockedModule'}->{'__MethodCallCounter'}->increment( $MethodName );
+        return $rSub->( @_ );
+    } );
 
     return;
 }
