@@ -40,25 +40,7 @@ sub _initMockedModule {
 
     return;
 }
-#========================================================================================
-# §function     GetParametersFromMockifyCall
-# §state        public
-#----------------------------------------------------------------------------------------
-# §syntax       GetParametersFromMockifyCall( );
-#----------------------------------------------------------------------------------------
-# §description  After mocking a method with Mockify framework and using the method,
-#               you can use this function to retrive you the Parameters that were 
-#               given to the mocked method.
-#               If the Mocked Method was called mutiple times you can assess the parameters
-#               from a specific call.
-#               If Position is not defined it tocks the parameters from the first call.
-#               The position acts like an Array so first Element you will get with 0, the second with 1, and so on.
-#----------------------------------------------------------------------------------------
-# §input        $MockifiedMockedObject | MockifiedMockedObject which was build with Mockify | object
-# §input        $MethodName | name of method | string
-# §input        $Position |  | Input1Type_boolean_integer_String_object_ref_hash_refarray
-# §return       Array with the parameters that were given to the mocked method | array
-#========================================================================================
+#----------------------------------------------------------------------------------------=
 sub GetParametersFromMockifyCall {
     my ( $MockifiedMockedObject, $MethodName, $Position ) = @_;
 
@@ -79,18 +61,7 @@ sub GetParametersFromMockifyCall {
 
     return $MockifiedMockedObject->__getParametersFromMockifyCall( $MethodName, $Position );
 }
-#========================================================================================
-# §function     WasCalled
-# §state        public
-#----------------------------------------------------------------------------------------
-# §syntax       WasCalled( $MockifiedMockedObject, $MethodName );
-#----------------------------------------------------------------------------------------
-# §description  returns true if the Method was called
-#----------------------------------------------------------------------------------------
-# §input        $MockifiedMockedObject | MockifiedMockedObject which was build with Mockify | object
-# §input        $MethodName | name of method | string
-# §return       $WasCalled | was called | boolean
-#========================================================================================
+#----------------------------------------------------------------------------------------=
 sub WasCalled {
     my ( $MockifiedMockedObject, $MethodName ) = @_;
 
@@ -104,19 +75,7 @@ sub WasCalled {
 
     return $WasCalled;
 }
-#========================================================================================
-# §function     GetCallCount
-# §state        public
-#----------------------------------------------------------------------------------------
-# §syntax       GetCallCount( $MockifiedMockedObject, $MethodName );
-#----------------------------------------------------------------------------------------
-# §description  Return a number with the amount of calls, this mockified method was called.
-#               Dies if the requested method was not Mockified.
-#----------------------------------------------------------------------------------------
-# §input        $MockifiedMockedObject | MockifiedMockedObject which was build with Mockify | object
-# §input        $MethodName | name of method | string
-# §return       Amount Of Calls | integer
-#========================================================================================
+#----------------------------------------------------------------------------------------=
 sub GetCallCount {
     my ( $MockifiedMockedObject, $MethodName ) = @_;
 
@@ -142,21 +101,7 @@ sub _TestMockifyObject {
 
     return;
 }
-#========================================================================================
-# §function     mock
-# §state        public
-#----------------------------------------------------------------------------------------
-# §syntax       mock( $MethodName, $ReturnValue, $aParameterTypes );
-#----------------------------------------------------------------------------------------
-# §description  Based on the type and amout of parameters this is a shortcut for:
-#               addMock                                 | mock('name', sub {})
-#               addMockWithReturnValuemock              | mock('name', 'returnValue')
-#               addMockWithReturnValueAndParameterCheck | mock('name', 'returnValue', [{'string'=>'jajaGenau'}])
-#----------------------------------------------------------------------------------------
-# §input        $MethodName | name of method | String
-# §input        $ReturnValue | value which will be returned by the mocked method | integer String object refhash refarray
-# §input        $aParameterTypes | differnd parameter types | refarray
-#========================================================================================
+#----------------------------------------------------------------------------------------=
 sub mock {
     my $self = shift;
     my @Parameters = @_;
@@ -175,16 +120,7 @@ sub mock {
     }
     return;
 }
-#========================================================================================
-# §function     addMethodSpy
-# §state        public
 #----------------------------------------------------------------------------------------
-# §syntax       addMethodSpy( $MethodName );
-#----------------------------------------------------------------------------------------
-# §description  Give option to observe a Method while keeping the original functionality.
-#----------------------------------------------------------------------------------------
-# §input        $MethodName | $MethodName | string
-#========================================================================================
 sub addMethodSpy {
     my $self = shift;
     my ( $MethodName ) = @_;
@@ -196,29 +132,7 @@ sub addMethodSpy {
 
     return;
 }
-#========================================================================================
-# §function     addMethodSpyWithParameterCheck
-# §state        public
 #----------------------------------------------------------------------------------------
-# §syntax       addMethodSpyWithParameterCheck( $MethodName, $aParameterTypes );
-#----------------------------------------------------------------------------------------
-# §description  Give option to observe a Method while keeping the original functionality.
-#               but also check the parameters
-#               check, based on the $aParameterTypes if it was called with the correct parameters
-#
-#               my $aParameterTypes = ['string',{'string' => 'ABCD'}];
-#               $Mockify->addMockWithReturnValueAndParameterCheck('myMethod','the return value',$aParameterTypes);
-#               my $MyFakeObject = $MockObject->getMockObject();
-#               ok( $MyModuleObject->myMethod('Hello','ABCD') ),
-#
-#               possible parameters types are:
-#                   ['string', 'int', 'hashref', 'arrayref', 'object', 'undef', 'any']
-#               or with more detail:
-#                   [{'string'=>'abcdef'}, {'int' => 123}, {'hashref' => {'key'=>'value'}}, {'arrayref'=>['one', 'two']}, {'object'=> 'PAth::to:Obejct}]
-#----------------------------------------------------------------------------------------
-# §input        $MethodName | name of method | String
-# §input        $aParameterTypes | differnd parameter types | refarray
-#========================================================================================
 sub addMethodSpyWithParameterCheck {
     my $self = shift;
     my ( $MethodName, $aParameterTypes ) = @_;
