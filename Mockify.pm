@@ -256,6 +256,9 @@ sub _testParameterType {
         when( 'int' ) {
         $self->_testExpectedInt( $ParameterName,$Value, $TestParameter, $MethodName );
         }
+        when( 'float' ) {
+        $self->_testExpectedFloat( $ParameterName,$Value, $TestParameter, $MethodName );
+        }
         when( 'hashref' ) {
         $self->_testExpectedHashRef( $ParameterName,$Value, $TestParameter, $MethodName );
         }
@@ -371,6 +374,31 @@ sub _testExpectedInt {
 
     if ( not IsInteger( $Value ) ) {
         Error( "$Name is not an Integer", {
+            'Method' => $self->{'__MockedModulePath'}."->$MethodName",
+            'Value' => $Value
+            });
+    }
+    if( IsHashReference( $hTestParameterType ) ){
+        my @Values = values %{$hTestParameterType};
+        my $ExpectedValue = $Values[0];
+        if( $Value != $ExpectedValue ){
+            Error( "$Name unexpected value", {
+                'Method' => $self->{'__MockedModulePath'}."->$MethodName",
+                'ActualValue' => $Value,
+                'ExpectedValue' => $ExpectedValue,
+            });
+        }
+    }
+
+    return;
+}
+#----------------------------------------------------------------------------------------
+sub _testExpectedFloat {
+    my $self = shift;
+    my ( $Name, $Value, $hTestParameterType, $MethodName ) = @_;
+
+    if ( not IsFloat( $Value ) ) {
+        Error( "$Name is not an Float", {
             'Method' => $self->{'__MockedModulePath'}."->$MethodName",
             'Value' => $Value
             });
