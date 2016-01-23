@@ -1,6 +1,16 @@
 # Documentaion #
 
 Here in a nutshell the options:
+## needed cpan modules ##
+```
+cpan Module::Load
+```
+```
+cpan Test::MockObject::Extends
+```
+```
+Data::Compare
+```
 
 ## getMockObject ##
 gives you the actual mocked object which you can use in the test.
