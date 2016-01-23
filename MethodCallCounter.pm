@@ -1,93 +1,94 @@
 #========================================================================================
-# Â§package      t::FakeModuleForMockifyTest
-# Â§state        public
+# §package      MethodCallCounter
+# §state        public
 #----------------------------------------------------------------------------------------
-# Â§description  Fake Module For Mockify Test framework unit test
+# §description  encapsulate the Call Counter for Mockify
 #========================================================================================
-package t::FakeModuleForMockifyTest;
+package MethodCallCounter;
+
+use DE_EPAGES::Core::API::Error qw ( Error );
 
 use strict;
-
 #========================================================================================
-# Â§function     new
-# Â§state        public
+# §function     new
+# §state        public
 #----------------------------------------------------------------------------------------
-# Â§syntax       new( );
+# §syntax       new( );
 #----------------------------------------------------------------------------------------
-# Â§description  constructor
+# §description  constructor
 #----------------------------------------------------------------------------------------
-# Â§input        @ParameterList | Parameter list | array
-# Â§return       $self | self | t::FakeModuleForMockifyTest
+# §return       $self | self | MethodCallCounter
 #========================================================================================
 sub new {
     my $class = shift;
-    my @ParameterList = @_;
-    my $self  = bless {
-        'ParameterListNew' => \@ParameterList
-    }, $class;
+    my $self  = bless {}, $class;
     return $self;
 }
-
 #========================================================================================
-# Â§function     DummmyMethodForTestOverriding
-# Â§state        public
+# §function     addMethod
+# §state        public
 #----------------------------------------------------------------------------------------
-# Â§syntax       DummmyMethodForTestOverriding( );
+# §syntax       addMethod( $MethodName );
 #----------------------------------------------------------------------------------------
-# Â§description  dummmy method for test overriding
+# §description  add the Method '$MethodName' to the counter
 #----------------------------------------------------------------------------------------
-# Â§return       a test string | String
+# §input        $MethodName | name of method | string
 #========================================================================================
-sub DummmyMethodForTestOverriding {
+sub addMethod {
     my $self = shift;
-    return 'A dummmy method';
-}
+    my ( $MethodName ) = @_;
 
+    $self->{$MethodName} = 0;
+
+    return;
+}
 #========================================================================================
-# Â§function     secondDummmyMethodForTestOverriding
-# Â§state        public
+# §function     increment
+# §state        public
 #----------------------------------------------------------------------------------------
-# Â§syntax       secondDummmyMethodForTestOverriding( );
+# §syntax       increment( $MethodName );
 #----------------------------------------------------------------------------------------
-# Â§description  dummmy method for test overriding
+# §description  increment the the counter for the Method '$MethodName'
 #----------------------------------------------------------------------------------------
-# Â§return       a test string | String
+# §input        $MethodName | name of method | string
 #========================================================================================
-sub secondDummmyMethodForTestOverriding {
+sub increment {
     my $self = shift;
-    return 'A second dummmy method';
-}
+    my ( $MethodName ) = @_;
 
+    $self->_testIfMethodWasAdded( $MethodName );
+    $self->{$MethodName} += 1;
+
+    return;
+}
 #========================================================================================
-# Â§function     dummmyMethodWithParameterReturn
-# Â§state        public
+# §function     getAmountOfCalls
+# §state        public
 #----------------------------------------------------------------------------------------
-# Â§syntax       dummmyMethodWithParameterReturn( $Parameter );
+# §syntax       getAmountOfCalls( $MethodName );
 #----------------------------------------------------------------------------------------
-# Â§description  dummmy method for test overriding
+# §description  returns the amount of calls for the method '$MethodName'
+#               throws error if the method was not added to Mockify
 #----------------------------------------------------------------------------------------
-# Â§input        $Parameter | a parameter | String
-# Â§return       $Parameter | a parameter | String
+# §input        $MethodName | name of method | string
+# §return       $AmountOfCalls | Amount of calles | integer
 #========================================================================================
-sub dummmyMethodWithParameterReturn {
+sub getAmountOfCalls {
     my $self = shift;
-    my ( $Parameter ) = @_;
-    return $Parameter;
-}
+    my ( $MethodName ) = @_;
 
-#========================================================================================
-# Â§function     returnParameterListNew
-# Â§state        public
+    $self->_testIfMethodWasAdded( $MethodName );
+    my $AmountOfCalls = $self->{ $MethodName };
+
+    return $AmountOfCalls;
+}
 #----------------------------------------------------------------------------------------
-# Â§syntax       returnParameterListNew( );
-#----------------------------------------------------------------------------------------
-# Â§description  returns the parameter list from constructor
-#----------------------------------------------------------------------------------------
-# Â§return       ParameterListNew | refarray
-#========================================================================================
-sub returnParameterListNew {
+sub _testIfMethodWasAdded {
     my $self = shift;
-    return $self->{'ParameterListNew'};
-}
+    my ( $MethodName ) = @_;
 
+    if( not exists $self->{ $MethodName } ){
+        Error( "The Method: '$MethodName' was not added to Mockify" );
+    }
+}
 1;
