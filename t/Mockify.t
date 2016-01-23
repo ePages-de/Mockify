@@ -16,12 +16,14 @@ sub testPlan {
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedString();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedInteger();
+    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedFloat();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedHash();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedArray();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedObject();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_EmptyString();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongAmountOfParameters();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Int();
+    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Float();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_String();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_HashRef();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_ArrayRef();
@@ -500,6 +502,28 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedInteger {
     return;
 }
 #----------------------------------------------------------------------------------------
+sub test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedFloat {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = [];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    my $ParameterCheckList = [{'float'=>1.23}];
+    $MockObject->addMockWithReturnValueAndParameterCheck('DummmyMethodForTestOverriding', 'This is a return value', $ParameterCheckList);
+    my $MockedFakeModule = $MockObject->getMockObject();
+    is(
+        $MockedFakeModule->DummmyMethodForTestOverriding( 1.23 ),
+        'This is a return value',"$SubTestName - tests if the parameter list check for float is working"
+    );
+    throws_ok(
+        sub { $MockedFakeModule->DummmyMethodForTestOverriding( 6.66 ) },
+        qr/Parameter\[0\] unexpected value:\nMockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding\nData:{ExpectedValue='1.23',ActualValue='6.66'}/,
+        "$SubTestName - test if a wrong float value will be found."
+    );
+
+    return;
+}
+#----------------------------------------------------------------------------------------
 sub test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedHash {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
@@ -656,6 +680,29 @@ Data:{Value='123NotANumber321'}
 END
     throws_ok(
         sub { $MockedFakeModule->DummmyMethodForTestOverriding('123NotANumber321') },
+        qr/$ErrorMessageRegEx/,
+        "$SubTestName - test the Error if method is called with wrong type"
+    );
+
+    return;
+}
+#----------------------------------------------------------------------------------------
+sub test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Float {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $aParameterList = [];
+    my $MockObject = $self->_createMockObject($aParameterList);
+    my $ParameterCheckList = ['float'];
+    $MockObject->addMockWithReturnValueAndParameterCheck('DummmyMethodForTestOverriding', 'This is a return value', $ParameterCheckList);
+    my $MockedFakeModule = $MockObject->getMockObject();
+    my $ErrorMessageRegEx = <<'END';
+Parameter\[0\] is not an Float:
+MockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding
+Data:{Value='1.23NotAFloat3.21'}
+END
+    throws_ok(
+        sub { $MockedFakeModule->DummmyMethodForTestOverriding('1.23NotAFloat3.21') },
         qr/$ErrorMessageRegEx/,
         "$SubTestName - test the Error if method is called with wrong type"
     );

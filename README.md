@@ -48,11 +48,11 @@ $MockObject->addMockWithReturnValueAndParameterCheck('myMethodName','the return 
 ### Options ###
 pure Types
 ```
-['string', 'int', 'hashref', 'arrayref', 'object', 'undef', 'any']
+['string', 'int', 'float', 'hashref', 'arrayref', 'object', 'undef', 'any']
 ```
 or Types with expected values
 ```
-[{'string'=>'abcdef'}, {'int' => 123}, {'hashref' => {'key'=>'value'}}, {'arrayref'=>['one', 'two']}, {'object'=> 'PAth::to:Obejct}]
+[{'string'=>'abcdef'}, {'int' => 123}, {'float' => 1.23}, {'hashref' => {'key'=>'value'}}, {'arrayref'=>['one', 'two']}, {'object'=> 'PAth::to:Obejct}]
 ```
 If you use **any** you must prove this value explicitly in the test, see **GetParametersFromMockifyCall**
 
