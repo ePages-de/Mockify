@@ -1,6 +1,6 @@
 # Documentaion #
 
-Here in a nutshell the options:
+Here the options in a nutshell:
 
 ## getMockObject ##
 gives you the actual mocked object which you can use in the test.
@@ -11,7 +11,7 @@ my $MyModuleObject = $MockifyObject->getMockObject();
 ```
 ## addMock ##
 
-This is the simplest case. It is like the mock-method from Test::MockObject.
+This is the simplest case. It works like the mock-method from Test::MockObject.
 
 Only handover the **name** and a **method pointer**. Mockify will automatically check if the method exists in the original object.
 ```
@@ -30,48 +30,48 @@ This method is an extension of *addMockWithReturnValue*. Here you also can check
 
 You can check if they have a specific **datatype** or even check if they have a given **value**.
 
-In the following example, two strings will be expected and the second one has to have the value "abcd".
+In the following example two strings will be expected, and the second one has to have the value "abcd".
 ```
 my $aParameterTypes = ['string',{'string' => 'abcd'}];
 $MockObject->addMockWithReturnValueAndParameterCheck('myMethodName','the return value',$aParameterTypes);
 ```
 ### Options ###
-pure Types
+pure types
 ```
 ['string', 'int', 'float', 'hashref', 'arrayref', 'object', 'undef', 'any']
 ```
-or Types with expected values
+or types with expected values
 ```
 [{'string'=>'abcdef'}, {'int' => 123}, {'float' => 1.23}, {'hashref' => {'key'=>'value'}}, {'arrayref'=>['one', 'two']}, {'object'=> 'PAth::to:Obejct}]
 ```
-If you use **any** you must prove this value explicitly in the test, see **GetParametersFromMockifyCall**
+If you use **any** you must verify this value explicitly in the test, see **GetParametersFromMockifyCall**
 
 ## addMethodSpy ##
-With this method it is possible to observe a method. So you keep the original functionality but, you can get meta data from the mockify- framework.
+With this method it is possible to observe a method. So you keep the original functionality, but you can get meta data from the mockify- framework.
 ```
 $MockObject->addMethodSpy('myMethodName');
 ```
 
 ##addMethodSpyWithParameterCheck ##
-With this method it is possible to observer a method and check the parameters. So you keep the original functionality but, you can get meta data from the mockify- framework and use the ParameterCheck, like "addMockWithReturnValueAndParameterCheck"
+With this method it is possible to observe a method and check the parameters. So you keep the original functionality, but you can get meta data from the mockify- framework and use the ParameterCheck, like "addMockWithReturnValueAndParameterCheck"
 ```
 my $aParameterTypes = ['string',{'string' => 'abcd'}];
 $MockObject->addMethodSpyWithParameterCheck('myMethodName','the return value',$aParameterTypes);
 ```
 
 ### Options ###
-pure Types
+pure types
 ```
 ['string', 'int', 'hashref', 'arrayref', 'object', 'undef', 'any']
 ```
-or Types with expected values
+or types with expected values
 ```
 [{'string'=>'abcdef'}, {'int' => 123}, {'hashref' => {'key'=>'value'}}, {'arrayref'=>['one', 'two']}, {'object'=> 'PAth::to:Obejct}]
 ```
-If you use *any* you *must* prove this value explicitly in the test, see **GetParametersFromMockifyCall**
+If you use *any* you *must* verify this value explicitly in the test, see **GetParametersFromMockifyCall**
 
 ## mock ##
-This is a shortcut for *addMock*, *addMockWithReturnValue* and *addMockWithReturnValueAndParameterCheck*. *mock* detects with the Parameters the needed Method.
+This is a shortcut for *addMock*, *addMockWithReturnValue* and *addMockWithReturnValueAndParameterCheck*. *mock* detects the needed method with given parameters.
 
 | Parameter in *mock*  | actually used method |
 | ------------- | ------------- |
@@ -86,22 +86,22 @@ or, get meta data from calls
 ```
 my $aParameters = GetParametersFromMockifyCall($MockifiedObject, 'nameOfMethod', $OptionalPosition);
 ```
-With this Function it is possible to get all the Parameters after the Mockified-modul was used. If the test calls the method multiple times, the "$OptionalPosition" can be used to get the specific call, default is "0".
+This function returns all the parameters after the *mockified* module was used. If the test calls the method multiple times, the "$OptionalPosition" can be used to get the specific call, default is "0".
 Returns an array ref with the parameters of the specific method call.
-*(Note: the calls are counted starting from zero. You will get the parameters from the first call with 0, the ones from the second call with 1, and so on)*
+*(Note: The calls are counted starting from zero. You will get the parameters from the first call with 0, the ones from the second call with 1, and so on)*
 
 ### GetCallCount ###
 ```
 my $AmountOfCalls = GetCallCount($MockifiedObject, 'nameOfMethod');
 ```
-With this Function it is possible to get the amount of calls after the Mockified-modul was used. *If the method was not called it will return "0"*
+This function returns the information how often the method was called on the *mockified* module. *If the method was not called it will return "0"*
 
 ### WasCalled ###
 ```
 my $WasCalled = WasCalled($MockifiedObject, 'nameOfMethod');
 
 ```
-With this Function it is possible to get the information if the method was called when the Mockified-modul was used.
+This function returns the information if the method was called on the *mockified* module.
 
 ## addtional needed cpan modules ##
 ```
