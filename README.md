@@ -71,7 +71,7 @@ or types with expected values
 If you use *any* you *must* verify this value explicitly in the test, see **GetParametersFromMockifyCall**
 
 ## mock ##
-This is a shortcut for *addMock*, *addMockWithReturnValue* and *addMockWithReturnValueAndParameterCheck*. *mock* mock detects the needed method with given parameters.
+This is a shortcut for *addMock*, *addMockWithReturnValue* and *addMockWithReturnValueAndParameterCheck*. *mock* detects the needed method with given parameters.
 
 | Parameter in *mock*  | actually used method |
 | ------------- | ------------- |
@@ -86,7 +86,7 @@ or, get meta data from calls
 ```
 my $aParameters = GetParametersFromMockifyCall($MockifiedObject, 'nameOfMethod', $OptionalPosition);
 ```
-This function returns all the parameters after the mockified module was used. If the test calls the method multiple times, the "$OptionalPosition" can be used to get the specific call, default is "0".
+This function returns all the parameters after the *mockified* module was used. If the test calls the method multiple times, the "$OptionalPosition" can be used to get the specific call, default is "0".
 Returns an array ref with the parameters of the specific method call.
 *(Note: The calls are counted starting from zero. You will get the parameters from the first call with 0, the ones from the second call with 1, and so on)*
 
@@ -94,14 +94,14 @@ Returns an array ref with the parameters of the specific method call.
 ```
 my $AmountOfCalls = GetCallCount($MockifiedObject, 'nameOfMethod');
 ```
-This function returns the information how often the method was called on the mockified module. *If the method was not called it will return "0"*
+This function returns the information how often the method was called on the *mockified* module. *If the method was not called it will return "0"*
 
 ### WasCalled ###
 ```
 my $WasCalled = WasCalled($MockifiedObject, 'nameOfMethod');
 
 ```
-This function returns the information if the method was called on the mockified module.
+This function returns the information if the method was called on the *mockified* module.
 
 ## addtional needed cpan modules ##
 ```
