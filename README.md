@@ -6,8 +6,8 @@ Here the options in a nutshell:
 gives you the actual mocked object which you can use in the test.
 ```
 my $aParameterList = ['SomeValueForConstructor'];
-my $MockifyObject = Mockify->new( 'My::Module', $aParameterList );
-my $MyModuleObject = $MockifyObject->getMockObject();
+my $Mockify = Mockify->new( 'My::Module', $aParameterList );
+my $MyModuleObject = $Mockify->getMockObject();
 ```
 ## addMock ##
 
@@ -15,7 +15,7 @@ This is the simplest case. It works like the mock-method from Test::MockObject.
 
 Only handover the **name** and a **method pointer**. Mockify will automatically check if the method exists in the original object.
 ```
-$MockObject->addMock('myMethodName', sub {
+$Mockify->addMock('myMethodName', sub {
                                     # Your implementation
                                  }
  );
@@ -23,7 +23,7 @@ $MockObject->addMock('myMethodName', sub {
 ## addMockWithReturnValue ##
 Does the same as *addMock*, but here you can handover a **value** which will be returned if you call the mocked method.
 ```
-$MockObject->addMockWithReturnValue('myMethodName','the return value');
+$Mockify->addMockWithReturnValue('myMethodName','the return value');
 ```
 ## addMockWithReturnValueAndParameterCheck ##
 This method is an extension of *addMockWithReturnValue*. Here you also can check the parameters which will be passed.
@@ -33,7 +33,7 @@ You can check if they have a specific **datatype** or even check if they have a 
 In the following example two strings will be expected, and the second one has to have the value "abcd".
 ```
 my $aParameterTypes = ['string',{'string' => 'abcd'}];
-$MockObject->addMockWithReturnValueAndParameterCheck('myMethodName','the return value',$aParameterTypes);
+$Mockify->addMockWithReturnValueAndParameterCheck('myMethodName','the return value',$aParameterTypes);
 ```
 ### Options ###
 pure types
@@ -49,24 +49,24 @@ If you use **any** you must verify this value explicitly in the test, see **GetP
 ## addMethodSpy ##
 With this method it is possible to observe a method. So you keep the original functionality, but you can get meta data from the mockify- framework.
 ```
-$MockObject->addMethodSpy('myMethodName');
+$Mockify->addMethodSpy('myMethodName');
 ```
 
 ##addMethodSpyWithParameterCheck ##
 With this method it is possible to observe a method and check the parameters. So you keep the original functionality, but you can get meta data from the mockify- framework and use the ParameterCheck, like "addMockWithReturnValueAndParameterCheck"
 ```
 my $aParameterTypes = ['string',{'string' => 'abcd'}];
-$MockObject->addMethodSpyWithParameterCheck('myMethodName','the return value',$aParameterTypes);
+$Mockify->addMethodSpyWithParameterCheck('myMethodName', $aParameterTypes);
 ```
 
 ### Options ###
 pure types
 ```
-['string', 'int', 'hashref', 'arrayref', 'object', 'undef', 'any']
+['string', 'int', 'hashref', 'float', 'arrayref', 'object', 'undef', 'any']
 ```
 or types with expected values
 ```
-[{'string'=>'abcdef'}, {'int' => 123}, {'hashref' => {'key'=>'value'}}, {'arrayref'=>['one', 'two']}, {'object'=> 'PAth::to:Obejct}]
+[{'string'=>'abcdef'}, {'int' => 123}, {'float' => 1.23}, {'hashref' => {'key'=>'value'}}, {'arrayref'=>['one', 'two']}, {'object'=> 'PAth::to:Obejct}]
 ```
 If you use *any* you *must* verify this value explicitly in the test, see **GetParametersFromMockifyCall**
 
