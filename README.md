@@ -62,11 +62,11 @@ $MockObject->addMethodSpyWithParameterCheck('myMethodName','the return value',$a
 ### Options ###
 pure types
 ```
-['string', 'int', 'hashref', 'arrayref', 'object', 'undef', 'any']
+['string', 'int', 'hashref', 'float', 'arrayref', 'object', 'undef', 'any']
 ```
 or types with expected values
 ```
-[{'string'=>'abcdef'}, {'int' => 123}, {'hashref' => {'key'=>'value'}}, {'arrayref'=>['one', 'two']}, {'object'=> 'PAth::to:Obejct}]
+[{'string'=>'abcdef'}, {'int' => 123}, {'float' => 1.23}, {'hashref' => {'key'=>'value'}}, {'arrayref'=>['one', 'two']}, {'object'=> 'PAth::to:Obejct}]
 ```
 If you use *any* you *must* verify this value explicitly in the test, see **GetParametersFromMockifyCall**
 
