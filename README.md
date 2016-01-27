@@ -56,7 +56,7 @@ $Mockify->addMethodSpy('myMethodName');
 With this method it is possible to observe a method and check the parameters. So you keep the original functionality, but you can get meta data from the mockify- framework and use the ParameterCheck, like "addMockWithReturnValueAndParameterCheck"
 ```
 my $aParameterTypes = ['string',{'string' => 'abcd'}];
-$Mockify->addMethodSpyWithParameterCheck('myMethodName','the return value',$aParameterTypes);
+$Mockify->addMethodSpyWithParameterCheck('myMethodName', $aParameterTypes);
 ```
 
 ### Options ###
