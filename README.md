@@ -80,7 +80,8 @@ This is a short cut for *addMock*, *addMockWithReturnValue* and *addMockWithRetu
 | mock('MethodName', 'someValue', ['string',{'string' => 'abcd'}])  | *addMockWithReturnValueAndParameterCheck*  |
 
 ## Additional meta data functions ##
-or, get meta data from calls
+Sometimes you will need to verify that a specific method was called a certain amount of times, each time with specific parameters.
+Mockify provides the following methods to access these data.
 
 ### GetParametersFromMockifyCall ###
 ```
