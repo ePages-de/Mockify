@@ -1,20 +1,27 @@
-package Mockify;
+package Devel::Mockify;
 use base qw ( Exporter );
-use Tools qw ( Error ExistsMethod IsValid LoadPackage Isa );
-use TypeTests qw ( IsInteger IsFloat IsString IsArrayReference IsHashReference IsObjectReference );
+use Devel::Mockify::Tools qw ( Error ExistsMethod IsValid LoadPackage Isa );
+use Devel::Mockify::TypeTests qw ( IsInteger IsFloat IsString IsArrayReference IsHashReference IsObjectReference );
+use Devel::Mockify::MethodCallCounter;
 use Test::MockObject::Extends;
-use MethodCallCounter;
 use Data::Dumper;
 use feature qw ( switch );
+use Scalar::Util qw( blessed );
+use Test::More;
+use Data::Compare;
+
+use v5.14;
 use strict;
+no warnings 'experimental';
+
 our @EXPORT_OK = qw (
     GetParametersFromMockifyCall
     WasCalled
     GetCallCount
 );
-use Scalar::Util qw( blessed );
-use Test::More;
-use Data::Compare;
+
+our $VERSION = '0.9';
+
 #----------------------------------------------------------------------------------------
 sub new {
     my $class = shift;
@@ -34,7 +41,7 @@ sub new {
 sub _initMockedModule {
     my $self = shift;
 
-    $self->{'__MockedModule'}->{'__MethodCallCounter'} = MethodCallCounter->new();
+    $self->{'__MockedModule'}->{'__MethodCallCounter'} = Devel::Mockify::MethodCallCounter->new();
     $self->{'__MockedModule'}->{'__isMockified'} = 1;
     $self->_addGetParameterFromMockifyCall();
 

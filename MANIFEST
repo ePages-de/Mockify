@@ -1,0 +1,6 @@
+Makefile.PL
+MANIFEST
+lib/Devel/Mockify.pm
+lib/Devel/Mockify/MethodCallCounter.pm
+lib/Devel/Mockify/Tools.pm
+lib/Devel/Mockify/TypeTests.pm

@@ -1,7 +1,11 @@
-package t::TypeTests_isFloat;
-use base t::TestBase;
+package TypeTests_isFloat;
 use strict;
-use TypeTests qw (IsFloat);
+
+use FindBin;
+use lib ($FindBin::Bin);
+
+use parent 't::TestBase';
+use Devel::Mockify::TypeTests qw (IsFloat);
 use Test::More;
 
 #------------------------------------------------------------------------

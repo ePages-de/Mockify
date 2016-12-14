@@ -1,7 +1,11 @@
-package t::TypeTests_isArrayReference;
-use base t::TestBase;
+package TypeTests_isArrayReference;
 use strict;
-use TypeTests qw ( IsArrayReference );
+
+use FindBin;
+use lib ($FindBin::Bin);
+
+use parent 't::TestBase';
+use Devel::Mockify::TypeTests qw ( IsArrayReference );
 use Test::More;
 #------------------------------------------------------------------------
 sub testPlan{

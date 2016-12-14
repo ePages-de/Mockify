@@ -1,7 +1,11 @@
-package t::TypeTests_isString;
-use base t::TestBase;
+package TypeTests_isString;
 use strict;
-use TypeTests qw (IsString);
+
+use FindBin;
+use lib ($FindBin::Bin);
+
+use parent 't::TestBase';
+use Devel::Mockify::TypeTests qw (IsString);
 use Test::More;
 
 #------------------------------------------------------------------------

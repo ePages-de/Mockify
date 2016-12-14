@@ -1,9 +1,13 @@
-package t::Mockify;
-use base t::TestBase;
-use Mockify qw (GetParametersFromMockifyCall WasCalled GetCallCount);
+package MockifyTest;
+use strict;
+
+use FindBin;
+use lib ($FindBin::Bin);
+
+use parent 't::TestBase';
+use Devel::Mockify qw (GetParametersFromMockifyCall WasCalled GetCallCount);
 use Test::More;
 use Test::Exception;
-use strict;
 
 sub testPlan {
     my $self = shift;
@@ -314,7 +318,7 @@ sub test_MockModule_CallCounter_addMethodSpyWithParameterCheck_negativ {
     my $MockedFakeModule = $MockObject->getMockObject();
     my $ErrorMessageRegEx = <<'End';
 Parameter\[0\] is not a HashRef:
-MockedMethod: t::FakeModuleForMockifyTest->dummmyMethodWithParameterReturn
+MockedMethod: FakeModuleForMockifyTest->dummmyMethodWithParameterReturn
 Data:{Value='NotAHashRef'}
 .*
 End
@@ -393,7 +397,7 @@ sub test_MockModule_AddMockWithReturnValue_UnexpectedParameterInCall {
     my $MockedFakeModule = $MockObject->getMockObject();
     throws_ok(
         sub { $MockedFakeModule->DummmyMethodForTestOverriding('anUnexpectedParameter') },
-        qr/UnexpectedParameter:\nMockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding\nData:{ParameterList='\(anUnexpectedParameter\)',AmountOfUnexpectedParameters=1}/,
+        qr/UnexpectedParameter:\nMockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding\nData:\{ParameterList='\(anUnexpectedParameter\)',AmountOfUnexpectedParameters=1\}/,
         "$SubTestName - test if the mocked method was called with the wrong amount of parameters"
     );
 
@@ -473,7 +477,7 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedString {
     );
     throws_ok(
         sub { $MockedFakeModule->DummmyMethodForTestOverriding( 'wrong String' ) },
-        qr/Parameter\[0\] unexpected value:\nMockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding\nData:{ExpectedValue='ABC123',ActualValue='wrong String'}/,
+        qr/Parameter\[0\] unexpected value:\nMockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding\nData:\{ExpectedValue='ABC123',ActualValue='wrong String'\}/,
         "$SubTestName - test if a wrong value will be found."
     );
 
@@ -495,7 +499,7 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedInteger {
     );
     throws_ok(
         sub { $MockedFakeModule->DummmyMethodForTestOverriding( 123456 ) },
-        qr/Parameter\[0\] unexpected value:\nMockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding\nData:{ExpectedValue=666,ActualValue=123456}/,
+        qr/Parameter\[0\] unexpected value:\nMockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding\nData:\{ExpectedValue=666,ActualValue=123456\}/,
         "$SubTestName - test if a wrong value will be found."
     );
 
@@ -517,7 +521,7 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_ExpectedFloat {
     );
     throws_ok(
         sub { $MockedFakeModule->DummmyMethodForTestOverriding( 6.66 ) },
-        qr/Parameter\[0\] unexpected value:\nMockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding\nData:{ExpectedValue='1.23',ActualValue='6.66'}/,
+        qr/Parameter\[0\] unexpected value:\nMockedMethod: t::FakeModuleForMockifyTest->DummmyMethodForTestOverriding\nData:\{ExpectedValue='1.23',ActualValue='6.66'\}/,
         "$SubTestName - test if a wrong float value will be found."
     );
 
@@ -1086,7 +1090,7 @@ sub _createMockObject {
     my $self = shift;
     my ($aParameterList) = @_;
 
-    my $MockObject = Mockify->new( 't::FakeModuleForMockifyTest', $aParameterList );
+    my $MockObject = Devel::Mockify->new( 't::FakeModuleForMockifyTest', $aParameterList );
 
     return $MockObject;
 }

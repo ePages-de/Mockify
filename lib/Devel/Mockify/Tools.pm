@@ -1,4 +1,4 @@
-package Tools;
+package Devel::Mockify::Tools;
 use Module::Load;
 use strict;
 use Data::Dumper;
@@ -65,7 +65,7 @@ sub Error {
     local $Data::Dumper::Indent = 0;
     local $Data::Dumper::Pair = '=';
     local $Data::Dumper::Quotekeys = 0;
-    my $MockedMethod = delete $hData->{'Method'} if defined $hData->{'Method'};
+    my $MockedMethod = delete $hData->{'Method'} if defined $hData->{'Method'}; ## no critic (ProhibitConditionalDeclarations)
     $MockedMethod //= '-not set-';
     my $DumpedData = Dumper($hData);
     # print Callerstack

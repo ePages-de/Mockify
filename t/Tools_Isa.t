@@ -1,7 +1,11 @@
-package t::Tools_Isa;
-use base t::TestBase;
+package Tools_Isa;
 use strict;
-use Tools qw ( Isa );
+
+use FindBin;
+use lib ($FindBin::Bin);
+
+use parent 't::TestBase';
+use Devel::Mockify::Tools qw ( Isa );
 use Test::More;
 use t::FakeModuleForMockifyTest;
 #------------------------------------------------------------------------

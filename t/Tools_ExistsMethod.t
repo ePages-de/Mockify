@@ -1,7 +1,12 @@
-package t::Tools_ExistsMethod;
-use base t::TestBase;
+package Tools_ExistsMethod;
 use strict;
-use Tools qw (ExistsMethod);
+
+use FindBin;
+use lib ($FindBin::Bin);
+
+use parent 't::TestBase';
+use strict;
+use Devel::Mockify::Tools qw (ExistsMethod);
 use Test::More;
 use Test::Exception;
 use t::FakeModuleForMockifyTest;

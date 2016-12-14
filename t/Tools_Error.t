@@ -1,8 +1,12 @@
-package t::Tools_Error;
-use base t::TestBase;
+package Tools_Error;
 use strict;
+
+use FindBin;
+use lib ($FindBin::Bin);
+
+use parent 't::TestBase';
 use Test::Exception;
-use Tools qw (Error);
+use Devel::Mockify::Tools qw (Error);
 use Test::More;
 #------------------------------------------------------------------------
 sub testPlan{

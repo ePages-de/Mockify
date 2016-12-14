@@ -1,8 +1,12 @@
-package t::Tools_loadPackage;
-use base t::TestBase;
+package Tools_loadPackage;
 use strict;
+
+use FindBin;
+use lib ($FindBin::Bin);
+
+use parent 't::TestBase';
 use Test::More;
-use Tools qw ( LoadPackage );
+use Devel::Mockify::Tools qw ( LoadPackage );
 
 #------------------------------------------------------------------------
 sub testPlan{
@@ -34,7 +38,7 @@ sub LoadAllreadyLoadedModule {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    use TypeTests;
+    use Devel::Mockify::TypeTests;
     my $ModulePath = 'TypeTests.pm';
     is( $INC{$ModulePath}, $ModulePath, "$SubTestName - the module: $ModulePath is allready loaded");
     LoadPackage('TypeTests');
