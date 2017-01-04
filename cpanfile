@@ -9,6 +9,7 @@ on 'test' => sub {
 };
 
 on 'build' => sub {
+    requires 'Perl::Critic', '1.123';
     requires 'Devel::Cover', '1.23';
     requires 'Devel::Cover::Report::Clover', '1.01';
     requires 'TAP::Harness::Archive', '0.18';
