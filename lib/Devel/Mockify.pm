@@ -10,7 +10,7 @@ use Scalar::Util qw( blessed );
 use Test::More;
 use Data::Compare;
 
-use v5.14;
+use v5.10;
 use strict;
 no warnings 'experimental';
 
