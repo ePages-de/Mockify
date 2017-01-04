@@ -21,3 +21,4 @@ nytprof.out
 /.project
 .*
 !.gitignore
+!.travis.yml
