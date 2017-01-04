@@ -3,10 +3,8 @@ addons:
   sonarqube:
     token:
       secure: "FzdgVsC6xwsUeHUoKrIp4V2oCTI+pZQXuvCWEwe0d5wWU/ZoxanZ7U5zcPgkd3M7rD8zwMseqEai80xM2L6m0SwFjyNhCMIJqpLjKkvYC2QxkihGy+6DmrO9XPqXWeNvBpyi0NUdg9xXpch67bhF5CBQkQSyq4ic1Zsn9xBrrVSu/z18TK3UcP3RwsaKmWC7n4XrI140M5dL+aU+kiToEkA+B/39wN8f8Nlg+O7DbdO0qC1Z4b+IXdUKpvWV/hXkaDIsuocSq27w/yaD6cj+F7A3A1+ji4i7gbLhDLpUIZLc5rIh+QoEgUJRk4Cx1L91ZUDA8zhzbN/OPVudOdH6sGWdIN4ifjXW9RA87kdgm9COmFz0T0mS8ir57y82SBPo+AdyIobgzKK86Upy0CVHTlQND230v/f0QpzQQGmLfxcpX0Yl91s96awVl2TfQbjY/+Afkkicscbs3BiNStkXyS7ALSyiOobtbgZNm57qyCBPEb0kZgCU7d2JyOhuNMwYDzzNghXzsewk2HNbqvwoeXMIgVVjMj7Fbmvt0hPMt7kxP9FSl310QibVEw31+r6OULu3ELR1AWZ6tHhhQgwJTMIsyQPQKWBoxVKuKiucM2P1pqiZwPk62aBYFp2wRcmlyYfMX+subI4n5clZKyW4KwPWbc8tDjkJef/EjOjYUWc="
-  apt:
-    packages:
-      - oracle-java8-set-default
 
+sudo: required
 language: perl
 perl:
   - "5.18"
