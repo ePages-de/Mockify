@@ -3,80 +3,19 @@
 # Global settings for Perl Critics
 # ============================================================================================
 #
-severity = 3
-theme = bugs || security || core || maintenance || complexity || pbp
-top = 1000
+severity = 1
+theme = core
 
-# ProhibitAmbiguousNames: Don't use vague variable or subroutine names like 'last' or 'set'.
-# ProhibitAutomaticExportation: Symbols are exported by default (use @EXPORT_OK instead of @EXPORT) (we have our own)
-# ProhibitBuiltinHomonyms: Don't declare your own open function.
-# ProhibitCaptureWithoutTest: Capture variable used outside conditional.
-# ProhibitCommaSeparatedStatements:
-# ProhibitComplexMappings: Map blocks should have a single statement.
-# ProhibitComplexRegexes: Split long regexps into smaller qr// chunks
-# ProhibitConstantPragma: Don't use constant FOO => 15.
-# ProhibitDeepNests: Code structure is deeply nested
-# ProhibitExplicitReturnUndef: Returning undef is OK if functions are documented to return only scalars
-# ProhibitImplicitNewlines: Use concatenation or HEREDOCs instead of literal line breaks in strings.
-# ProhibitMatchVars: Avoid $`, $&, $' and their English equivalents.
-# ProhibitNegativeExpressionsInUnlessAndUntilConditions: Don't use operators like not, !~, and le within until and unless.
-# ProhibitPackageVars: Eliminate globals declared with our or use vars.
-# ProhibitPrivateSubroutineUse: Private subroutines (starting with underscore and small letter) must only be called from within the module they are defined
-# ProhibitSubroutinePrototypes: Don't write sub my_function (@@) {}
-# ProhibitUniversalCan - Write eval { $foo->can($name) } instead of UNIVERSAL::can($foo, $name).
-# ProhibitUniversalIsa - Write eval { $foo->isa($pkg) } instead of UNIVERSAL::isa($foo, $pkg).
-# ProhibitUnusedCapture: Only use a capturing group if you plan to use the captured value
-# RequireArgUnpacking: Always unpack @_ first.
-# RequireBarewordIncludes: "require" statement with library name as string, e.g. require "MakeMake/Makefile.PL"
-# RequireCarping: Use functions from Carp instead of warn or die.
-# ProhibitCascadingIfElse: Don't write long "if-elsif-elsif-elsif-elsif...else" chains.
-# RequireCheckingReturnValueOfEval: Return value of eval not tested - eval() is checked via GetError(), which is not recognized by the policy
-# RequireEndWithOne: Modules must end with "1;"
-# RequireExplicitPackage: Always make the package explicit.
-# RequireExtendedFormatting: Use /x for extended formatting of regular expressions
-# RequireFilenameMatchesPackage: does not recognize numbers in package name (like 'DE_EPAGES::4B::UI')
-# RequireFinalReturn: End every path through a subroutine with an explicit return statement.
-# RequireQuotedHeredocTerminator: Heredoc terminator must be quoted
-# RequireSimpleSortBlock: Sort blocks should have a single statement.
-# RequireUseWarnings: Always use warnings.
-exclude = ProhibitAmbiguousNames ProhibitAutomaticExportation$ ProhibitBuiltinHomonyms ProhibitCaptureWithoutTest ProhibitCascadingIfElse ProhibitCommaSeparatedStatements ProhibitComplexMappings ProhibitComplexRegexes ProhibitConstantPragma ProhibitDeepNests ProhibitExplicitReturnUndef ProhibitImplicitNewlines ProhibitManyArgs ProhibitMatchVars ProhibitNegativeExpressionsInUnlessAndUntilConditions ProhibitPackageVars ProhibitPathConcatenation ProhibitSubroutinePrototypes ProhibitUniversalCan$ ProhibitUniversalIsa$ ProhibitUnusedCapture RequireArgUnpacking RequireBarewordIncludes RequireCarping RequireCheckingReturnValueOfEval RequireEndWithOne RequireExplicitPackage RequireExtendedFormatting RequireFilenameMatchesPackage$ RequireFinalReturn RequireLexicalLoopIterators RequireQuotedHeredocTerminator RequireSimpleSortBlock RequireUseWarnings ProhibitAccessOfPrivateData ProhibitDebuggingModules
-
-
-# evaluate: RequireLexicalLoopIterators ProhibitConstantPragma
-# currently in perlcritic.hard:
-#  - ProhibitCaptureWithoutTest
-#  - ProhibitAmbiguousNames
-#  - ProhibitCascadingIfElse
-#  - ProhibitDeepNests
-#  - RequireExtendedFormatting
-#  - ProhibitNegativeExpressionsInUnlessAndUntilConditions
-#  - ProhibitImplicitNewlines
-#  - ProhibitMatchVars
-#  - ProhibitPackageVars
-#  - RequireArgUnpacking
-#  - ProhibitPrivateSubroutineUse
-
-include = ProhibitAmpersandSigils ProhibitPerl4PackageNames ProhibitStringySplit RequireCheckedClose RequireUpperCaseHeredocTerminator RequireSpacesNotTabs
-
+exclude = ProhibitAutomaticExportation$ ProhibitBuiltinHomonyms ProhibitCommaSeparatedStatements ProhibitComplexMappings ProhibitConstantPragma ProhibitExplicitReturnUndef RequireExtendedFormatting ProhibitManyArgs ProhibitSubroutinePrototypes ProhibitUniversalCan$ ProhibitUniversalIsa$ Subroutines::RequireArgUnpacking RequireCarping RequireCheckingReturnValueOfEval RequireEndWithOne RequireExplicitPackage RegularExpressions::RequireExtendedFormatting RequireFilenameMatchesPackage$ RequireFinalReturn RequireLexicalLoopIterators RequireQuotedHeredocTerminator RequireSimpleSortBlock RequireUseWarnings ProhibitCallsToUndeclaredSubs ProhibitPostfixControls RequireTidyCode
+include = ProhibitExcessCognitiveComplexity
 
 #
 # ============================================================================================
 # Settings for modules which come directly from cpan
 # ============================================================================================
-#
+# 
 [ValuesAndExpressions::ProhibitMagicNumbers]
 allowed_values = -1 0 1 2 3 4 5 6 7 8 9
-
-[Perl::Critic::Policy::Tics::ProhibitLongLines]
-#  base_max - the preferred maximum line length (default: 80)
-#  hard_max - the length beyond which a line is "extremely long"
-#             (default: base_max * 1.5)
-#
-#  pct_allowed - the percentage of total lines which may fall between base_max
-#                and hard_max before those violations are reported (default: 1)
-#
-base_max = 120
-pct_allowed = 3
 
 [Variables::RequireLocalizedPunctuationVars]
 allow = $ENV @ENV @ARGV $ARGV
@@ -93,10 +32,20 @@ allow = $ENV @ENV @ARGV $ARGV
 list_funcs = grep List::Util::first List::MoreUtils::any List::MoreUtils::all List::MoreUtils::none List::MoreUtils::notall List::MoreUtils::true List::MoreUtils::false List::MoreUtils::firstidx List::MoreUtils::first_index List::MoreUtils::lastidx List::MoreUtils::last_index List::MoreUtils::insert_after List::MoreUtils::insert_after_string
 
 [Subroutines::ProhibitExcessComplexity]
-max_mccabe = 65
+max_mccabe = 1
+severity = 1
+
+[ControlStructures::ProhibitCascadingIfElse]
+# Long if-elsif chains are hard to digest, especially if they are longer than a 
+# single page or screen. If testing for equality, use a hash lookup instead. 
+# If you're using perl 5.10 or later, use given/when.
+max_elsif = 5
 
 [InputOutput::RequireBriefOpen]
-lines = 25
+lines = 20
 
 [InputOutput::ProhibitBacktickOperators]
 only_in_void_context = 1
+
+[NamingConventions::ProhibitAmbiguousNames]
+forbid = abstract bases close contract last left no record right second
