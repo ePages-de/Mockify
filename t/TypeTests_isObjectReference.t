@@ -1,7 +1,11 @@
-package t::TypeTests_isObjectReference;
-use base t::TestBase;
+package TypeTests_isObjectReference;
 use strict;
-use TypeTests qw (IsObjectReference);
+
+use FindBin;
+use lib ($FindBin::Bin);
+
+use parent 'TestBase';
+use Devel::Mockify::TypeTests qw (IsObjectReference);
 use Test::More;
 #------------------------------------------------------------------------
 sub testPlan{

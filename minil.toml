@@ -1,0 +1,6 @@
+name = "Devel-Mockify"
+badges = ["travis"]
+
+module_maker="ModuleBuildTiny"
+
+

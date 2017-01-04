@@ -1,0 +1,50 @@
+#
+# ============================================================================================
+# Global settings for Perl Critics
+# ============================================================================================
+#
+severity = 1
+theme = core
+
+exclude = ProhibitAutomaticExportation$ ProhibitBuiltinHomonyms ProhibitCommaSeparatedStatements ProhibitComplexMappings ProhibitConstantPragma ProhibitExplicitReturnUndef RequireExtendedFormatting ProhibitManyArgs ProhibitSubroutinePrototypes ProhibitUniversalCan$ ProhibitUniversalIsa$ Subroutines::RequireArgUnpacking RequireCarping RequireCheckingReturnValueOfEval RequireEndWithOne RequireExplicitPackage RegularExpressions::RequireExtendedFormatting RequireFilenameMatchesPackage$ RequireFinalReturn RequireLexicalLoopIterators RequireQuotedHeredocTerminator RequireSimpleSortBlock RequireUseWarnings ProhibitCallsToUndeclaredSubs ProhibitPostfixControls RequireTidyCode
+
+#
+# ============================================================================================
+# Settings for modules which come directly from cpan
+# ============================================================================================
+# 
+[ValuesAndExpressions::ProhibitMagicNumbers]
+allowed_values = -1 0 1 2 3 4 5 6 7 8 9
+
+[Variables::RequireLocalizedPunctuationVars]
+allow = $ENV @ENV @ARGV $ARGV
+
+[ControlStructures::ProhibitMutatingListFunctions]
+# By default, this policy applies to the following list functions:
+
+#    map grep
+#    List::Util qw(first)
+#    List::MoreUtils qw(any all none notall true false firstidx
+#                       first_index lastidx last_index insert_after
+#                       insert_after_string)
+
+list_funcs = grep List::Util::first List::MoreUtils::any List::MoreUtils::all List::MoreUtils::none List::MoreUtils::notall List::MoreUtils::true List::MoreUtils::false List::MoreUtils::firstidx List::MoreUtils::first_index List::MoreUtils::lastidx List::MoreUtils::last_index List::MoreUtils::insert_after List::MoreUtils::insert_after_string
+
+[Subroutines::ProhibitExcessComplexity]
+max_mccabe = 1
+severity = 1
+
+[ControlStructures::ProhibitCascadingIfElse]
+# Long if-elsif chains are hard to digest, especially if they are longer than a 
+# single page or screen. If testing for equality, use a hash lookup instead. 
+# If you're using perl 5.10 or later, use given/when.
+max_elsif = 5
+
+[InputOutput::RequireBriefOpen]
+lines = 20
+
+[InputOutput::ProhibitBacktickOperators]
+only_in_void_context = 1
+
+[NamingConventions::ProhibitAmbiguousNames]
+forbid = abstract bases close contract last left no record right second
