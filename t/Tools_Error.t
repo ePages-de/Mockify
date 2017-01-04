@@ -4,7 +4,7 @@ use strict;
 use FindBin;
 use lib ($FindBin::Bin);
 
-use parent 't::TestBase';
+use parent 'TestBase';
 use Test::Exception;
 use Devel::Mockify::Tools qw (Error);
 use Test::More;
@@ -86,7 +86,7 @@ Data:\{\}
 Test::Exception::throws_ok,.*t/Tools_Error.t\(line \d+\)
 Tools_Error::test_ErrorWithoutMockedMethod,.*t/Tools_Error.t\(line \d+\)
 Tools_Error::testPlan,.*t/TestBase.pm\(line \d+\)
-t::TestBase::RunTest,.*t/Tools_Error.t\(line \d+\)
+TestBase::RunTest,.*t/Tools_Error.t\(line \d+\)
 END_REGEX
 END;
 }
@@ -99,7 +99,7 @@ Data:\{\}
 Test::Exception::throws_ok,.*t/Tools_Error.t\(line \d+\)
 Tools_Error::test_ErrorWithMockedMethod,.*t/Tools_Error.t\(line \d+\)
 Tools_Error::testPlan,.*t/TestBase.pm\(line \d+\)
-t::TestBase::RunTest,.*t/Tools_Error.t\(line \d+\)
+TestBase::RunTest,.*t/Tools_Error.t\(line \d+\)
 END_REGEX
 END;
 }
@@ -112,7 +112,7 @@ Data:\{key='value'\}
 Test::Exception::throws_ok,.*t/Tools_Error.t\(line \d+\)
 Tools_Error::test_ErrorWithoutMockedMethodAndDataBlock,.*t/Tools_Error.t\(line \d+\)
 Tools_Error::testPlan,.*t/TestBase.pm\(line \d+\)
-t::TestBase::RunTest,.*t/Tools_Error.t\(line \d+\)
+TestBase::RunTest,.*t/Tools_Error.t\(line \d+\)
 END_REGEX
 END;
 }

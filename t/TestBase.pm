@@ -1,7 +1,7 @@
 # Copy&Paste template for yourTest.t
 =head1
-package t::yourTest;
-use base t::TestBase;
+package yourTest;
+use base TestBase;
 use strict;
 use TypeTests;
 use Test::More;
@@ -38,7 +38,7 @@ sub isObjectReference_negativPath {
 __PACKAGE__->RunTest();
 1;
 =cut
-package t::TestBase;
+package TestBase;
 use strict;
 use Test::More;
 

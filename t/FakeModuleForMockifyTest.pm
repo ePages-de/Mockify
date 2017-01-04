@@ -1,4 +1,4 @@
-package t::FakeModuleForMockifyTest;
+package FakeModuleForMockifyTest;
 
 use strict;
 

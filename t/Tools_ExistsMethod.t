@@ -4,12 +4,12 @@ use strict;
 use FindBin;
 use lib ($FindBin::Bin);
 
-use parent 't::TestBase';
+use parent 'TestBase';
 use strict;
 use Devel::Mockify::Tools qw (ExistsMethod);
 use Test::More;
 use Test::Exception;
-use t::FakeModuleForMockifyTest;
+use FakeModuleForMockifyTest;
 
 #------------------------------------------------------------------------
 sub testPlan{
@@ -24,12 +24,12 @@ sub ExistsMethod_WithObject_positiv {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $FakeModuleForMockifyTest = t::FakeModuleForMockifyTest->new();
+    my $FakeModuleForMockifyTest = FakeModuleForMockifyTest->new();
     ok( ExistsMethod($FakeModuleForMockifyTest, 'DummmyMethodForTestOverriding'),
         "$SubTestName - tests if ExistsMethod works with an object"
     );
     throws_ok( sub{ExistsMethod($FakeModuleForMockifyTest,'NotExistingMethod')},
-        qr/t::FakeModuleForMockifyTest donsn't have a method like: NotExistingMethod/,
+        qr/FakeModuleForMockifyTest donsn't have a method like: NotExistingMethod/,
         "$SubTestName - tests if ExistsMethod throws error if method not exists with an object"
     ); 
 
@@ -40,11 +40,11 @@ sub ExistsMethod_WithPath_positiv {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    ok( ExistsMethod('t::FakeModuleForMockifyTest', 'DummmyMethodForTestOverriding'),
+    ok( ExistsMethod('FakeModuleForMockifyTest', 'DummmyMethodForTestOverriding'),
         "$SubTestName - tests if ExistsMethod works with the object path"
     );
-    throws_ok( sub{ExistsMethod('t::FakeModuleForMockifyTest','NotExistingMethod')},
-        qr/t::FakeModuleForMockifyTest donsn't have a method like: NotExistingMethod/,
+    throws_ok( sub{ExistsMethod('FakeModuleForMockifyTest','NotExistingMethod')},
+        qr/FakeModuleForMockifyTest donsn't have a method like: NotExistingMethod/,
         "$SubTestName - tests if ExistsMethod throws error if method not exists with the object path"
     );
 
@@ -60,7 +60,7 @@ sub ExistsMethod_negativ {
         qr/Path or Object is needed/,
         "$SubTestName - tests if ExistsMethod throws error if there no parameters"
     );
-    throws_ok( sub{ExistsMethod('t::FakeModuleForMockifyTest')},
+    throws_ok( sub{ExistsMethod('FakeModuleForMockifyTest')},
         qr/Method name is needed/,
         "$SubTestName - tests if ExistsMethod throws error if there is only a path"
     );

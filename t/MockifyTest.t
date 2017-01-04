@@ -4,7 +4,7 @@ use strict;
 use FindBin;
 use lib ($FindBin::Bin);
 
-use parent 't::TestBase';
+use parent 'TestBase';
 use Devel::Mockify qw (GetParametersFromMockifyCall WasCalled GetCallCount);
 use Test::More;
 use Test::Exception;
@@ -348,7 +348,7 @@ sub test_MockModule_addMock_overrideNotExistingMethod {
     my $MockObject = $self->_createMockObject($aParameterList);
     throws_ok(
         sub { $MockObject->addMockWithReturnValue('aNotExistingMethod', sub {}); },
-        qr/t::FakeModuleForMockifyTest donsn't have a method like: aNotExistingMethod/,
+        qr/FakeModuleForMockifyTest donsn't have a method like: aNotExistingMethod/,
         "$SubTestName - test if the mocked method throw an Error if the method don't exists in the module"
     );
 
@@ -952,10 +952,10 @@ sub test_MockModule_GetParametersFromMockifyCall_ForNotMockifyObject {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $NotMockifyObject = t::FakeModuleForMockifyTest->new();
+    my $NotMockifyObject = FakeModuleForMockifyTest->new();
     throws_ok(
         sub { GetParametersFromMockifyCall($NotMockifyObject,'DummmyMethodForTestOverriding') },
-        qr/t::FakeModuleForMockifyTest was not mockified:/,
+        qr/FakeModuleForMockifyTest was not mockified:/,
         "$SubTestName - test the Error if function was call and we didn't use the mocked method before"
     );
 
@@ -966,7 +966,7 @@ sub test_MockModule_GetParametersFromMockifyCall_NoMethodName {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $NotMockifyObject = t::FakeModuleForMockifyTest->new();
+    my $NotMockifyObject = FakeModuleForMockifyTest->new();
     throws_ok(
         sub { GetParametersFromMockifyCall( $NotMockifyObject ) },
         qr/Method name must be specified:/sm,
@@ -980,7 +980,7 @@ sub _createMockObject {
     my $self = shift;
     my ($aParameterList) = @_;
 
-    my $MockObject = Devel::Mockify->new( 't::FakeModuleForMockifyTest', $aParameterList );
+    my $MockObject = Devel::Mockify->new( 'FakeModuleForMockifyTest', $aParameterList );
 
     return $MockObject;
 }

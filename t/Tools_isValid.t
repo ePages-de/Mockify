@@ -4,7 +4,7 @@ use strict;
 use FindBin;
 use lib ($FindBin::Bin);
 
-use parent 't::TestBase';
+use parent 'TestBase';
 use Devel::Mockify::Tools qw ( IsValid );
 use Test::More;
 

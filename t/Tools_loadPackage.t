@@ -4,7 +4,7 @@ use strict;
 use FindBin;
 use lib ($FindBin::Bin);
 
-use parent 't::TestBase';
+use parent 'TestBase';
 use Test::More;
 use Devel::Mockify::Tools qw ( LoadPackage );
 
@@ -23,9 +23,9 @@ sub LoadFakeModuleForMockifyTest {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $ModulePath = 't/FakeModuleForMockifyTest.pm';
+    my $ModulePath = 'FakeModuleForMockifyTest.pm';
     is($INC{$ModulePath}, undef ,"$SubTestName - check if the module is not loaded now - undef");
-    LoadPackage('t::FakeModuleForMockifyTest');
+    LoadPackage('FakeModuleForMockifyTest');
     ok( $INC{$ModulePath}, "$SubTestName - the module: $ModulePath is loaded");
     delete $INC{$ModulePath};# rollback
     is($INC{$ModulePath}, undef ,"$SubTestName - check if the module is not loaded now (rollback was fine)- undef");
