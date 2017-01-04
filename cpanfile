@@ -1,4 +1,4 @@
-requires 'perl', '5.010';
+requires 'perl', '5.018';
 
 requires 'Module::Load';
 requires 'Test::MockObject::Extends';

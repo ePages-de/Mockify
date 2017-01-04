@@ -45,7 +45,7 @@
             "Data::Compare" : "0",
             "Module::Load" : "0",
             "Test::MockObject::Extends" : "0",
-            "perl" : "5.14"
+            "perl" : "5.18"
          }
       },
       "test" : {
