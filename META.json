@@ -26,6 +26,16 @@
       ]
    },
    "prereqs" : {
+      "build" : {
+         "requires" : {
+            "Devel::Cover" : "1.23",
+            "Devel::Cover::Report::Clover" : "1.01",
+            "Module::Build::Tiny" : "0.039",
+            "Perl::Critic" : "1.123",
+            "TAP::Harness::Archive" : "0.18",
+            "experimental" : "0"
+         }
+      },
       "configure" : {
          "requires" : {
             "Module::Build::Tiny" : "0.035"
