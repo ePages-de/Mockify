@@ -1,7 +1,7 @@
 {
    "abstract" : "Mockify!",
    "author" : [
-      "Christian Breitkreutz <cbreitkreutz@epages.com>"
+      "Christian Breitkreutz."
    ],
    "dynamic_config" : 0,
    "generated_by" : "Minilla/v3.0.7, CPAN::Meta::Converter version 2.150001",
@@ -76,11 +76,12 @@
          "web" : "https://github.com/ePages-de/Mockify"
       }
    },
-   "version" : "0.01",
+   "version" : "0.9",
    "x_contributors" : [
       "Christian Breitkreutz <c.breitkreutz@epages.com>",
       "Alexander Sandau <a.sandau@epages.com>",
       "Birgit Bader <b.bader@epages.com>",
+      "Christian Breitkreutz <cbreitkreutz@epages.com>",
       "Oliver Trosien <otrosien@epages.com>"
    ]
 }
