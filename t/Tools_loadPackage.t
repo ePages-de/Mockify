@@ -26,7 +26,7 @@ sub LoadFakeModuleForMockifyTest {
     my $ModulePath = 't/FakeModuleForMockifyTest.pm';
     is($INC{$ModulePath}, undef ,"$SubTestName - check if the module is not loaded now - undef");
     LoadPackage('t::FakeModuleForMockifyTest');
-    is( $INC{$ModulePath}, $ModulePath, "$SubTestName - the module: $ModulePath is loaded");
+    ok( $INC{$ModulePath}, "$SubTestName - the module: $ModulePath is loaded");
     delete $INC{$ModulePath};# rollback
     is($INC{$ModulePath}, undef ,"$SubTestName - check if the module is not loaded now (rollback was fine)- undef");
 
@@ -39,10 +39,10 @@ sub LoadAllreadyLoadedModule {
     my $SubTestName = (caller(0))[3];
 
     use Devel::Mockify::TypeTests;
-    my $ModulePath = 'TypeTests.pm';
-    is( $INC{$ModulePath}, $ModulePath, "$SubTestName - the module: $ModulePath is allready loaded");
-    LoadPackage('TypeTests');
-    is( $INC{$ModulePath}, $ModulePath, "$SubTestName - the module: $ModulePath is still loaded");
+    my $ModulePath = 'Devel/Mockify/TypeTests.pm';
+    ok( $INC{$ModulePath}, "$SubTestName - the module: $ModulePath is already loaded");
+    LoadPackage('Devel::Mockify::TypeTests');
+    ok( $INC{$ModulePath}, "$SubTestName - the module: $ModulePath is still loaded");
 
     return;
 }

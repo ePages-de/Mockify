@@ -25,7 +25,7 @@ sub test_ErrorWithoutMessage {
 
     my $RegEx = $self->_getErrorRegEx_ErrorWithoutMockedMethod();
     throws_ok( sub{Error()},
-        qr/^Message is needed at Tools.pm line \d+.$/,
+        qr/^Message is needed at .*Tools.pm line \d+.$/,
         "$SubTestName - tests if Error works well"
     );
     ;
@@ -39,7 +39,7 @@ sub test_ErrorWithoutMockedMethod {
 
     my $RegEx = $self->_getErrorRegEx_ErrorWithoutMockedMethod();
     throws_ok( sub{Error('AnErrorMessage')},
-        qr/^$RegEx$/,
+        qr/^$RegEx/sm,
         "$SubTestName - tests if Error works well"
     );
     ;
@@ -82,11 +82,11 @@ sub _getErrorRegEx_ErrorWithoutMockedMethod {
     return <<'END_REGEX';
 AnErrorMessage:
 MockedMethod: -not set-
-Data:{}
-Test::Exception::throws_ok,t/Tools_Error.t\(line \d+\)
-t::Tools_Error::test_ErrorWithoutMockedMethod,t/Tools_Error.t\(line \d+\)
-t::Tools_Error::testPlan,t/TestBase.pm\(line \d+\)
-t::TestBase::RunTest,t/Tools_Error.t\(line \d+\)
+Data:\{\}
+Test::Exception::throws_ok,.*t/Tools_Error.t\(line \d+\)
+Tools_Error::test_ErrorWithoutMockedMethod,.*t/Tools_Error.t\(line \d+\)
+Tools_Error::testPlan,.*t/TestBase.pm\(line \d+\)
+t::TestBase::RunTest,.*t/Tools_Error.t\(line \d+\)
 END_REGEX
 END;
 }
@@ -95,11 +95,11 @@ sub _getErrorRegEx_ErrorWithMockedMethod {
     return <<'END_REGEX';
 AnErrorMessage:
 MockedMethod: aMockedMethod
-Data:{}
-Test::Exception::throws_ok,t/Tools_Error.t\(line \d+\)
-t::Tools_Error::test_ErrorWithMockedMethod,t/Tools_Error.t\(line \d+\)
-t::Tools_Error::testPlan,t/TestBase.pm\(line \d+\)
-t::TestBase::RunTest,t/Tools_Error.t\(line \d+\)
+Data:\{\}
+Test::Exception::throws_ok,.*t/Tools_Error.t\(line \d+\)
+Tools_Error::test_ErrorWithMockedMethod,.*t/Tools_Error.t\(line \d+\)
+Tools_Error::testPlan,.*t/TestBase.pm\(line \d+\)
+t::TestBase::RunTest,.*t/Tools_Error.t\(line \d+\)
 END_REGEX
 END;
 }
@@ -108,11 +108,11 @@ sub _getErrorRegEx_ErrorWithoutMockedMethodAndDataBlock {
     return <<'END_REGEX';
 AnErrorMessage:
 MockedMethod: -not set-
-Data:{key='value'}
-Test::Exception::throws_ok,t/Tools_Error.t\(line \d+\)
-t::Tools_Error::test_ErrorWithoutMockedMethodAndDataBlock,t/Tools_Error.t\(line \d+\)
-t::Tools_Error::testPlan,t/TestBase.pm\(line \d+\)
-t::TestBase::RunTest,t/Tools_Error.t\(line \d+\)
+Data:\{key='value'\}
+Test::Exception::throws_ok,.*t/Tools_Error.t\(line \d+\)
+Tools_Error::test_ErrorWithoutMockedMethodAndDataBlock,.*t/Tools_Error.t\(line \d+\)
+Tools_Error::testPlan,.*t/TestBase.pm\(line \d+\)
+t::TestBase::RunTest,.*t/Tools_Error.t\(line \d+\)
 END_REGEX
 END;
 }
