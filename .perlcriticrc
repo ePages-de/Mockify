@@ -7,7 +7,6 @@ severity = 1
 theme = core
 
 exclude = ProhibitAutomaticExportation$ ProhibitBuiltinHomonyms ProhibitCommaSeparatedStatements ProhibitComplexMappings ProhibitConstantPragma ProhibitExplicitReturnUndef RequireExtendedFormatting ProhibitManyArgs ProhibitSubroutinePrototypes ProhibitUniversalCan$ ProhibitUniversalIsa$ Subroutines::RequireArgUnpacking RequireCarping RequireCheckingReturnValueOfEval RequireEndWithOne RequireExplicitPackage RegularExpressions::RequireExtendedFormatting RequireFilenameMatchesPackage$ RequireFinalReturn RequireLexicalLoopIterators RequireQuotedHeredocTerminator RequireSimpleSortBlock RequireUseWarnings ProhibitCallsToUndeclaredSubs ProhibitPostfixControls RequireTidyCode
-include = ProhibitExcessCognitiveComplexity
 
 #
 # ============================================================================================
