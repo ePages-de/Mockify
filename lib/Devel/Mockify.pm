@@ -14,8 +14,6 @@ use v5.18;
 use strict;
 no warnings 'experimental';
 
-our $VERSION = '0.01';
-
 our @EXPORT_OK = qw (
     GetParametersFromMockifyCall
     WasCalled
