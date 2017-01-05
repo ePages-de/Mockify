@@ -56,7 +56,7 @@
             "Module::Load" : "0",
             "Test::MockObject::Extends" : "0",
             "experimental" : "0",
-            "perl" : "5.018"
+            "perl" : "v5.10.1"
          }
       },
       "test" : {
