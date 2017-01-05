@@ -1,8 +1,9 @@
-requires 'perl', '5.018';
+requires 'perl', '5.010';
 
 requires 'Module::Load';
 requires 'Test::MockObject::Extends';
 requires 'Data::Compare';
+requires 'experimental';
 
 on 'test' => sub {
     requires 'Test::More', '0.98';
@@ -15,6 +16,5 @@ on 'build' => sub {
     requires 'TAP::Harness::Archive', '0.18';
     requires 'Module::Build::Tiny', '0.039';
     requires 'Minilla', '3.0.0';
-    requires 'experimental';
 };
 

@@ -5,20 +5,19 @@ use Devel::Mockify::TypeTests qw ( IsInteger IsFloat IsString IsArrayReference I
 use Devel::Mockify::MethodCallCounter;
 use Test::MockObject::Extends;
 use Data::Dumper;
-use feature qw ( switch );
 use Scalar::Util qw( blessed );
 use Test::More;
 use Data::Compare;
 
-use v5.18;
+use experimental 'switch';
 use strict;
-no warnings 'experimental';
 
 our @EXPORT_OK = qw (
     GetParametersFromMockifyCall
     WasCalled
     GetCallCount
 );
+
 
 our $VERSION = '0.9';
 
@@ -256,7 +255,7 @@ sub _testParameterType {
     my ( $ParameterName, $Value, $TestParameter, $MethodName ) = @_;
 
     my $TestParameterType = $self->_getParameterType( $TestParameter );
-    given ( $TestParameterType ) {
+    foreach ( $TestParameterType ) {
         when( 'string' ) {
         $self->_testExpectedString( $ParameterName,$Value, $TestParameter ,$MethodName );
         }
