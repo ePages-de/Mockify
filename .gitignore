@@ -21,3 +21,4 @@ nytprof.out
 !.gitignore
 !.travis.yml
 _build_params
+*.gz
