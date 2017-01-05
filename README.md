@@ -120,7 +120,7 @@ This function returns the information if the method was called on the \*mockifie
 
 # LICENSE
 
-Copyright (C) 2017 Christian Breitkreutz.
+Copyright (C) 2017 ePages GmbH
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

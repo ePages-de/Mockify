@@ -14,6 +14,7 @@ on 'build' => sub {
     requires 'Devel::Cover::Report::Clover', '1.01';
     requires 'TAP::Harness::Archive', '0.18';
     requires 'Module::Build::Tiny', '0.039';
+    requires 'Minilla', '3.0.0';
     requires 'experimental';
 };
 

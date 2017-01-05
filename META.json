@@ -1,10 +1,10 @@
 {
    "abstract" : "Mockify!",
    "author" : [
-      "Christian Breitkreutz."
+      "ePages GmbH"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.7, CPAN::Meta::Converter version 2.150001",
+   "generated_by" : "Minilla/v3.0.8, CPAN::Meta::Converter version 2.150001",
    "license" : [
       "perl_5"
    ],
@@ -30,6 +30,7 @@
          "requires" : {
             "Devel::Cover" : "1.23",
             "Devel::Cover::Report::Clover" : "1.01",
+            "Minilla" : "v3.0.0",
             "Module::Build::Tiny" : "0.039",
             "Perl::Critic" : "1.123",
             "TAP::Harness::Archive" : "0.18",
@@ -77,6 +78,7 @@
       }
    },
    "version" : "0.9",
+   "x_authority" : "cpan:CHRISBR",
    "x_contributors" : [
       "Christian Breitkreutz <c.breitkreutz@epages.com>",
       "Alexander Sandau <a.sandau@epages.com>",
