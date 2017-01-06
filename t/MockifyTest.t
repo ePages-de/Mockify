@@ -5,7 +5,8 @@ use FindBin;
 use lib ($FindBin::Bin);
 
 use parent 'TestBase';
-use Test::Mockify qw (GetParametersFromMockifyCall WasCalled GetCallCount);
+use Test::Mockify;
+use Test::Mockify::Verify qw (GetParametersFromMockifyCall WasCalled GetCallCount);
 use Test::More;
 use Test::Exception;
 

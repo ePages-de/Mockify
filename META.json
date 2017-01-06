@@ -1,5 +1,5 @@
 {
-   "abstract" : "Mockify!",
+   "abstract" : "minimal mocking framework for perl",
    "author" : [
       "ePages GmbH"
    ],
