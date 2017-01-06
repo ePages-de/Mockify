@@ -93,7 +93,6 @@ sub Error {
     );
     
     die($ErrorOutput);
-    return;
 }   
 
 

@@ -20,6 +20,8 @@ use Scalar::Util qw( blessed );
 
 use base qw ( Exporter );
 
+use strict;
+
 our @EXPORT_OK = qw (
     GetParametersFromMockifyCall
     WasCalled
@@ -51,8 +53,7 @@ sub GetParametersFromMockifyCall {
     if ( not $MockifiedMockedObject->can('__getParametersFromMockifyCall') ){
         Error("$PackageName was not mockified", { 'Position'=>$Position, 'Method' => $MethodName});
     }
-    if( not 
-( $Position ) || not IsInteger( $Position )){
+    if( !( $Position ) || !(IsInteger( $Position ))){
         $Position = 0;
     }
 
