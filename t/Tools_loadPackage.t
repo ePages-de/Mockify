@@ -6,7 +6,7 @@ use lib ($FindBin::Bin);
 
 use parent 'TestBase';
 use Test::More;
-use Devel::Mockify::Tools qw ( LoadPackage );
+use Test::Mockify::Tools qw ( LoadPackage );
 
 #------------------------------------------------------------------------
 sub testPlan{
@@ -38,10 +38,10 @@ sub LoadAllreadyLoadedModule {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    use Devel::Mockify::TypeTests;
-    my $ModulePath = 'Devel/Mockify/TypeTests.pm';
+    use Test::Mockify::TypeTests;
+    my $ModulePath = 'Test/Mockify/TypeTests.pm';
     ok( $INC{$ModulePath}, "$SubTestName - the module: $ModulePath is already loaded");
-    LoadPackage('Devel::Mockify::TypeTests');
+    LoadPackage('Test::Mockify::TypeTests');
     ok( $INC{$ModulePath}, "$SubTestName - the module: $ModulePath is still loaded");
 
     return;

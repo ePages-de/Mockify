@@ -6,7 +6,7 @@ use lib ($FindBin::Bin);
 
 use parent 'TestBase';
 use Test::Exception;
-use Devel::Mockify::Tools qw (Error);
+use Test::Mockify::Tools qw (Error);
 use Test::More;
 #------------------------------------------------------------------------
 sub testPlan{

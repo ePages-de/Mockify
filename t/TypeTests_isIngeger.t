@@ -5,7 +5,7 @@ use FindBin;
 use lib ($FindBin::Bin);
 
 use parent 'TestBase';
-use Devel::Mockify::TypeTests qw ( IsInteger );
+use Test::Mockify::TypeTests qw ( IsInteger );
 use Test::More;
 
 #------------------------------------------------------------------------

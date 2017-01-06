@@ -2,10 +2,10 @@ use strict;
 use Test::More 0.98;
 
 use_ok $_ for qw(
-    Devel::Mockify
-    Devel::Mockify::MethodCallCounter
-    Devel::Mockify::Tools
-    Devel::Mockify::TypeTests
+    Test::Mockify
+    Test::Mockify::MethodCallCounter
+    Test::Mockify::Tools
+    Test::Mockify::TypeTests
 );
 
 done_testing;

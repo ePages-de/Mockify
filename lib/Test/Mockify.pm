@@ -1,8 +1,8 @@
-package Devel::Mockify;
+package Test::Mockify;
 use base qw ( Exporter );
-use Devel::Mockify::Tools qw ( Error ExistsMethod IsValid LoadPackage Isa );
-use Devel::Mockify::TypeTests qw ( IsInteger IsFloat IsString IsArrayReference IsHashReference IsObjectReference );
-use Devel::Mockify::MethodCallCounter;
+use Test::Mockify::Tools qw ( Error ExistsMethod IsValid LoadPackage Isa );
+use Test::Mockify::TypeTests qw ( IsInteger IsFloat IsString IsArrayReference IsHashReference IsObjectReference );
+use Test::Mockify::MethodCallCounter;
 use Test::MockObject::Extends;
 use Data::Dumper;
 use Scalar::Util qw( blessed );
@@ -40,7 +40,7 @@ sub new {
 sub _initMockedModule {
     my $self = shift;
 
-    $self->{'__MockedModule'}->{'__MethodCallCounter'} = Devel::Mockify::MethodCallCounter->new();
+    $self->{'__MockedModule'}->{'__MethodCallCounter'} = Test::Mockify::MethodCallCounter->new();
     $self->{'__MockedModule'}->{'__isMockified'} = 1;
     $self->_addGetParameterFromMockifyCall();
 
@@ -541,15 +541,15 @@ __END__
 
 =head1 NAME
 
-Devel::Mockify - Mockify!
+Test::Mockify - Mockify!
 
 =head1 SYNOPSIS
 
-    use Devel::Mockify;
+    use Test::Mockify;
 
 =head1 DESCRIPTION
 
-Devel::Mockify in a nutshell:
+Test::Mockify in a nutshell:
 
 =head2 getMockObject
 Provides the actual mocked object which you can use in the test.

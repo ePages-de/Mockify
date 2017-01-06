@@ -1,15 +1,15 @@
 [![Build Status](https://travis-ci.org/ePages-de/Mockify.svg?branch=master)](https://travis-ci.org/ePages-de/Mockify)
 # NAME
 
-Devel::Mockify - Mockify!
+Test::Mockify - Mockify!
 
 # SYNOPSIS
 
-    use Devel::Mockify;
+    use Test::Mockify;
 
 # DESCRIPTION
 
-Devel::Mockify in a nutshell:
+Test::Mockify in a nutshell:
 
 ## getMockObject
 Provides the actual mocked object which you can use in the test.

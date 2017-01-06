@@ -1,4 +1,4 @@
-package Devel::Mockify::Tools;
+package Test::Mockify::Tools;
 use Module::Load;
 use strict;
 use Data::Dumper;

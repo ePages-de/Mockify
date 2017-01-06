@@ -5,7 +5,7 @@ use FindBin;
 use lib ($FindBin::Bin);
 
 use parent 'TestBase';
-use Devel::Mockify::TypeTests qw (IsString);
+use Test::Mockify::TypeTests qw (IsString);
 use Test::More;
 
 #------------------------------------------------------------------------

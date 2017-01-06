@@ -5,7 +5,7 @@ use FindBin;
 use lib ($FindBin::Bin);
 
 use parent 'TestBase';
-use Devel::Mockify::Tools qw ( IsValid );
+use Test::Mockify::Tools qw ( IsValid );
 use Test::More;
 
 #------------------------------------------------------------------------

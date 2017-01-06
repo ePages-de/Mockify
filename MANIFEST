@@ -1,6 +1,6 @@
 Makefile.PL
 MANIFEST
-lib/Devel/Mockify.pm
-lib/Devel/Mockify/MethodCallCounter.pm
-lib/Devel/Mockify/Tools.pm
-lib/Devel/Mockify/TypeTests.pm
+lib/Test/Mockify.pm
+lib/Test/Mockify/MethodCallCounter.pm
+lib/Test/Mockify/Tools.pm
+lib/Test/Mockify/TypeTests.pm

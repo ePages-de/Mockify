@@ -5,7 +5,7 @@ use FindBin;
 use lib ($FindBin::Bin);
 
 use parent 'TestBase';
-use Devel::Mockify qw (GetParametersFromMockifyCall WasCalled GetCallCount);
+use Test::Mockify qw (GetParametersFromMockifyCall WasCalled GetCallCount);
 use Test::More;
 use Test::Exception;
 
@@ -980,7 +980,7 @@ sub _createMockObject {
     my $self = shift;
     my ($aParameterList) = @_;
 
-    my $MockObject = Devel::Mockify->new( 'FakeModuleForMockifyTest', $aParameterList );
+    my $MockObject = Test::Mockify->new( 'FakeModuleForMockifyTest', $aParameterList );
 
     return $MockObject;
 }

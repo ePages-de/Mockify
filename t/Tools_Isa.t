@@ -5,7 +5,7 @@ use FindBin;
 use lib ($FindBin::Bin);
 
 use parent 'TestBase';
-use Devel::Mockify::Tools qw ( Isa );
+use Test::Mockify::Tools qw ( Isa );
 use Test::More;
 use FakeModuleForMockifyTest;
 #------------------------------------------------------------------------

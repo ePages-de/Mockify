@@ -6,7 +6,7 @@ use lib ($FindBin::Bin);
 
 use parent 'TestBase';
 use strict;
-use Devel::Mockify::Tools qw (ExistsMethod);
+use Test::Mockify::Tools qw (ExistsMethod);
 use Test::More;
 use Test::Exception;
 use FakeModuleForMockifyTest;

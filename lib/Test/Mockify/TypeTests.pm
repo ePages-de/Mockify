@@ -1,4 +1,4 @@
-package Devel::Mockify::TypeTests;
+package Test::Mockify::TypeTests;
 use strict;
 use Scalar::Util qw ( blessed );
 use base qw( Exporter );

@@ -4,9 +4,9 @@
 #----------------------------------------------------------------------------------------
 # §description  encapsulate the Call Counter for Mockify
 #========================================================================================
-package Devel::Mockify::MethodCallCounter;
+package Test::Mockify::MethodCallCounter;
 
-use Devel::Mockify::Tools qw ( Error );
+use Test::Mockify::Tools qw ( Error );
 
 use strict;
 #========================================================================================

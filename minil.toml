@@ -1,4 +1,4 @@
-name = "Devel-Mockify"
+name = "Test-Mockify"
 badges = ["travis"]
 
 module_maker="ModuleBuildTiny"
