@@ -30,8 +30,7 @@ allow = $ENV @ENV @ARGV $ARGV
 list_funcs = grep List::Util::first List::MoreUtils::any List::MoreUtils::all List::MoreUtils::none List::MoreUtils::notall List::MoreUtils::true List::MoreUtils::false List::MoreUtils::firstidx List::MoreUtils::first_index List::MoreUtils::lastidx List::MoreUtils::last_index List::MoreUtils::insert_after List::MoreUtils::insert_after_string
 
 [Subroutines::ProhibitExcessComplexity]
-max_mccabe = 1
-severity = 1
+max_mccabe = 10
 
 [ControlStructures::ProhibitCascadingIfElse]
 # Long if-elsif chains are hard to digest, especially if they are longer than a 
