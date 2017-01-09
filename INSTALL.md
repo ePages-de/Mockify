@@ -1,6 +1,7 @@
 ## Installing from CPAN
 
-Mockify has not been released on CPAN yet. Please hold the line...
+Mockify has been [released on CPAN](https://metacpan.org/pod/Test::Mockify).
+Use your favourite CPAN client to install it.
 
 ## Building Mockify
 
