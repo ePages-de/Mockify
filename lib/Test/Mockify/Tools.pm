@@ -1,6 +1,7 @@
 package Test::Mockify::Tools;
 use Module::Load;
 use strict;
+use warnings;
 use Data::Dumper;
 use Scalar::Util qw( blessed );
 use base qw( Exporter );
