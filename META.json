@@ -4,7 +4,7 @@
       "ePages GmbH"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.8, CPAN::Meta::Converter version 2.150001",
+   "generated_by" : "Minilla/v3.0.8, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -30,6 +30,7 @@
          "requires" : {
             "Devel::Cover" : "1.23",
             "Devel::Cover::Report::Clover" : "1.01",
+            "Fatal" : "0",
             "Minilla" : "v3.0.0",
             "Module::Build::Tiny" : "0.039",
             "Perl::Critic" : "1.123",
@@ -76,13 +77,13 @@
    "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/ePages-de/Mockify/issues"
+         "web" : "https://github.com/ChristianBreitkreutz/Mockify/issues"
       },
-      "homepage" : "https://github.com/ePages-de/Mockify",
+      "homepage" : "https://github.com/ChristianBreitkreutz/Mockify",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/ePages-de/Mockify.git",
-         "web" : "https://github.com/ePages-de/Mockify"
+         "url" : "git://github.com/ChristianBreitkreutz/Mockify.git",
+         "web" : "https://github.com/ChristianBreitkreutz/Mockify"
       }
    },
    "version" : "0.9",
@@ -91,7 +92,8 @@
       "Christian Breitkreutz <c.breitkreutz@epages.com>",
       "Alexander Sandau <a.sandau@epages.com>",
       "Birgit Bader <b.bader@epages.com>",
-      "Christian Breitkreutz <cbreitkreutz@epages.com>",
-      "Oliver Trosien <otrosien@epages.com>"
-   ]
+      "Oliver Trosien <otrosien@epages.com>",
+      "Christian Breitkreutz <cbreitkreutz@epages.com>"
+   ],
+   "x_serialization_backend" : "JSON::PP version 2.27400"
 }

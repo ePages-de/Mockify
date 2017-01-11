@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ePages-de/Mockify.svg?branch=master)](https://travis-ci.org/ePages-de/Mockify)
+[![Build Status](https://travis-ci.org/ChristianBreitkreutz/Mockify.svg?branch=master)](https://travis-ci.org/ChristianBreitkreutz/Mockify)
 # NAME
 
 Test::Mockify - minimal mocking framework for perl
