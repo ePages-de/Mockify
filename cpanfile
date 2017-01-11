@@ -3,10 +3,18 @@ requires 'perl', '5.10.1';
 requires 'Module::Load';
 requires 'Test::MockObject::Extends';
 requires 'Data::Compare';
+requires 'Data::Dumper';
+requires 'Exporter';
+requires 'Scalar::Util';
 requires 'experimental';
+requires 'strict';
 
 on 'test' => sub {
     requires 'Test::More', '0.98';
+    requires 'Test::Exception';
+    requires 'FindBin';
+    requires 'parent';
+    requires 'strict';
 };
 
 on 'build' => sub {

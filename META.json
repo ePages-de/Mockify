@@ -53,15 +53,23 @@
       "runtime" : {
          "requires" : {
             "Data::Compare" : "0",
+            "Data::Dumper" : "0",
+            "Exporter" : "0",
             "Module::Load" : "0",
+            "Scalar::Util" : "0",
             "Test::MockObject::Extends" : "0",
             "experimental" : "0",
-            "perl" : "v5.10.1"
+            "perl" : "v5.10.1",
+            "strict" : "0"
          }
       },
       "test" : {
          "requires" : {
-            "Test::More" : "0.98"
+            "FindBin" : "0",
+            "Test::Exception" : "0",
+            "Test::More" : "0.98",
+            "parent" : "0",
+            "strict" : "0"
          }
       }
    },

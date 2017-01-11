@@ -11,7 +11,6 @@ our @EXPORT_OK = qw (
         IsObjectReference
     );
 
-use Test::More;
 #------------------------------------------------------------------------
 sub IsInteger {
     my ( $Value ) = @_;
