@@ -18,6 +18,7 @@ on 'test' => sub {
 };
 
 on 'build' => sub {
+	requires 'Fatal';
     requires 'Perl::Critic', '1.123';
     requires 'Devel::Cover', '1.23';
     requires 'Devel::Cover::Report::Clover', '1.01';
