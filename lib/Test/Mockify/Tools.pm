@@ -50,6 +50,7 @@ sub ExistsMethod {
 sub Isa {
     my ($Object, $ClassName) = @_;
     return 0 unless blessed( $Object );
+    return 0 unless $ClassName;
     my $ResultIsaCheck = $Object->isa( $ClassName );
     if($ResultIsaCheck eq ''){
         return 0;

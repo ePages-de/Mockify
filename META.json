@@ -4,7 +4,7 @@
       "ePages GmbH"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.8, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.0.9, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -34,7 +34,8 @@
             "Minilla" : "v3.0.0",
             "Module::Build::Tiny" : "0.039",
             "Perl::Critic" : "1.123",
-            "TAP::Harness::Archive" : "0.18"
+            "TAP::Harness::Archive" : "0.18",
+            "Version::Next" : "0"
          }
       },
       "configure" : {
@@ -53,6 +54,7 @@
       },
       "runtime" : {
          "requires" : {
+            "CPAN::Uploader" : "0",
             "Data::Compare" : "0",
             "Data::Dumper" : "0",
             "Exporter" : "0",

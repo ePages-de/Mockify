@@ -51,11 +51,9 @@ Provides the actual mock object, which you can use in the test.
 
 This is a short cut for \*addMock\*, \*addMockWithReturnValue\* and \*addMockWithReturnValueAndParameterCheck\*. \*mock\* detects the required method with given parameters.
 
-| Parameter in \*mock\*  | actually used method |
-| ------------- | ------------- |
-| mock('MethodName', sub{})  | \*addMock\*  |
-| mock('MethodName', 'someValue')  | \*addMockWithReturnValue\*  |
-| mock('MethodName', 'someValue', \['string',{'string' => 'abcd'}\])  | \*addMockWithReturnValueAndParameterCheck\*  |
+    $MockObjectBuilder->mock('MethodName', sub{});
+    $MockObjectBuilder->mock('MethodName', 'someValue');
+    $MockObjectBuilder->mock('MethodName', 'someValue', ['string',{'string' => 'abcd'}]);
 
 ## addMethodSpy
 
