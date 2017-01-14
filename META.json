@@ -88,7 +88,7 @@
          "web" : "https://github.com/ChristianBreitkreutz/Mockify"
       }
    },
-   "version" : "0.9",
+   "version" : "0.9.1",
    "x_authority" : "cpan:CHRISBR",
    "x_contributors" : [
       "Christian Breitkreutz <c.breitkreutz@epages.com>",

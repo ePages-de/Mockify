@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ChristianBreitkreutz/Mockify.svg?branch=master)](https://travis-ci.org/ChristianBreitkreutz/Mockify)
+[![Build Status](https://travis-ci.org/ChristianBreitkreutz/Mockify.svg?branch=master)](https://travis-ci.org/ChristianBreitkreutz/Mockify) [![MetaCPAN Release](https://badge.fury.io/pl/Test-Mockify.svg)](https://metacpan.org/release/Test-Mockify)
 # NAME
 
 Test::Mockify - minimal mocking framework for perl

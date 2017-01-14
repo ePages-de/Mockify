@@ -45,7 +45,7 @@ use Data::Compare;
 use experimental 'switch';
 use strict;
 
-our $VERSION = '0.9';
+our $VERSION = '0.9.1';
 
 #----------------------------------------------------------------------------------------
 =pod
