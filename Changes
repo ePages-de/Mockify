@@ -1,6 +1,10 @@
 Revision history for Perl extension Devel-Mockify
 
 {{$NEXT}}
+ 
+    - revison number
+    - add meatcpan badge
+    - fix kwalitee warnings
 
 0.9 2017-01-06T14:07:50Z
     - initial version
