@@ -21,6 +21,7 @@ use Scalar::Util qw( blessed );
 use base qw ( Exporter );
 
 use strict;
+use warnings;
 
 our @EXPORT_OK = qw (
     GetParametersFromMockifyCall
