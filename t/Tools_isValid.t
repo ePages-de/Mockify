@@ -1,7 +1,11 @@
-package t::Tools_isValid;
-use base t::TestBase;
+package Tools_isValid;
 use strict;
-use Tools qw ( IsValid );
+
+use FindBin;
+use lib ($FindBin::Bin);
+
+use parent 'TestBase';
+use Test::Mockify::Tools qw ( IsValid );
 use Test::More;
 
 #------------------------------------------------------------------------

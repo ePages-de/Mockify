@@ -1,7 +1,11 @@
-package t::TypeTests_isHashReference;
-use base t::TestBase;
+package TypeTests_isHashReference;
 use strict;
-use TypeTests qw (IsHashReference);
+
+use FindBin;
+use lib ($FindBin::Bin);
+
+use parent 'TestBase';
+use Test::Mockify::TypeTests qw (IsHashReference);
 use Test::More;
 
 #------------------------------------------------------------------------

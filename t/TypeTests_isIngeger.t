@@ -1,7 +1,11 @@
-package t::TypeTests_isInteger;
-use base t::TestBase;
+package TypeTests_isInteger;
 use strict;
-use TypeTests qw ( IsInteger );
+
+use FindBin;
+use lib ($FindBin::Bin);
+
+use parent 'TestBase';
+use Test::Mockify::TypeTests qw ( IsInteger );
 use Test::More;
 
 #------------------------------------------------------------------------

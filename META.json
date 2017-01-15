@@ -1,0 +1,101 @@
+{
+   "abstract" : "minimal mocking framework for perl",
+   "author" : [
+      "ePages GmbH"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Minilla/v3.0.9, CPAN::Meta::Converter version 2.150010",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "Test-Mockify",
+   "no_index" : {
+      "directory" : [
+         "t",
+         "xt",
+         "inc",
+         "share",
+         "eg",
+         "examples",
+         "author",
+         "builder"
+      ]
+   },
+   "prereqs" : {
+      "build" : {
+         "requires" : {
+            "Devel::Cover" : "1.23",
+            "Devel::Cover::Report::Clover" : "1.01",
+            "Fatal" : "0",
+            "Minilla" : "v3.0.0",
+            "Module::Build::Tiny" : "0.039",
+            "Perl::Critic" : "1.123",
+            "TAP::Harness::Archive" : "0.18",
+            "Version::Next" : "0"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "Module::Build::Tiny" : "0.035"
+         }
+      },
+      "develop" : {
+         "requires" : {
+            "Test::CPAN::Meta" : "0",
+            "Test::MinimumVersion::Fast" : "0.04",
+            "Test::PAUSE::Permissions" : "0.04",
+            "Test::Pod" : "1.41",
+            "Test::Spellunker" : "v0.2.7"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "CPAN::Uploader" : "0",
+            "Data::Compare" : "0",
+            "Data::Dumper" : "0",
+            "Exporter" : "0",
+            "Module::Load" : "0",
+            "Scalar::Util" : "0",
+            "Test::MockObject::Extends" : "0",
+            "experimental" : "0",
+            "perl" : "v5.10.1",
+            "strict" : "0"
+         }
+      },
+      "test" : {
+         "requires" : {
+            "FindBin" : "0",
+            "Test::Exception" : "0",
+            "Test::More" : "0.98",
+            "parent" : "0",
+            "strict" : "0"
+         }
+      }
+   },
+   "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/ChristianBreitkreutz/Mockify/issues"
+      },
+      "homepage" : "https://github.com/ChristianBreitkreutz/Mockify",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/ChristianBreitkreutz/Mockify.git",
+         "web" : "https://github.com/ChristianBreitkreutz/Mockify"
+      }
+   },
+   "version" : "0.9.3",
+   "x_authority" : "cpan:CHRISBR",
+   "x_contributors" : [
+      "Christian Breitkreutz <c.breitkreutz@epages.com>",
+      "Alexander Sandau <a.sandau@epages.com>",
+      "Birgit Bader <b.bader@epages.com>",
+      "Oliver Trosien <otrosien@epages.com>",
+      "Christian Breitkreutz <cbreitkreutz@epages.com>"
+   ],
+   "x_serialization_backend" : "JSON::PP version 2.27400"
+}

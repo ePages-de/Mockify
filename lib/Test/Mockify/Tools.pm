@@ -1,6 +1,7 @@
-package Tools;
+package Test::Mockify::Tools;
 use Module::Load;
 use strict;
+use warnings;
 use Data::Dumper;
 use Scalar::Util qw( blessed );
 use base qw( Exporter );
@@ -49,6 +50,7 @@ sub ExistsMethod {
 sub Isa {
     my ($Object, $ClassName) = @_;
     return 0 unless blessed( $Object );
+    return 0 unless $ClassName;
     my $ResultIsaCheck = $Object->isa( $ClassName );
     if($ResultIsaCheck eq ''){
         return 0;
@@ -65,7 +67,7 @@ sub Error {
     local $Data::Dumper::Indent = 0;
     local $Data::Dumper::Pair = '=';
     local $Data::Dumper::Quotekeys = 0;
-    my $MockedMethod = delete $hData->{'Method'} if defined $hData->{'Method'};
+    my $MockedMethod = delete $hData->{'Method'} if defined $hData->{'Method'}; ## no critic (ProhibitConditionalDeclarations)
     $MockedMethod //= '-not set-';
     my $DumpedData = Dumper($hData);
     # print Callerstack
@@ -93,7 +95,6 @@ sub Error {
     );
     
     die($ErrorOutput);
-    return;
 }   
 
 

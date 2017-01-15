@@ -1,5 +1,6 @@
-package TypeTests;
+package Test::Mockify::TypeTests;
 use strict;
+use warnings;
 use Scalar::Util qw ( blessed );
 use base qw( Exporter );
 our @EXPORT_OK = qw (
@@ -11,16 +12,16 @@ our @EXPORT_OK = qw (
         IsObjectReference
     );
 
-use Test::More;
 #------------------------------------------------------------------------
 sub IsInteger {
     my ( $Value ) = @_;
 
     my $IsInteger = 0;
     my $Sign = '[-+]?'; # + or - or nothing
-
-    if( $Value =~ /^$Sign\d+$/ ) {
-        $IsInteger = 1;
+	if( defined $Value ){
+	    if($Value =~ /^$Sign\d+$/ ) {
+	        $IsInteger = 1;
+		}
     }
 
     return $IsInteger;
@@ -36,7 +37,8 @@ sub IsFloat {
     my $OptionalExponent = '([eE][-+]?\d+)?';
     my $FloatRegex = sprintf('%s%s%s', $OptionalSign, $NumberOptions, $OptionalExponent);
 
-    if ( $Value =~ /^$FloatRegex$/ ){
+	
+    if ( $Value && $Value =~ /^$FloatRegex$/ ){
         $IsFloat = 1;
     }
 

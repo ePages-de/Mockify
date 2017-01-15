@@ -1,8 +1,12 @@
-package t::Tools_loadPackage;
-use base t::TestBase;
+package Tools_loadPackage;
 use strict;
+
+use FindBin;
+use lib ($FindBin::Bin);
+
+use parent 'TestBase';
 use Test::More;
-use Tools qw ( LoadPackage );
+use Test::Mockify::Tools qw ( LoadPackage );
 
 #------------------------------------------------------------------------
 sub testPlan{
@@ -19,10 +23,10 @@ sub LoadFakeModuleForMockifyTest {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $ModulePath = 't/FakeModuleForMockifyTest.pm';
+    my $ModulePath = 'FakeModuleForMockifyTest.pm';
     is($INC{$ModulePath}, undef ,"$SubTestName - check if the module is not loaded now - undef");
-    LoadPackage('t::FakeModuleForMockifyTest');
-    is( $INC{$ModulePath}, $ModulePath, "$SubTestName - the module: $ModulePath is loaded");
+    LoadPackage('FakeModuleForMockifyTest');
+    ok( $INC{$ModulePath}, "$SubTestName - the module: $ModulePath is loaded");
     delete $INC{$ModulePath};# rollback
     is($INC{$ModulePath}, undef ,"$SubTestName - check if the module is not loaded now (rollback was fine)- undef");
 
@@ -34,11 +38,11 @@ sub LoadAllreadyLoadedModule {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    use TypeTests;
-    my $ModulePath = 'TypeTests.pm';
-    is( $INC{$ModulePath}, $ModulePath, "$SubTestName - the module: $ModulePath is allready loaded");
-    LoadPackage('TypeTests');
-    is( $INC{$ModulePath}, $ModulePath, "$SubTestName - the module: $ModulePath is still loaded");
+    use Test::Mockify::TypeTests;
+    my $ModulePath = 'Test/Mockify/TypeTests.pm';
+    ok( $INC{$ModulePath}, "$SubTestName - the module: $ModulePath is already loaded");
+    LoadPackage('Test::Mockify::TypeTests');
+    ok( $INC{$ModulePath}, "$SubTestName - the module: $ModulePath is still loaded");
 
     return;
 }

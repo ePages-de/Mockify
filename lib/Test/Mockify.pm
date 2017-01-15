@@ -1,21 +1,65 @@
-package Mockify;
-use base qw ( Exporter );
-use Tools qw ( Error ExistsMethod IsValid LoadPackage Isa );
-use TypeTests qw ( IsInteger IsFloat IsString IsArrayReference IsHashReference IsObjectReference );
+=pod
+
+=head1 NAME
+
+Test::Mockify - minimal mocking framework for perl
+
+=head1 SYNOPSIS
+
+  use Test::Mockify;
+  use Test::Mockify::Verify qw ( WasCalled );
+
+  # build a new mocked object
+  my $MockObjectBuilder = Test::Mockify->new('SampleLogger', []);
+  my $returnValue = undef;
+  my $expectedParameterTypes = ['string'];
+  $MockObjectBuilder->mock('log', $returnValue, $expectedParameterTypes);
+  my $MockedLogger = $MockLoggerBuilder->getMockObject();
+  
+  # inject mocked object into the code you want to test
+  my $App = SampleApp->new('logger'=> $MockedLogger);
+  $App->do_something();
+  
+  # verify that the mock object was called
+  ok(WasCalled($MockedLogger, 'log'), 'log was called');
+  done_testing();
+
+=head1 DESCRIPTION
+
+Use L<Test::Mockify> to create and configure mock objects. Use L<Test::Mockify::Verify> to
+verify the interactions with your mocks.
+
+=head1 METHODS
+
+=cut
+
+package Test::Mockify;
+use Test::Mockify::Tools qw ( Error ExistsMethod IsValid LoadPackage Isa );
+use Test::Mockify::TypeTests qw ( IsInteger IsFloat IsString IsArrayReference IsHashReference IsObjectReference );
+use Test::Mockify::MethodCallCounter;
 use Test::MockObject::Extends;
-use MethodCallCounter;
 use Data::Dumper;
-use feature qw ( switch );
-use strict;
-our @EXPORT_OK = qw (
-    GetParametersFromMockifyCall
-    WasCalled
-    GetCallCount
-);
 use Scalar::Util qw( blessed );
-use Test::More;
 use Data::Compare;
+
+use experimental 'switch';
+use strict;
+
+our $VERSION = '0.9.3';
+
 #----------------------------------------------------------------------------------------
+=pod
+
+=head2 new
+
+  my $MockObjectBuilder = Test::Mockify->new('Module::To::Mock', ['Constructor Parameters']);
+
+=head3 Options
+
+The C<new> method creates a new mock object builder. Use C<getMockObject> to obtain the final
+mock object.
+
+=cut
 sub new {
     my $class = shift;
     my ( $FakeModulePath, $aFakeParams ) = @_;
@@ -34,74 +78,42 @@ sub new {
 sub _initMockedModule {
     my $self = shift;
 
-    $self->{'__MockedModule'}->{'__MethodCallCounter'} = MethodCallCounter->new();
+    $self->{'__MockedModule'}->{'__MethodCallCounter'} = Test::Mockify::MethodCallCounter->new();
     $self->{'__MockedModule'}->{'__isMockified'} = 1;
     $self->_addGetParameterFromMockifyCall();
 
     return;
 }
-#----------------------------------------------------------------------------------------=
-sub GetParametersFromMockifyCall {
-    my ( $MockifiedMockedObject, $MethodName, $Position ) = @_;
 
-    if( not blessed $MockifiedMockedObject){
-        Error('The first argument must be blessed');
-    }
-    my $PackageName = ref($MockifiedMockedObject);
-    if( not IsValid( $MethodName )){
-        Error('Method name must be specified', {'Position'=>$Position, 'Package' => $PackageName});
-    }
-    if ( not $MockifiedMockedObject->can('__getParametersFromMockifyCall') ){
-        Error("$PackageName was not mockified", { 'Position'=>$Position, 'Method' => $MethodName});
-    }
-    if( not 
-( $Position ) || not IsInteger( $Position )){
-        $Position = 0;
-    }
-
-    return $MockifiedMockedObject->__getParametersFromMockifyCall( $MethodName, $Position );
-}
-#----------------------------------------------------------------------------------------=
-sub WasCalled {
-    my ( $MockifiedMockedObject, $MethodName ) = @_;
-
-    my $WasCalled;
-    my $AmountOfCalles = GetCallCount( $MockifiedMockedObject, $MethodName );
-    if($AmountOfCalles > 0){
-        $WasCalled = 1;
-    }else{
-        $WasCalled = 0;
-    }
-
-    return $WasCalled;
-}
-#----------------------------------------------------------------------------------------=
-sub GetCallCount {
-    my ( $MockifiedMockedObject, $MethodName ) = @_;
-
-    _TestMockifyObject( $MockifiedMockedObject );
-    return $MockifiedMockedObject->{'__MethodCallCounter'}->getAmountOfCalls( $MethodName );
-}
 #----------------------------------------------------------------------------------------
+=pod
+
+=head2 getMockObject
+
+Provides the actual mock object, which you can use in the test.
+
+  my $aParameterList = ['SomeValueForConstructor'];
+  my $MockObjectBuilder = Test::Mockify->new( 'My::Module', $aParameterList );
+  my $MyModuleObject = $MockObjectBuilder->getMockObject();
+
+=cut
 sub getMockObject {
     my $self = shift;
     return $self->{'__MockedModule'};
 }
-#----------------------------------------------------------------------------------------
-sub _TestMockifyObject {
-    my ( $MockifiedMockedObject ) = @_;
 
-    my $ObjectPath = ref( $MockifiedMockedObject );
-    if( not IsValid( $ObjectPath ) ){
-        Error( 'Object is not defined' );
-    }
-    if ( $MockifiedMockedObject->{'__isMockified'} != 1){
-        Error( "The Object: '$ObjectPath' is not mockified" );
-    }
-
-    return;
-}
 #----------------------------------------------------------------------------------------=
+=pod
+
+=head2 mock
+
+This is a short cut for *addMock*, *addMockWithReturnValue* and *addMockWithReturnValueAndParameterCheck*. *mock* detects the required method with given parameters.
+
+  $MockObjectBuilder->mock('MethodName', sub{});
+  $MockObjectBuilder->mock('MethodName', 'someValue');
+  $MockObjectBuilder->mock('MethodName', 'someValue', ['string',{'string' => 'abcd'}]);
+
+=cut
 sub mock {
     my $self = shift;
     my @Parameters = @_;
@@ -121,6 +133,15 @@ sub mock {
     return;
 }
 #----------------------------------------------------------------------------------------
+=pod
+
+=head2 addMethodSpy
+
+With this method it is possible to observe a method. That means, you keep the original functionality, but you can get meta data from the mockify- framework.
+
+  $MockObjectBuilder->addMethodSpy('myMethodName');
+
+=cut
 sub addMethodSpy {
     my $self = shift;
     my ( $MethodName ) = @_;
@@ -133,6 +154,28 @@ sub addMethodSpy {
     return;
 }
 #----------------------------------------------------------------------------------------
+=pod
+
+=head2 addMethodSpyWithParameterCheck
+
+With this method it is possible to observe a method and check the parameters. That means, you keep the original functionality, but you can get meta data from the mockify- framework and use the parameter check, like *addMockWithReturnValueAndParameterCheck*.
+
+  my $aParameterTypes = ['string',{'string' => 'abcd'}];
+  $MockObjectBuilder->addMethodSpyWithParameterCheck('myMethodName', $aParameterTypes);
+
+=head3 Options
+
+Pure types
+
+  ['string', 'int', 'hashref', 'float', 'arrayref', 'object', 'undef', 'any']
+
+or types with expected values
+
+  [{'string'=>'abcdef'}, {'int' => 123}, {'float' => 1.23}, {'hashref' => {'key'=>'value'}}, {'arrayref'=>['one', 'two']}, {'object'=> 'PAth::to:Obejct}]
+
+If you use *any*, you have to verify this value explicitly in the test, see **GetParametersFromMockifyCall** in L<Test::Mockify::Verify>.
+
+=cut
 sub addMethodSpyWithParameterCheck {
     my $self = shift;
     my ( $MethodName, $aParameterTypes ) = @_;
@@ -150,6 +193,20 @@ sub addMethodSpyWithParameterCheck {
     return;
 }
 #----------------------------------------------------------------------------------------
+=pod
+
+=head2 addMock
+
+This is the simplest case. It works like the mock-method from Test::MockObject.
+
+Only handover the **name** and a **method pointer**. Mockify will automatically check if the method exists in the original object.
+
+  $MockObjectBuilder->addMock('myMethodName', sub {
+                                    # Your implementation
+                                 }
+  );
+
+=cut
 sub addMock {
     my $self = shift;
     my ( $MethodName, $rSub ) = @_;
@@ -164,6 +221,15 @@ sub addMock {
     return;
 }
 #----------------------------------------------------------------------------------------
+=pod
+
+=head2  addMockWithReturnValue
+
+Does the same as C<addMock>, but here you can handover a **value** which will be returned if you call the mocked method.
+
+  $MockObjectBuilder->addMockWithReturnValue('myMethodName','the return value');
+
+=cut
 sub addMockWithReturnValue {
     my $self = shift;
     my ( $MethodName, $ReturnValue ) = @_;
@@ -186,6 +252,32 @@ sub addMockWithReturnValue {
     return;
 }
 #----------------------------------------------------------------------------------------
+=pod
+
+=head2 addMockWithReturnValueAndParameterCheck
+
+This method is an extension of *addMockWithReturnValue*. Here you can also check the parameters which will be passed.
+
+You can check if they have a specific **data type** or even check if they have a given **value**.
+
+In the following example two strings will be expected, and the second one has to have the value "abcd".
+
+  my $aParameterTypes = ['string',{'string' => 'abcd'}];
+  $MockObjectBuilder->addMockWithReturnValueAndParameterCheck('myMethodName','the return value',$aParameterTypes);
+
+=head3 Options
+
+Pure types
+
+  ['string', 'int', 'float', 'hashref', 'arrayref', 'object', 'undef', 'any']
+
+or types with expected values
+
+  [{'string'=>'abcdef'}, {'int' => 123}, {'float' => 1.23}, {'hashref' => {'key'=>'value'}}, {'arrayref'=>['one', 'two']}, {'object'=> 'PAth::to:Obejct}]
+
+If you use **any**, you have to verify this value explicitly in the test, see +*GetParametersFromMockifyCall** in L<Test::Mockify::Verify>.
+
+=cut
 sub addMockWithReturnValueAndParameterCheck {
     my $self = shift;
     my ( $MethodName, $ReturnValue, $aParameterTypes ) = @_;
@@ -249,7 +341,7 @@ sub _testParameterType {
     my ( $ParameterName, $Value, $TestParameter, $MethodName ) = @_;
 
     my $TestParameterType = $self->_getParameterType( $TestParameter );
-    given ( $TestParameterType ) {
+    foreach ( $TestParameterType ) {
         when( 'string' ) {
         $self->_testExpectedString( $ParameterName,$Value, $TestParameter ,$MethodName );
         }
@@ -527,3 +619,19 @@ sub _checkParameterTypesForMethod {
 }
 
 1;
+
+__END__
+
+=head1 LICENSE
+
+Copyright (C) 2017 ePages GmbH
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=head1 AUTHOR
+
+Christian Breitkreutz E<lt>cbreitkreutz@epages.comE<gt>
+
+=cut
+
