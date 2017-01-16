@@ -45,7 +45,7 @@ use Data::Compare;
 use experimental 'switch';
 use strict;
 
-our $VERSION = '0.9';
+our $VERSION = '0.9.3';
 
 #----------------------------------------------------------------------------------------
 =pod
@@ -109,11 +109,9 @@ sub getMockObject {
 
 This is a short cut for *addMock*, *addMockWithReturnValue* and *addMockWithReturnValueAndParameterCheck*. *mock* detects the required method with given parameters.
 
-| Parameter in *mock*  | actually used method |
-| ------------- | ------------- |
-| mock('MethodName', sub{})  | *addMock*  |
-| mock('MethodName', 'someValue')  | *addMockWithReturnValue*  |
-| mock('MethodName', 'someValue', ['string',{'string' => 'abcd'}])  | *addMockWithReturnValueAndParameterCheck*  |
+  $MockObjectBuilder->mock('MethodName', sub{});
+  $MockObjectBuilder->mock('MethodName', 'someValue');
+  $MockObjectBuilder->mock('MethodName', 'someValue', ['string',{'string' => 'abcd'}]);
 
 =cut
 sub mock {

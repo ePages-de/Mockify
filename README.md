@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ePages-de/Mockify.svg?branch=master)](https://travis-ci.org/ePages-de/Mockify)
+[![Build Status](https://travis-ci.org/ChristianBreitkreutz/Mockify.svg?branch=master)](https://travis-ci.org/ChristianBreitkreutz/Mockify) [![MetaCPAN Release](https://badge.fury.io/pl/Test-Mockify.svg)](https://metacpan.org/release/Test-Mockify)
 # NAME
 
 Test::Mockify - minimal mocking framework for perl
@@ -51,11 +51,9 @@ Provides the actual mock object, which you can use in the test.
 
 This is a short cut for \*addMock\*, \*addMockWithReturnValue\* and \*addMockWithReturnValueAndParameterCheck\*. \*mock\* detects the required method with given parameters.
 
-| Parameter in \*mock\*  | actually used method |
-| ------------- | ------------- |
-| mock('MethodName', sub{})  | \*addMock\*  |
-| mock('MethodName', 'someValue')  | \*addMockWithReturnValue\*  |
-| mock('MethodName', 'someValue', \['string',{'string' => 'abcd'}\])  | \*addMockWithReturnValueAndParameterCheck\*  |
+    $MockObjectBuilder->mock('MethodName', sub{});
+    $MockObjectBuilder->mock('MethodName', 'someValue');
+    $MockObjectBuilder->mock('MethodName', 'someValue', ['string',{'string' => 'abcd'}]);
 
 ## addMethodSpy
 

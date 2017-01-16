@@ -11,7 +11,7 @@ Mockify is using [Minilla](https://metacpan.org/pod/Minilla) and
 Here is how you can run an build the project.
 
 * Install dependencies:
-
+  yum install openssl-devel
   cpanm --installdeps --notest .
 
 * Run tests

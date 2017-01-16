@@ -8,6 +8,7 @@ requires 'Exporter';
 requires 'Scalar::Util';
 requires 'experimental';
 requires 'strict';
+requires 'CPAN::Uploader';
 
 on 'test' => sub {
     requires 'Test::More', '0.98';
@@ -18,6 +19,8 @@ on 'test' => sub {
 };
 
 on 'build' => sub {
+	requires 'Version::Next';
+	requires 'Fatal';
     requires 'Perl::Critic', '1.123';
     requires 'Devel::Cover', '1.23';
     requires 'Devel::Cover::Report::Clover', '1.01';
