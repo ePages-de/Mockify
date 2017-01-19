@@ -99,4 +99,5 @@ sub IsObjectReference {
 
     return $IsObject;
 }
+
 1;

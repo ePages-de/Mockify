@@ -1,7 +1,7 @@
 # Copy&Paste template for yourTest.t
 =head1
 package yourTest;
-use base TestBase;
+use parent 'TestBase'
 use strict;
 use TypeTests;
 use Test::More;

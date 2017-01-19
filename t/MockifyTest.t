@@ -985,4 +985,5 @@ sub _createMockObject {
 
     return $MockObject;
 }
+
 __PACKAGE__->RunTest();
