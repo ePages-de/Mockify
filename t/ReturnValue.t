@@ -92,12 +92,12 @@ sub test_thenReturnHash{
     is_deeply(\%Result, \%ExpectedResult, 'proves if the Hash is transferred to call');
 
     throws_ok( sub { $ReturnValue->thenReturnHash(['hello','world']) },
-       qr/NoAnHashRef/,
+       qr/NoAHashRef/,
        "proves that the parameter is an hash, not array"
     );
 
     throws_ok( sub { $ReturnValue->thenReturnHash('helloworld') },
-       qr/NoAnHashRef/,
+       qr/NoAHashRef/,
        "proves that the parameter is an hash, not scalar"
     );
 }
@@ -108,7 +108,7 @@ sub test_thenCall{
     my $ReturnValue = Test::Mockify::ReturnValue->new();
     $ReturnValue->thenCall(sub{return join('-', @_);});
     my $Result = $ReturnValue->call('hello','world');
-    is($Result, 'hello-world', 'proves if the function was called when triggering call');
+    is($Result, 'hello-world', 'proves if the function was called when triggering call and the parameters where passed.');
 
     throws_ok( sub { $ReturnValue->thenCall([]) },
        qr/NoAnCodeRef/,

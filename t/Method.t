@@ -1,5 +1,14 @@
 package Method;
-use Test::Mockify::Matcher qw (String Number);
+use Test::Mockify::Matcher qw (
+        String
+        Number
+        HashRef
+        ArrayRef
+        Object
+        Function
+        Undef
+        Any
+);
 use strict;
 
 use FindBin;
@@ -16,6 +25,8 @@ sub testPlan{
     $self->_SignaturWithAnyMatcherAndExpectedMatcher();
     $self->_MultipleAnyMatcher();
     $self->_SingleExepctedMatcher();
+    $self->_AnyMatcher();
+    $self->_FunctionCall();
     $self->_MixedExepctedMatcherAndAnyMatcher_Error();
     $self->_MixedAnyMatcherWithDifferntTypes();
     $self->_DefineSignatureTwice_Error();
@@ -40,8 +51,39 @@ sub _SignaturWithAnyMatcherAndExpectedMatcher {
 sub _MultipleAnyMatcher {
     my $self = shift;
     my $Method = Test::Mockify::Method->new();
-    $Method->when( String(), Number() )->thenReturn('Hello World');    
-    is($Method->call('abc',123), 'Hello World', 'mixed parameters');
+    $Method->when( String(), Number(),HashRef(), ArrayRef(), Object() , Function(), Undef() )->thenReturn('Hello World');
+    my $Obj = bless({},'Test::Package');
+    my $Fct = sub {};
+    is($Method->call('a',1, {}, [], $Obj,$Fct, undef), 'Hello World', 'mixed parameters');
+}
+
+#---------------------------------------------------------------------------------
+sub _AnyMatcher {
+    my $self = shift;
+    my $Method = Test::Mockify::Method->new();
+    $Method->when(Any())->thenReturn('Result for one any.');
+
+    is($Method->call('OneString'), 'Result for one any.', 'single any parameter type string');
+    is($Method->call(123), 'Result for one any.', 'single any parameter type number');
+    is($Method->call({1=>23}), 'Result for one any.', 'single any parameter type hashref');
+    is($Method->call([1,23]), 'Result for one any.', 'single any parameter type arrayref');
+    is($Method->call(bless({},'Test::Package')), 'Result for one any.', 'single any parameter type object');
+    is($Method->call(sub{}), 'Result for one any.', 'single any parameter type sub');
+    is($Method->call(undef), 'Result for one any.', 'single any parameter type undef');
+    throws_ok( sub { $Method->when( Any() )->thenReturn('Hello World'); },
+               qr/It is not possible two add two times the same method signatur./,
+               'proves that it is not possbible to create two expectations for any'
+     );
+    throws_ok( sub { $Method->when( String() )->thenReturn('Hello World'); },
+               qr/It is not possibel to mix "specific type" with previously set "any type"./,
+               'proves that it is not possible to use a specific type after an any type was set.'
+     );
+    my $StringMethod = Test::Mockify::Method->new();
+    $StringMethod->when(String())->thenReturn('Result for one string.');
+    throws_ok( sub { $StringMethod->when( Any() )->thenReturn('Hello World'); },
+               qr/It is not possibel to mix "any type" with previously set "specific type"./,
+               'proves that it is not possible to use an any type after a specific type was set.'
+     );
 }
 #---------------------------------------------------------------------------------
 sub _SingleExepctedMatcher {
@@ -49,9 +91,27 @@ sub _SingleExepctedMatcher {
     my $Method = Test::Mockify::Method->new();
     $Method->when(String('OneString'))->thenReturn('Result for one string.');
     $Method->when(Number(123))->thenReturn('Result for one number.');
+    $Method->when(HashRef({1=>23}))->thenReturn('Result for one hashref.');
+    $Method->when(ArrayRef([1,23]))->thenReturn('Result for one arrayref.');
+    $Method->when(Object('Test::Package'))->thenReturn('Result for one object.');
+    $Method->when(Function())->thenReturn('Result for one function pointer.');
+    $Method->when(Undef())->thenReturn('Result for one undef.');
 
-    is($Method->call('OneString'), 'Result for one string.', 'single expected parameter type string');	
-    is($Method->call(123), 'Result for one number.', 'single expected parameter type number');	
+    is($Method->call('OneString'), 'Result for one string.', 'single expected parameter type string');
+    is($Method->call(123), 'Result for one number.', 'single expected parameter type number');
+    is($Method->call({1=>23}), 'Result for one hashref.', 'single expected parameter type hashref');
+    is($Method->call([1,23]), 'Result for one arrayref.', 'single expected parameter type arrayref');
+    is($Method->call(bless({},'Test::Package')), 'Result for one object.', 'single expected parameter type object');
+    is($Method->call(sub{}), 'Result for one function pointer.', 'single expected parameter type sub');
+    is($Method->call(undef), 'Result for one undef.', 'single expected parameter type undef');
+}
+#---------------------------------------------------------------------------------
+sub _FunctionCall {
+    my $self = shift;
+    my $Method = Test::Mockify::Method->new();
+    $Method->when(String(),Number())->thenCall(sub {return \@_;});
+    my $ReturnValue = $Method->call('StringToPass', 123);
+    is_deeply($ReturnValue, ['StringToPass', 123], 'proves that the parameter will be passed to the hole chain.');
 }
 #---------------------------------------------------------------------------------
 sub _SingleAnyParameter {
@@ -94,7 +154,6 @@ sub _MixedAnyMatcherWithDifferntTypes {
 
 } 
 #---------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------
 sub _DefineSignatureTwice_Error{
     my $self = shift;
     
@@ -126,7 +185,7 @@ sub _UndefinedType_Error {
     my $self = shift;
     my $Method = Test::Mockify::Method->new();
     throws_ok( sub { $Method->when('NotSuportedType')->thenReturn('Result for two strings.'); },
-               qr/Found unsupportd type 'NotSuportedType'. Use Test::Mockify:Matcher to define nice parameter types./,
+               qr/Found unsupported type. Use Test::Mockify:Matcher to define nice parameter types./,
                'unsuported type, not like string or number'
      );
 }

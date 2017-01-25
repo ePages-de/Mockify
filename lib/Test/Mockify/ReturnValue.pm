@@ -25,7 +25,7 @@ sub thenReturnArray {
 sub thenReturnHash {
     my $self = shift;
     my ($Value) = @_;
-    die('NoAnHashRef') unless(ref($Value) eq 'HASH');
+    die('NoAHashRef') unless(ref($Value) eq 'HASH');
     $self->{'HashValue'} = $Value;
 }
 #------------------------------------------------------------

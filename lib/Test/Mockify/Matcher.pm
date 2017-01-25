@@ -6,7 +6,6 @@ use Test::Mockify::TypeTests qw (
         IsString
         IsArrayReference
         IsHashReference
-        IsObjectReference
         IsCodeReference
     );
 use base qw( Exporter );
@@ -29,8 +28,8 @@ sub SupportedTypes{
         'hashref',
         'arrayref',
         'object',
-        'undef',
         'sub',
+        'undef',
         'any',
     ];
 }
@@ -66,9 +65,7 @@ sub Object(;$) {
 }
 #------------------------------------------------------------------------
 sub Function(;$) {
-    my ($Value) = @_;
-    die('NotAFunctionReference') if $Value && !IsCodeReference($Value);
-    return _Type('sub',$Value);
+    return _Type('sub',undef);
 }
 #------------------------------------------------------------------------
 sub Undef() {

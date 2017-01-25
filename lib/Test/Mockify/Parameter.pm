@@ -8,10 +8,10 @@ use warnings;
 #---------------------------------------------------------------------
 sub new {
     my $class = shift;
-    my ($aExpectedParams) = @_;
-    $aExpectedParams //= [];
+    my ($ExpectedParams) = @_;
+    $ExpectedParams //= [];
     my $self = bless {
-        'ExpectedParams' => $aExpectedParams,
+        'ExpectedParams' => $ExpectedParams,
     }, $class;
     return $self;
 }
@@ -43,7 +43,7 @@ sub matchWithExpectedParameters {
     for(my $i=0; $i < scalar @Params; $i++){
         if(IsString($self->{'ExpectedParams'}->[$i]) && $self->{'ExpectedParams'}->[$i] eq 'NoExpectedParameter'){
             next;
-        }elsif(ref($Params[$i]) eq $self->{'ExpectedParams'}->[$i]){# map classname
+        }elsif(ref($Params[$i]) eq $self->{'ExpectedParams'}->[$i]){# map package name
             next;
         }elsif(Data::Compare->new()->Cmp($Params[$i], $self->{'ExpectedParams'}->[$i])){
             next;

@@ -76,12 +76,9 @@ sub test_ArrayRef {
 sub test_Function {
     my $self = shift;
     is(Function(), 'sub' , 'proves that the "any matcher" for function returns the type only');
-    my $Result = Function(sub{});
-    is(ref($Result->{'sub'}) , 'CODE' , 'proves that the value of the type "sub" is an code reference');
-    throws_ok( sub { Function('abc') },
-        qr/NotAFunctionReference/,
-        'proves that the function matcher don´t accept anything else as function pointers'
-    );
+    my $Result = Function();
+    is($Result , 'sub' , 'proves that and code reference only return a the type as string.');
+
 }
 #------------------------------------------------------------------------
 sub test_Object {

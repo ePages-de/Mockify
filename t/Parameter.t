@@ -27,7 +27,7 @@ sub test_call_and_buildReturn {
     $Parameter = Test::Mockify::Parameter->new();
     throws_ok( sub { $Parameter->call() },
        qr/NoReturnValueDefined/,
-       'proves that the parameter is an code, not array'
+       'proves that mockify throws an error if the return is nott defined.'
     );
 
     return;
@@ -43,14 +43,17 @@ sub test_compareExpectedParameters {
     $Parameter = Test::Mockify::Parameter->new(['def']);
     is($Parameter->compareExpectedParameters(['abc']), 0, 'proves that to less parameter will return false');
 
-    $Parameter = Test::Mockify::Parameter->new(['def']);
+    $Parameter = Test::Mockify::Parameter->new(['abc']);
     is($Parameter->compareExpectedParameters(['abc','def','xyz']), 0, 'proves that to many parameter will return false');
 
     $Parameter = Test::Mockify::Parameter->new();
-    is($Parameter->compareExpectedParameters(), 1, 'proves that an empthy parameter list will be checked positiv');
+    is($Parameter->compareExpectedParameters(), 1, 'proves that an undefined parameter list will be checked positiv');
 
     $Parameter = Test::Mockify::Parameter->new();
-    is($Parameter->compareExpectedParameters(['abc']), 0, 'proves that an empthy parameter list will be checked negativ');
+    is($Parameter->compareExpectedParameters([]), 1, 'proves that an empty parameter list will be checked positiv');
+
+    $Parameter = Test::Mockify::Parameter->new();
+    is($Parameter->compareExpectedParameters(['abc']), 0, 'proves that an empty parameter list will be checked negativ');
 
     $Parameter = Test::Mockify::Parameter->new(['abc', 123]);
     is($Parameter->compareExpectedParameters(['abc', 123]), 1, 'proves that muiltple parameter of type scalar are supported');
@@ -64,9 +67,9 @@ sub test_compareExpectedParameters {
 sub matchWithExpectedParameters {
     my $self = shift;
     # no expected parameter
-    my $Parameter = Test::Mockify::Parameter->new(['expected','NoExpectedParameter','NoExpectedParameter']);
-    is($Parameter->matchWithExpectedParameters('expected','somevalue',123456),1, 'proves that expected and not checked values are checked. matches.');
-    is($Parameter->matchWithExpectedParameters('unexpected','somevalue',123456),0, 'proves that expected and not checked values are checked. matches not.');
+    my $Parameter = Test::Mockify::Parameter->new(['expectedValue','NoExpectedParameter','NoExpectedParameter']);
+    is($Parameter->matchWithExpectedParameters('expectedValue','somevalue',123456),1, 'proves that expected and not checked values are checked. matches.');
+    is($Parameter->matchWithExpectedParameters('unexpectedValue','somevalue',123456),0, 'proves that expected and not checked values are checked. matches not.');
     # check parameter amount
     $Parameter = Test::Mockify::Parameter->new(['somevalue','othervalue']);
     is($Parameter->matchWithExpectedParameters('somevalue','othervalue' ), 1, 'proves that the correct amount is matches.');
@@ -76,20 +79,20 @@ sub matchWithExpectedParameters {
     # check package name
     $Parameter = Test::Mockify::Parameter->new(['abc','Package::One','Package::Two']);
     is($Parameter->matchWithExpectedParameters('abc',bless({},'Package::One'),bless({},'Package::Two')), 1, 'proves that the package check is working well. matches.');
-    is($Parameter->matchWithExpectedParameters(bless({},'Package::One')), 0, 'proves that the package check is working well. matches not');
+    is($Parameter->matchWithExpectedParameters('abc',bless({},'Package::One')), 0, 'proves that the package check is working well. matches not');
 
     $Parameter = Test::Mockify::Parameter->new();
-    is($Parameter->compareExpectedParameters(), 1, 'proves that an empthy parameter list will be checked positiv');
+    is($Parameter->matchWithExpectedParameters(), 1, 'proves that an empty parameter list will be checked positiv');
 
     $Parameter = Test::Mockify::Parameter->new();
-    is($Parameter->compareExpectedParameters(['abc']), 0, 'proves that an empthy parameter list will not be matched');
+    is($Parameter->matchWithExpectedParameters('abc'), 0, 'proves that an empty parameter list will not be matched');
 
     $Parameter = Test::Mockify::Parameter->new(['abc', 123]);
-    is($Parameter->compareExpectedParameters(['abc', 123]), 1, 'proves that muiltple parameter of type scalar are supported');
+    is($Parameter->matchWithExpectedParameters('abc', 123), 1, 'proves that muiltple parameter of type scalar are supported');
 
     $Parameter = Test::Mockify::Parameter->new([{'hash'=>'value'},['one',{'two'=>'zwei'}]]);
-    is($Parameter->compareExpectedParameters([{'hash'=>'value'},['one',{'two'=>'zwei'}]]), 1, 'proves that muiltple parameter of depply nested arrays and hashs are supported -  matches');
-    is($Parameter->compareExpectedParameters([{'hash'=>'value'},['one','else']]), 0, 'proves that muiltple parameter of depply nested arrays and hashs are supported - matches not');
+    is($Parameter->matchWithExpectedParameters({'hash'=>'value'},['one',{'two'=>'zwei'}]), 1, 'proves that muiltple parameter of depply nested arrays and hashs are supported -  matches');
+    is($Parameter->matchWithExpectedParameters({'hash'=>'value'},['one','else']), 0, 'proves that muiltple parameter of depply nested arrays and hashs are supported - matches not');
 }
 __PACKAGE__->RunTest();
 1;
