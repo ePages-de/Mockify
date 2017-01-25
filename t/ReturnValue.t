@@ -1,6 +1,8 @@
 package ReturnValue;
-use parent 'TestBase';
 use strict;
+use FindBin;
+use lib ($FindBin::Bin);
+use parent 'TestBase';
 use Test::Mockify::ReturnValue;
 use Test::More;
 use Test::Exception;
