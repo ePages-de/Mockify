@@ -8,18 +8,17 @@ Test::Mockify - minimal mocking framework for perl
 
   use Test::Mockify;
   use Test::Mockify::Verify qw ( WasCalled );
+  use Test::Mockify::Matcher qw ( String );
 
   # build a new mocked object
   my $MockObjectBuilder = Test::Mockify->new('SampleLogger', []);
-  my $returnValue = undef;
-  my $expectedParameterTypes = ['string'];
-  $MockObjectBuilder->mock('log', $returnValue, $expectedParameterTypes);
+  $MockObjectBuilder->mock('log')->when(String())->thenReturnUndef();
   my $MockedLogger = $MockLoggerBuilder->getMockObject();
-  
+
   # inject mocked object into the code you want to test
   my $App = SampleApp->new('logger'=> $MockedLogger);
   $App->do_something();
-  
+
   # verify that the mock object was called
   ok(WasCalled($MockedLogger, 'log'), 'log was called');
   done_testing();
@@ -58,8 +57,7 @@ our $VERSION = '0.9.3';
 
 =head3 Options
 
-The C<new> method creates a new mock object builder. Use C<getMockObject> to obtain the final
-mock object.
+The C<new> method creates a new mock object builder. Use C<getMockObject> to obtain the final mock object.
 
 =cut
 sub new {
@@ -98,7 +96,6 @@ Provides the actual mock object, which you can use in the test.
   my $MockObjectBuilder = Test::Mockify->new( 'My::Module', $aParameterList );
   my $MyModuleObject = $MockObjectBuilder->getMockObject();
 
-
 =cut
 sub getMockObject {
     my $self = shift;
@@ -110,11 +107,22 @@ sub getMockObject {
 
 =head2 mock
 
-This is a short cut for *addMock*, *addMockWithReturnValue* and *addMockWithReturnValueAndParameterCheck*. *mock* detects the required method with given parameters.
+  This is place where the mocked methods are defined.
 
-  $MockObjectBuilder->mock('MethodName', sub{});
-  $MockObjectBuilder->mock('MethodName', 'someValue');
-  $MockObjectBuilder->mock('MethodName', 'someValue', ['string',{'string' => 'abcd'}]);
+  This return types are supported.
+  $MockObjectBuilder->mock('MethodName')->when(String())->thenReturn('Hello World');
+  $MockObjectBuilder->mock('MethodName')->when(String())->thenReturnUndef();
+  $MockObjectBuilder->mock('MethodName')->when(String())->thenReturnArray(['Hello', 'World']);
+  $MockObjectBuilder->mock('MethodName')->when(String())->thenReturnHash({'Hello' => 'World'});
+  $MockObjectBuilder->mock('MethodName')->when(String())->thenThrowError('ErrorType');
+  $MockObjectBuilder->mock('MethodName')->when(String())->thenCall(sub{return 'Hello World'});
+
+  This Matchers are supported:
+  String(), Number(), HashRef(), ArrayRef(), Object(), Function(), Undef(), Any()
+  $MockObjectBuilder->mock('MethodName')->when(String(), Number(), HashRef(), ArrayRef(), Object(), Function(), Undef(), Any())->thenReturnUndef();
+
+  If you don't care at all about the parameters you can use whenAny()
+  $MockObjectBuilder->mock('MethodName')->whenAny()->thenReturn('Hello World);
 
 =cut
 sub mock {
