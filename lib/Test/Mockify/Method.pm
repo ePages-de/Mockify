@@ -18,9 +18,7 @@ use warnings;
 #---------------------------------------------------------------------
 sub new {
     my $Class = shift;
-    my ($Name) = @_;
     my $self  = bless {
-        'name' => $Name,
         'TypeStore'=> undef,
         'MatcherStore'=> undef,
         'AnyStore'=> undef,
@@ -44,12 +42,14 @@ sub when {
             push(@Signature, $hParameter);
             push(@ParameterValues, 'NoExpectedParameter');
          }else{
-             die("Found unsupported type. Use Test::Mockify:Matcher to define nice parameter types.");
+             die("Found unsupported type, '$hParameter'. Use Test::Mockify:Matcher to define nice parameter types.");
          }
     }
     $self->_checkExpectedParameters(\@Signature, \@ParameterValues);
     return $self->_addToTypeStore(\@Signature, \@ParameterValues);
 }
+#---------------------------------------------------------------------
+
 #---------------------------------------------------------------------
 sub _getParameterKey {
     my $self = shift;

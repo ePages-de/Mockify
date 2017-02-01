@@ -37,6 +37,7 @@ package Test::Mockify;
 use Test::Mockify::Tools qw ( Error ExistsMethod IsValid LoadPackage Isa );
 use Test::Mockify::TypeTests qw ( IsInteger IsFloat IsString IsArrayReference IsHashReference IsObjectReference );
 use Test::Mockify::MethodCallCounter;
+use Test::Mockify::Method;
 use Test::MockObject::Extends;
 use Data::Dumper;
 use Scalar::Util qw( blessed );
@@ -97,6 +98,7 @@ Provides the actual mock object, which you can use in the test.
   my $MockObjectBuilder = Test::Mockify->new( 'My::Module', $aParameterList );
   my $MyModuleObject = $MockObjectBuilder->getMockObject();
 
+
 =cut
 sub getMockObject {
     my $self = shift;
@@ -119,6 +121,9 @@ sub mock {
     my $self = shift;
     my @Parameters = @_;
     my $ParameterAmount = scalar @Parameters;
+    if($ParameterAmount == 1 && IsString($Parameters[0]) ){
+        return $self->_addMethod($Parameters[0]);
+    }
     if($ParameterAmount == 2){
         my ( $MethodName, $ReturnValueOrFunctionPointer ) = @Parameters;
         if( ref($ReturnValueOrFunctionPointer) eq 'CODE' ){
@@ -212,6 +217,7 @@ sub addMock {
     my $self = shift;
     my ( $MethodName, $rSub ) = @_;
 
+#    $self->_addMethod($MethodName)->whenAny()->thenCall($rSub);
     ExistsMethod( $self->{'__MockedModulePath'}, $MethodName );
     $self->{'__MockedModule'}->{'__MethodCallCounter'}->addMethod( $MethodName );
     $self->{'__MockedModule'}->mock( $MethodName, sub {
@@ -220,6 +226,24 @@ sub addMock {
     } );
 
     return;
+}
+sub _addMethod {
+    my $self = shift;
+    my ( $MethodName ) = @_;
+
+    ExistsMethod( $self->{'__MockedModulePath'}, $MethodName );
+    $self->{'__MockedModule'}->{'__MethodCallCounter'}->addMethod( $MethodName );
+    if(not $self->{'MethodStore'}{$MethodName}){
+        $self->{'MethodStore'}{$MethodName} //= Test::Mockify::Method->new();
+        $self->{'__MockedModule'}->mock($MethodName, sub {
+            $self->{'__MockedModule'}->{'__MethodCallCounter'}->increment( $MethodName );
+            my $MockedSelf = shift;
+            my @MockedParameters = @_;
+            $self->_storeParameters( $MethodName, $MockedSelf, \@MockedParameters );
+            return $self->{'MethodStore'}{$MethodName}->call(@MockedParameters);
+        });
+    }
+    return $self->{'MethodStore'}{$MethodName};
 }
 #----------------------------------------------------------------------------------------
 =pod
@@ -235,6 +259,11 @@ sub addMockWithReturnValue {
     my $self = shift;
     my ( $MethodName, $ReturnValue ) = @_;
 
+#    if($ReturnValue){
+#        $self->_addMethod($MethodName)->when(@NewParams)->thenReturn($ReturnValue);
+#    }else {
+#        $self->_addMethod($MethodName)->when(@NewParams)->thenReturnUndef();
+#    }
     $self->addMock($MethodName, sub {
         my $MockedSelf = shift;
         my $ParameterListSize = scalar @_;
@@ -289,20 +318,32 @@ sub addMockWithReturnValueAndParameterCheck {
             'ParameterList' => $aParameterTypes,
         } );
     }
-
-    $self->addMock(
-        $MethodName,
-        sub{
-            my $MockedSelf = shift;
-            my @MockedParameters = @_;
-
-            $self->_storeParameters( $MethodName, $MockedSelf, \@MockedParameters );
-            $self->_testParameterAmount( $MethodName , $aParameterTypes, \@MockedParameters );
-            $self->_testParameterTypes( $MethodName , $aParameterTypes, \@MockedParameters );
-
-            return $ReturnValue;
+    #for backwards compatibility i need to transfer "int" and "float" to "number"
+    my @NewParams;
+    for(my $i = 0; $i < scalar @{$aParameterTypes}; $i++){
+        if(ref($aParameterTypes->[$i]) eq 'HASH'){
+            my $ExpectedValue;
+            if($aParameterTypes->[$i]->{'int'}){
+                $ExpectedValue = {'number' => $aParameterTypes->[$i]->{'int'}};
+            }elsif($aParameterTypes->[$i]->{'float'}){
+                $ExpectedValue = {'number' => $aParameterTypes->[$i]->{'float'}};
+            }else{
+                $ExpectedValue = $aParameterTypes->[$i];
+            }
+            $NewParams[$i] = $ExpectedValue;
+        }else{
+            if( $aParameterTypes->[$i] ~~ ['int', 'float']){
+                $NewParams[$i] = 'number';
+            } else{
+                $NewParams[$i] = $aParameterTypes->[$i];
+            }
         }
-    );
+    }
+    if($ReturnValue){
+        $self->_addMethod($MethodName)->when(@NewParams)->thenReturn($ReturnValue);
+    }else {
+        $self->_addMethod($MethodName)->when(@NewParams)->thenReturnUndef();
+    }
 
     return;
 }

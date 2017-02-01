@@ -185,7 +185,7 @@ sub _UndefinedType_Error {
     my $self = shift;
     my $Method = Test::Mockify::Method->new();
     throws_ok( sub { $Method->when('NotSuportedType')->thenReturn('Result for two strings.'); },
-               qr/Found unsupported type. Use Test::Mockify:Matcher to define nice parameter types./,
+               qr/Found unsupported type, 'NotSuportedType'./,
                'unsuported type, not like string or number'
      );
 }

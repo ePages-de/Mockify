@@ -12,6 +12,7 @@ sub new {
 sub thenReturn {
     my $self = shift;
     my ($Value) = @_;
+    die('Return value undefined. Use "thenReturnUndef" if you need to return undef.') unless($Value);
     $self->{'Value'} = $Value;
 }
 #------------------------------------------------------------
