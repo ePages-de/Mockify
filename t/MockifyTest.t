@@ -318,7 +318,7 @@ sub test_MockModule_CallCounter_addMethodSpyWithParameterCheck_negativ {
     $MockObject->addMethodSpyWithParameterCheck('dummmyMethodWithParameterReturn',[{'hashref'=>{'key'=>'value'}}]);
     my $MockedFakeModule = $MockObject->getMockObject();
     throws_ok( sub { $MockedFakeModule->dummmyMethodWithParameterReturn('NotAHashRef') },
-               qr/Parameter\[0\] is not a HashRef:/,
+               qr/No matching found for string/,
                "$SubTestName - test the Error if method is called with wrong type"
      );
 
@@ -392,7 +392,7 @@ sub test_MockModule_AddMockWithReturnValue_UnexpectedParameterInCall {
     my $MockedFakeModule = $MockObject->getMockObject();
     throws_ok(
         sub { $MockedFakeModule->DummmyMethodForTestOverriding('anUnexpectedParameter') },
-        qr/UnexpectedParameter:/,
+        qr/No matching found for string/,
         "$SubTestName - test if the mocked method was called with the wrong amount of parameters"
     );
 

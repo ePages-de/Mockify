@@ -151,12 +151,10 @@ With this method it is possible to observe a method. That means, you keep the or
 sub addMethodSpy {
     my $self = shift;
     my ( $MethodName ) = @_;
-
     my $PointerOriginalMethod = \&{$self->{'__MockedModulePath'}.'::'.$MethodName};
-    $self->addMock( $MethodName, sub {
-        $PointerOriginalMethod->( @_ );
-    } );
-
+    $self->_addMethod($MethodName)->whenAny()->thenCall(sub {
+        return $PointerOriginalMethod->($self->{'__MockedModule'}, @_);
+    });
     return;
 }
 #----------------------------------------------------------------------------------------
@@ -186,16 +184,11 @@ sub addMethodSpyWithParameterCheck {
     my $self = shift;
     my ( $MethodName, $aParameterTypes ) = @_;
 
-    $self->_checkParameterTypesForMethod( $MethodName , $aParameterTypes );
     my $PointerOriginalMethod = \&{$self->{'__MockedModulePath'}.'::'.$MethodName};
-     $self->addMock( $MethodName, sub {
-            my $MockedSelf = shift;
-            my @MockedParameters = @_;
-            $self->_storeParameters( $MethodName, $MockedSelf, \@MockedParameters );
-            $self->_testParameterTypes( $MethodName , $aParameterTypes, \@MockedParameters );
-            $self->_testParameterAmount( $MethodName , $aParameterTypes, \@MockedParameters );
-            $PointerOriginalMethod->($MockedSelf, @MockedParameters);
-    } );
+    my $NewParams = $self->_migrateIntAndFloatToNumber($aParameterTypes);
+    $self->_addMethod($MethodName)->when(@{$NewParams})->thenCall(sub {
+        return $PointerOriginalMethod->($self->{'__MockedModule'}, @_);
+    });
     return;
 }
 #----------------------------------------------------------------------------------------
@@ -217,16 +210,13 @@ sub addMock {
     my $self = shift;
     my ( $MethodName, $rSub ) = @_;
 
-#    $self->_addMethod($MethodName)->whenAny()->thenCall($rSub);
-    ExistsMethod( $self->{'__MockedModulePath'}, $MethodName );
-    $self->{'__MockedModule'}->{'__MethodCallCounter'}->addMethod( $MethodName );
-    $self->{'__MockedModule'}->mock( $MethodName, sub {
-        $self->{'__MockedModule'}->{'__MethodCallCounter'}->increment( $MethodName );
-        return $rSub->( @_ );
-    } );
+    $self->_addMethod($MethodName)->whenAny()->thenCall(sub {
+        return $rSub->($self->{'__MockedModule'}, @_);
+    });
 
     return;
 }
+#-------------------------------------------------------------------------------------
 sub _addMethod {
     my $self = shift;
     my ( $MethodName ) = @_;
@@ -245,6 +235,33 @@ sub _addMethod {
     }
     return $self->{'MethodStore'}{$MethodName};
 }
+#-------------------------------------------------------------------------------------
+sub _migrateIntAndFloatToNumber{
+    my $self = shift;
+    my ( $aParameterTypes ) = @_;
+    #for backwards compatibility i need to transfer "int" and "float" to "number"
+    my @NewParams;
+    for(my $i = 0; $i < scalar @{$aParameterTypes}; $i++){
+        if(ref($aParameterTypes->[$i]) eq 'HASH'){
+            my $ExpectedValue;
+            if($aParameterTypes->[$i]->{'int'}){
+                $ExpectedValue = {'number' => $aParameterTypes->[$i]->{'int'}};
+            }elsif($aParameterTypes->[$i]->{'float'}){
+                $ExpectedValue = {'number' => $aParameterTypes->[$i]->{'float'}};
+            }else{
+                $ExpectedValue = $aParameterTypes->[$i];
+            }
+            $NewParams[$i] = $ExpectedValue;
+        }else{
+            if( $aParameterTypes->[$i] ~~ ['int', 'float']){
+                $NewParams[$i] = 'number';
+            } else{
+                $NewParams[$i] = $aParameterTypes->[$i];
+            }
+        }
+    }
+    return \@NewParams;
+}
 #----------------------------------------------------------------------------------------
 =pod
 
@@ -259,25 +276,11 @@ sub addMockWithReturnValue {
     my $self = shift;
     my ( $MethodName, $ReturnValue ) = @_;
 
-#    if($ReturnValue){
-#        $self->_addMethod($MethodName)->when(@NewParams)->thenReturn($ReturnValue);
-#    }else {
-#        $self->_addMethod($MethodName)->when(@NewParams)->thenReturnUndef();
-#    }
-    $self->addMock($MethodName, sub {
-        my $MockedSelf = shift;
-        my $ParameterListSize = scalar @_;
-
-        if ( $ParameterListSize > 0 ){
-            Error('UnexpectedParameter',{
-            'Method' => "$self->{'__MockedModulePath'}->$MethodName",
-            'ParameterList' => "(@_)",
-            'AmountOfUnexpectedParameters' => $ParameterListSize,
-            } );
-        }
-
-        return $ReturnValue; #return of inner sub
-        } );
+    if($ReturnValue){
+        $self->_addMethod($MethodName)->when()->thenReturn($ReturnValue);
+    }else {
+        $self->_addMethod($MethodName)->when()->thenReturnUndef();
+    }
 
     return;
 }
@@ -318,103 +321,26 @@ sub addMockWithReturnValueAndParameterCheck {
             'ParameterList' => $aParameterTypes,
         } );
     }
-    #for backwards compatibility i need to transfer "int" and "float" to "number"
-    my @NewParams;
-    for(my $i = 0; $i < scalar @{$aParameterTypes}; $i++){
-        if(ref($aParameterTypes->[$i]) eq 'HASH'){
-            my $ExpectedValue;
-            if($aParameterTypes->[$i]->{'int'}){
-                $ExpectedValue = {'number' => $aParameterTypes->[$i]->{'int'}};
-            }elsif($aParameterTypes->[$i]->{'float'}){
-                $ExpectedValue = {'number' => $aParameterTypes->[$i]->{'float'}};
-            }else{
-                $ExpectedValue = $aParameterTypes->[$i];
-            }
-            $NewParams[$i] = $ExpectedValue;
-        }else{
-            if( $aParameterTypes->[$i] ~~ ['int', 'float']){
-                $NewParams[$i] = 'number';
-            } else{
-                $NewParams[$i] = $aParameterTypes->[$i];
-            }
-        }
-    }
+    my $NewParams = $self->_migrateIntAndFloatToNumber($aParameterTypes);
+
     if($ReturnValue){
-        $self->_addMethod($MethodName)->when(@NewParams)->thenReturn($ReturnValue);
+        $self->_addMethod($MethodName)->when(@{$NewParams})->thenReturn($ReturnValue);
     }else {
-        $self->_addMethod($MethodName)->when(@NewParams)->thenReturnUndef();
+        $self->_addMethod($MethodName)->when(@{$NewParams})->thenReturnUndef();
     }
 
     return;
 }
 #----------------------------------------------------------------------------------------
 sub _storeParameters {
-my $self = shift;
-
+    my $self = shift;
     my ( $MethodName, $MockedSelf, $aMockedParameters ) = @_;
+
     push( @{$MockedSelf->{$MethodName.'_MockifyParams'}}, $aMockedParameters );
 
     return;
 }
-#----------------------------------------------------------------------------------------
-sub _testParameterTypes {
-    my $self = shift;
-    my ( $MethodName, $aExpectedParameterTypes, $aActualInputParameters ) = @_;
 
-    my @TestParameters = @{$aExpectedParameterTypes};
-    my @MockedParameters = @{$aActualInputParameters};
-    my $MockedParametersSize = scalar @MockedParameters;
-    for ( my $i = 0; $i < $MockedParametersSize; $i++ ) {
-        my $TypeTestResult = $self->_testParameterType("Parameter[$i]", $MockedParameters[$i], $TestParameters[$i], $MethodName );
-        if ( ! $TypeTestResult ){
-            Error( 'UnknownParametertype', {
-            'Method' => $self->{'__MockedModulePath'}."->$MethodName",
-            'UnknownParameterType' => $self->_getParameterType( $TestParameters[$i] ),
-            'ParameterNumber'=> $i,
-            } );
-        }
-    }
-
-    return;
-}
-#----------------------------------------------------------------------------------------
-sub _testParameterType {
-    my $self = shift;
-    my ( $ParameterName, $Value, $TestParameter, $MethodName ) = @_;
-
-    my $TestParameterType = $self->_getParameterType( $TestParameter );
-    foreach ( $TestParameterType ) {
-        when( 'string' ) {
-        $self->_testExpectedString( $ParameterName,$Value, $TestParameter ,$MethodName );
-        }
-        when( 'int' ) {
-        $self->_testExpectedInt( $ParameterName,$Value, $TestParameter, $MethodName );
-        }
-        when( 'float' ) {
-        $self->_testExpectedFloat( $ParameterName,$Value, $TestParameter, $MethodName );
-        }
-        when( 'hashref' ) {
-        $self->_testExpectedHashRef( $ParameterName,$Value, $TestParameter, $MethodName );
-        }
-        when( 'arrayref' ) {
-        $self->_testExpectedArrayRef( $ParameterName,$Value, $TestParameter, $MethodName );
-        }
-        when( 'object' ) {
-        $self->_testExpectedObject( $ParameterName,$Value, $TestParameter,$MethodName );
-        }
-        when( 'undef' ) {
-        $self->_testUndefind( $ParameterName,$Value,$MethodName );
-        }
-        when( 'any' ) {
-            return 1;
-        }
-        default {
-        return 0;
-        }
-    }
-
-    return 1;
-}
 #----------------------------------------------------------------------------------------
 sub _addGetParameterFromMockifyCall {
     my $self = shift;
@@ -441,221 +367,6 @@ sub _addGetParameterFromMockifyCall {
             return;
         }
     );
-
-    return;
-}
-#----------------------------------------------------------------------------------------
-sub _getParameterType {
-    my $self = shift;
-    my ( $TestParameter ) = @_;
-
-    my $TestParameterType = undef;
-    if( IsHashReference( $TestParameter ) ){
-        my @Keys = keys %{$TestParameter};
-        $TestParameterType = $Keys[0];
-    } else {
-        $TestParameterType = $TestParameter;
-    }
-
-    return $TestParameterType;
-}
-#----------------------------------------------------------------------------------------
-sub _testParameterAmount {
-    my $self = shift;
-    my ( $MethodName , $aExpectedParameterTypes, $aActualInputParameters ) = @_;
-
-    my $AmountExpectedParameterTypes = scalar @{$aExpectedParameterTypes};
-    my $AmountActualInputParameters = scalar @{$aActualInputParameters};
-    if( $AmountActualInputParameters != $AmountExpectedParameterTypes ){
-        Error( 'WrongAmountOfParameters', {
-            'Method' => $self->{'__MockedModulePath'}."->$MethodName",
-            'ExpectedAmount' => $AmountExpectedParameterTypes,
-            'ActualAmount' => $AmountActualInputParameters,
-        } );
-    }
-
-    return;
-}
-#----------------------------------------------------------------------------------------
-sub _testExpectedString {
-    my $self = shift;
-    my ( $Name, $Value, $TestParameterType, $MethodName ) = @_;
-
-    if ( not IsString( $Value ) ) {
-        Error( "$Name is not a String", {
-            'Method' => $self->{'__MockedModulePath'}."->$MethodName",
-            'Value' => $Value
-        });
-    }
-    if( IsHashReference( $TestParameterType ) ){
-        my @Values = values %{$TestParameterType};
-        my $ExpectedValue = $Values[0];
-        if( $Value ne $ExpectedValue ){
-            Error( "$Name unexpected value", {
-                'Method' => $self->{'__MockedModulePath'}."->$MethodName",
-                'ActualValue' => $Value,
-                'ExpectedValue' => $ExpectedValue,
-            });
-        }
-    }
-
-    return;
-}
-#----------------------------------------------------------------------------------------
-sub _testExpectedInt {
-    my $self = shift;
-    my ( $Name, $Value, $hTestParameterType, $MethodName ) = @_;
-
-    if ( not IsInteger( $Value ) ) {
-        Error( "$Name is not an Integer", {
-            'Method' => $self->{'__MockedModulePath'}."->$MethodName",
-            'Value' => $Value
-            });
-    }
-    if( IsHashReference( $hTestParameterType ) ){
-        my @Values = values %{$hTestParameterType};
-        my $ExpectedValue = $Values[0];
-        if( $Value != $ExpectedValue ){
-            Error( "$Name unexpected value", {
-                'Method' => $self->{'__MockedModulePath'}."->$MethodName",
-                'ActualValue' => $Value,
-                'ExpectedValue' => $ExpectedValue,
-            });
-        }
-    }
-
-    return;
-}
-#----------------------------------------------------------------------------------------
-sub _testExpectedFloat {
-    my $self = shift;
-    my ( $Name, $Value, $hTestParameterType, $MethodName ) = @_;
-
-    if ( not IsFloat( $Value ) ) {
-        Error( "$Name is not an Float", {
-            'Method' => $self->{'__MockedModulePath'}."->$MethodName",
-            'Value' => $Value
-            });
-    }
-    if( IsHashReference( $hTestParameterType ) ){
-        my @Values = values %{$hTestParameterType};
-        my $ExpectedValue = $Values[0];
-        if( $Value != $ExpectedValue ){
-            Error( "$Name unexpected value", {
-                'Method' => $self->{'__MockedModulePath'}."->$MethodName",
-                'ActualValue' => $Value,
-                'ExpectedValue' => $ExpectedValue,
-            });
-        }
-    }
-
-    return;
-}
-#----------------------------------------------------------------------------------------
-sub _testUndefind {
-    my $self = shift;
-    my ( $Name, $Value, $MethodName ) = @_;
-
-    if ( IsValid( $Value ) ) {
-        Error( "$Name is not undefined", {
-            'Method' => $self->{'__MockedModulePath'}."->$MethodName",
-            'Value' => $Value
-        });
-    }
-
-    return;
-}
-#----------------------------------------------------------------------------------------
-sub _testExpectedHashRef {
-    my $self = shift;
-    my ( $Name, $Value, $TestParameterType, $MethodName ) = @_;
-
-    if ( not IsHashReference( $Value ) ) {
-        Error( "$Name is not a HashRef", {
-            'Method' => $self->{'__MockedModulePath'}."->$MethodName",
-            'Value' => $Value
-        });
-    }
-    if( IsHashReference( $TestParameterType ) ){
-        my @Values = values %{$TestParameterType};
-        my $ExpectedValue = $Values[0];
-        my $Compare = Data::Compare->new();
-        if( not $Compare->Cmp($Value,$ExpectedValue) ){
-        my $DumpedValue = Dumper( $Value );
-        my $DumpedExpected = Dumper( $ExpectedValue );
-            Error( "$Name unexpected value", {
-                'Method' => $self->{'__MockedModulePath'}."->$MethodName(???)",
-                'got value' => $DumpedValue,
-                'expected value' => $DumpedExpected,
-            } );
-        }
-    }
-
-    return;
-}
-#----------------------------------------------------------------------------------------
-sub _testExpectedArrayRef {
-    my $self = shift;
-    my ( $Name, $Value, $TestParameterType, $MethodName ) = @_;
-
-    if ( not IsArrayReference( $Value ) ) {
-        Error( "$Name is not an ArrayRef", {
-        'Method' => $self->{'__MockedModulePath'}."->$MethodName",
-        'Value' => $Value
-        } );
-    }
-    if( IsHashReference( $TestParameterType ) ){
-        my @Values = values %{$TestParameterType};
-        my $ExpectedValue = $Values[0];
-        my $Compare = Data::Compare->new();
-        if( not $Compare->Cmp($Value,$ExpectedValue) ){
-        my $DumpedValue = Dumper( $Value );
-        my $DumpedExpected = Dumper( $ExpectedValue );
-            Error( "$Name unexpected value", {
-                'Method' => $self->{'__MockedModulePath'}."->$MethodName(???)",
-                'got value' => $DumpedValue,
-                'expected value' => $DumpedExpected,
-            } );
-        }
-    }
-
-    return;
-}
-#----------------------------------------------------------------------------------------
-sub _testExpectedObject {
-    my $self = shift;
-    my ( $Name, $Value, $TestParameterType, $MethodName ) = @_;
-
-    if ( not IsObjectReference($Value) ) {
-        Error( "$Name is not a Object", {
-            'Method' => $self->{'__MockedModulePath'}."->$MethodName",
-            'Value' => $Value
-        } );
-    }
-    if( IsHashReference( $TestParameterType ) ){
-        my @Values = values %{$TestParameterType};
-        my $ExpectedValue = $Values[0];
-        if( not Isa( $Value, $ExpectedValue ) ){
-            Error( "$Name unexpected value", {
-                'Method' => $self->{'__MockedModulePath'}."::MethodName",
-                'ActualObjectType' => blessed($Value),
-                'ExpectedObjectType' => $ExpectedValue,
-            });
-        }
-    }
-
-    return;
-}
-#----------------------------------------------------------------------------------------
-sub _checkParameterTypesForMethod {
-    my $self = shift;
-    my ( $MethodName, $aParameterTypes ) = @_;
-
-    if ( not ( defined $aParameterTypes ) or not IsArrayReference( $aParameterTypes )){
-        Error( 'ParameterTypesNotProvided', {
-            'Method' => $self->{'__MockedModulePath'}."::MethodName",
-        } );
-    }
 
     return;
 }

@@ -34,6 +34,7 @@ sub when {
     my @Parameters = @_;
     my @Signature;
     my @ParameterValues ;
+    $self->_testTypeStore();
     foreach my $hParameter ( @Parameters ){
          if( ref($hParameter) eq 'HASH') {
             push(@Signature, $self->_getParameterKey($hParameter));
@@ -49,7 +50,14 @@ sub when {
     return $self->_addToTypeStore(\@Signature, \@ParameterValues);
 }
 #---------------------------------------------------------------------
-
+sub whenAny {
+    my $self = shift;
+    die ('"whenAny" don`t allow any parameters' ) if (@_);
+    if((scalar keys %{$self->{'TypeStore'}})){
+        die('"whenAny" can only used once. Also it is not possible to use a mixture between "when" and "whenAny"');
+    }
+    return $self->_addToTypeStore(['UsedWithWhenAny']);
+}
 #---------------------------------------------------------------------
 sub _getParameterKey {
     my $self = shift;
@@ -81,6 +89,15 @@ sub _checkExpectedParameters{
     foreach my $ExistingParameter (@{$self->{'TypeStore'}{$SignaturKey}}){
         if($ExistingParameter->compareExpectedParameters($NewExpectedParameters)){
             die('It is not possible two add two times the same method signatur.');
+        }
+    }
+}
+#---------------------------------------------------------------------
+sub _testTypeStore {
+    my $self = shift;
+    foreach my $Signatur (keys %{$self->{'TypeStore'}}){
+        if($Signatur eq 'UsedWithWhenAny'){
+            die('It is not possible to use a mixture between "when" and "whenAny"');
         }
     }
 }
@@ -126,7 +143,7 @@ sub _addToTypeStore {
 sub call {
     my $self = shift;
     my @Parameters = @_;
-    my $SignaturKey;
+    my $SignaturKey = '';
     for(my $i = 0; $i < scalar @Parameters; $i++){
         if($self->{'AnyStore'}->[$i] && $self->{'AnyStore'}->[$i] eq 'any'){
             $SignaturKey .= 'any';
@@ -134,9 +151,13 @@ sub call {
             $SignaturKey .= $self->_getType($Parameters[$i]);
         }
     }
-    foreach my $ExistingParameter (@{$self->{'TypeStore'}{$SignaturKey}}){
-        if($ExistingParameter->matchWithExpectedParameters(@Parameters)){
-            return $ExistingParameter->call(@Parameters);
+    if($self->{'TypeStore'}{'UsedWithWhenAny'}){
+        return $self->{'TypeStore'}{'UsedWithWhenAny'}->[0]->call(@Parameters);
+    }else {
+        foreach my $ExistingParameter (@{$self->{'TypeStore'}{$SignaturKey}}){
+            if($ExistingParameter->matchWithExpectedParameters(@Parameters)){
+                return $ExistingParameter->call(@Parameters);
+            }
         }
     }
     die ("No matching found for $SignaturKey -> ".Dumper(\@Parameters));

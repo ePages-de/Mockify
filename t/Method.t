@@ -26,6 +26,7 @@ sub testPlan{
     $self->_MultipleAnyMatcher();
     $self->_SingleExepctedMatcher();
     $self->_AnyMatcher();
+    $self->_AnyParameter();
     $self->_FunctionCall();
     $self->_MixedExepctedMatcherAndAnyMatcher_Error();
     $self->_MixedAnyMatcherWithDifferntTypes();
@@ -83,6 +84,34 @@ sub _AnyMatcher {
     throws_ok( sub { $StringMethod->when( Any() )->thenReturn('Hello World'); },
                qr/It is not possibel to mix "any type" with previously set "specific type"./,
                'proves that it is not possible to use an any type after a specific type was set.'
+     );
+}
+#---------------------------------------------------------------------------------
+sub _AnyParameter {
+    my $self = shift;
+    my $Method = Test::Mockify::Method->new();
+    $Method->whenAny()->thenReturn('helloWorld');
+    is($Method->call(),'helloWorld' , 'proves that "whenAny" works without parameters.');;
+    is($Method->call(123),'helloWorld' , 'proves that "whenAny" works one parameter.');;
+    is($Method->call('abc',['abc']),'helloWorld' , 'proves that the same"whenAny" works with two parameter.');
+    throws_ok( sub { $Method->whenAny()->thenReturn('WaterWorld') },
+               qr/"whenAny" can only used once. Also it is not possible to use a mixture between "when" and "whenAny"/,
+               'proves that it is not possible to use "whenAny" two times.'
+     );
+    throws_ok( sub { $Method->when(String('abc'))->thenReturn('WaterWorld') },
+               qr/It is not possible to use a mixture between "when" and "whenAny"/,
+               'proves that it is not possible to use "when" when "whenAny" was used before.'
+     );
+     $Method = Test::Mockify::Method->new();
+    throws_ok( sub { $Method->whenAny('param')->thenReturn('WaterWorld') },
+               qr/"whenAny" don`t allow any parameters/,
+               'proves that it is not possible to use "whenAny" two times.'
+     );
+     $Method = Test::Mockify::Method->new();
+     $Method->when(String())->thenReturn('helloWorld');
+    throws_ok( sub { $Method->whenAny()->thenReturn('WaterWorld') },
+               qr/"whenAny" can only used once. Also it is not possible to use a mixture between "when" and "whenAny"/,
+               'proves that it is not possible to use "whenAny" when "when" was used before.'
      );
 }
 #---------------------------------------------------------------------------------
