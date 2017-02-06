@@ -1,6 +1,6 @@
 =pod
 
-=head1 NAME
+=head1 Mockify
 
 Test::Mockify - minimal mocking framework for perl
 
@@ -108,7 +108,7 @@ sub getMockObject {
 
 =head2 mock
 
-This is place where the mocked methods are defined.
+This is place where the mocked methods are defined. The method also proves that the method you like to mock actually exists.
   
 =head3 synopsis
 
@@ -125,67 +125,16 @@ C<< is($SampleLogger->log('abc',123), 'Hello World'); >>
 
 =head3 when
 
-To define in a nice way the signatur you should use the L<< Test::Mockify::Matchers; >>. With some of them you can even define your expected value.
-
-=over 4
-
-=item * C<< String(), String('abc') >>
-
-Without parameter this matcher will exept any string. With parameter, only 'abc'.
-
-=item * C<< Number(), Number(123) >>
-
-Without parameter this matcher will exept any number. With parameter, only 123.
-
-=item * C<< HashRef(), HashRef({1 => 23}) >>
-
-Without parameter this matcher will exept any hash reference. With parameter, only the hash reference {1 => 23}.
-
-=item * C<< ArrayRef(), ArrayRef([1, 23]) >>
-
-Without parameter this matcher will exept any array reference. With parameter, only the array reference [1, 23].
-
-=item * C<< Object(), Object('Module::Path') >>
-
-Without parameter this matcher will exept any object. With parameter, only an Object of type 'Module::Path' is accepted.
-
-=item * C<< Function() >>
-
-This matcher will exept any function pointer. It is not possible to define an expected function.
-
-=item * C<< Undef() >>
-
-This matcher will exept an undef.
-
-=item * C<< Any() >>
-
-This matcher will exept any possible type and undef.
-
-=back
+To define the signatur in the needed structure you should use the L<< Test::Mockify::Matchers >>.
 
 =head3 whenAny
 
-If you don't want to specify the method signatur at all, you can use whenAny. It is not possible to mix whenAny and when for the same method.
+If you don't want to specify the method signatur at all, you can use whenAny.
+It is not possible to mix C<whenAny> and C<when> for the same method.
 
-=head3 then...
+=head3 then ...
 
-To define mocked return values you can use one of the following:
-
-=over 4
-
-=item * C<< thenReturn('Hello World') >>
-
-=item * C<< thenReturnUndef() >>
-
-=item * C<< thenReturnArray(['Hello', 'World']) >>
-
-=item * C<< thenReturnHash({'Hello' => 'World'}) >>
-
-=item * C<< thenThrowError('ErrorType') >>
-
-=item * C<< thenCall(sub{return 'Hello World'}) >>
-
-=back
+For possible return types please look in L<Test::Mockify::ReturnValue>
 
 =cut
 sub mock {
@@ -214,7 +163,7 @@ sub mock {
 
 =head2 addMethodSpy
 
-With this method it is possible to observe a method. That means, you keep the original functionality, but you can get meta data from the mockify- framework.
+With this method it is possible to observe a method. That means, you keep the original functionality but you can get meta data from the mockify-framework.
 
   $MockObjectBuilder->addMethodSpy('myMethodName');
 
