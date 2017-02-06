@@ -38,6 +38,7 @@ use Test::Mockify::TypeTests qw ( IsInteger IsFloat IsString IsArrayReference Is
 use Test::Mockify::MethodCallCounter;
 use Test::Mockify::Method;
 use Test::MockObject::Extends;
+use Test::Mockify::CompatibilityTools qw (IntAndFloat2Number);
 use Data::Dumper;
 use Scalar::Util qw( blessed );
 use Data::Compare;
@@ -107,22 +108,84 @@ sub getMockObject {
 
 =head2 mock
 
-  This is place where the mocked methods are defined.
+This is place where the mocked methods are defined.
+  
+=head3 synopsis
 
-  This return types are supported.
-  $MockObjectBuilder->mock('MethodName')->when(String())->thenReturn('Hello World');
-  $MockObjectBuilder->mock('MethodName')->when(String())->thenReturnUndef();
-  $MockObjectBuilder->mock('MethodName')->when(String())->thenReturnArray(['Hello', 'World']);
-  $MockObjectBuilder->mock('MethodName')->when(String())->thenReturnHash({'Hello' => 'World'});
-  $MockObjectBuilder->mock('MethodName')->when(String())->thenThrowError('ErrorType');
-  $MockObjectBuilder->mock('MethodName')->when(String())->thenCall(sub{return 'Hello World'});
+This method takes one parameter, which is the name of the method you like to mock.
+Because you need to specify more detailed the behaviour of this mock you have to chain the method signature (when) and the expected return value (then...). 
 
-  This Matchers are supported:
-  String(), Number(), HashRef(), ArrayRef(), Object(), Function(), Undef(), Any()
-  $MockObjectBuilder->mock('MethodName')->when(String(), Number(), HashRef(), ArrayRef(), Object(), Function(), Undef(), Any())->thenReturnUndef();
+For example, the next line will create a mocked version of the method log, but only if this method is called with any string and the number 123. In this case it will return the String 'Hello World'. Mockify will throw an error if this method is called somehow else.
 
-  If you don't care at all about the parameters you can use whenAny()
-  $MockObjectBuilder->mock('MethodName')->whenAny()->thenReturn('Hello World);
+
+C<< $MockObjectBuilder->mock('log')->when(String(), Number(123))->thenReturn('Hello World'); >>
+
+C<< is($SampleLogger->log('abc',123), 'Hello World'); >>
+
+
+=head3 when
+
+To define in a nice way the signatur you should use the L<< Test::Mockify::Matchers; >>. With some of them you can even define your expected value.
+
+=over 4
+
+=item * C<< String(), String('abc') >>
+
+Without parameter this matcher will exept any string. With parameter, only 'abc'.
+
+=item * C<< Number(), Number(123) >>
+
+Without parameter this matcher will exept any number. With parameter, only 123.
+
+=item * C<< HashRef(), HashRef({1 => 23}) >>
+
+Without parameter this matcher will exept any hash reference. With parameter, only the hash reference {1 => 23}.
+
+=item * C<< ArrayRef(), ArrayRef([1, 23]) >>
+
+Without parameter this matcher will exept any array reference. With parameter, only the array reference [1, 23].
+
+=item * C<< Object(), Object('Module::Path') >>
+
+Without parameter this matcher will exept any object. With parameter, only an Object of type 'Module::Path' is accepted.
+
+=item * C<< Function() >>
+
+This matcher will exept any function pointer. It is not possible to define an expected function.
+
+=item * C<< Undef() >>
+
+This matcher will exept an undef.
+
+=item * C<< Any() >>
+
+This matcher will exept any possible type and undef.
+
+=back
+
+=head3 whenAny
+
+If you don't want to specify the method signatur at all, you can use whenAny. It is not possible to mix whenAny and when for the same method.
+
+=head3 then...
+
+To define mocked return values you can use one of the following:
+
+=over 4
+
+=item * C<< thenReturn('Hello World') >>
+
+=item * C<< thenReturnUndef() >>
+
+=item * C<< thenReturnArray(['Hello', 'World']) >>
+
+=item * C<< thenReturnHash({'Hello' => 'World'}) >>
+
+=item * C<< thenThrowError('ErrorType') >>
+
+=item * C<< thenCall(sub{return 'Hello World'}) >>
+
+=back
 
 =cut
 sub mock {
@@ -175,17 +238,7 @@ With this method it is possible to observe a method and check the parameters. Th
   my $aParameterTypes = ['string',{'string' => 'abcd'}];
   $MockObjectBuilder->addMethodSpyWithParameterCheck('myMethodName', $aParameterTypes);
 
-=head3 Options
-
-Pure types
-
-  ['string', 'int', 'hashref', 'float', 'arrayref', 'object', 'undef', 'any']
-
-or types with expected values
-
-  [{'string'=>'abcdef'}, {'int' => 123}, {'float' => 1.23}, {'hashref' => {'key'=>'value'}}, {'arrayref'=>['one', 'two']}, {'object'=> 'PAth::to:Obejct}]
-
-If you use *any*, you have to verify this value explicitly in the test, see **GetParametersFromMockifyCall** in L<Test::Mockify::Verify>.
+To define in a nice way the signatur you should use the L<< Test::Mockify::Matchers; >>.
 
 =cut
 sub addMethodSpyWithParameterCheck {
@@ -193,7 +246,7 @@ sub addMethodSpyWithParameterCheck {
     my ( $MethodName, $aParameterTypes ) = @_;
 
     my $PointerOriginalMethod = \&{$self->{'__MockedModulePath'}.'::'.$MethodName};
-    my $NewParams = $self->_migrateIntAndFloatToNumber($aParameterTypes);
+    my $NewParams = IntAndFloat2Number($aParameterTypes);
     $self->_addMethod($MethodName)->when(@{$NewParams})->thenCall(sub {
         return $PointerOriginalMethod->($self->{'__MockedModule'}, @_);
     });
@@ -243,33 +296,6 @@ sub _addMethod {
     }
     return $self->{'MethodStore'}{$MethodName};
 }
-#-------------------------------------------------------------------------------------
-sub _migrateIntAndFloatToNumber{
-    my $self = shift;
-    my ( $aParameterTypes ) = @_;
-    #for backwards compatibility i need to transfer "int" and "float" to "number"
-    my @NewParams;
-    for(my $i = 0; $i < scalar @{$aParameterTypes}; $i++){
-        if(ref($aParameterTypes->[$i]) eq 'HASH'){
-            my $ExpectedValue;
-            if($aParameterTypes->[$i]->{'int'}){
-                $ExpectedValue = {'number' => $aParameterTypes->[$i]->{'int'}};
-            }elsif($aParameterTypes->[$i]->{'float'}){
-                $ExpectedValue = {'number' => $aParameterTypes->[$i]->{'float'}};
-            }else{
-                $ExpectedValue = $aParameterTypes->[$i];
-            }
-            $NewParams[$i] = $ExpectedValue;
-        }else{
-            if( $aParameterTypes->[$i] ~~ ['int', 'float']){
-                $NewParams[$i] = 'number';
-            } else{
-                $NewParams[$i] = $aParameterTypes->[$i];
-            }
-        }
-    }
-    return \@NewParams;
-}
 #----------------------------------------------------------------------------------------
 =pod
 
@@ -306,17 +332,7 @@ In the following example two strings will be expected, and the second one has to
   my $aParameterTypes = ['string',{'string' => 'abcd'}];
   $MockObjectBuilder->addMockWithReturnValueAndParameterCheck('myMethodName','the return value',$aParameterTypes);
 
-=head3 Options
-
-Pure types
-
-  ['string', 'int', 'float', 'hashref', 'arrayref', 'object', 'undef', 'any']
-
-or types with expected values
-
-  [{'string'=>'abcdef'}, {'int' => 123}, {'float' => 1.23}, {'hashref' => {'key'=>'value'}}, {'arrayref'=>['one', 'two']}, {'object'=> 'PAth::to:Obejct}]
-
-If you use **any**, you have to verify this value explicitly in the test, see +*GetParametersFromMockifyCall** in L<Test::Mockify::Verify>.
+To define in a nice way the signatur you should use the L<< Test::Mockify::Matchers; >>.
 
 =cut
 sub addMockWithReturnValueAndParameterCheck {
@@ -329,7 +345,7 @@ sub addMockWithReturnValueAndParameterCheck {
             'ParameterList' => $aParameterTypes,
         } );
     }
-    my $NewParams = $self->_migrateIntAndFloatToNumber($aParameterTypes);
+    my $NewParams = IntAndFloat2Number($aParameterTypes);
 
     if($ReturnValue){
         $self->_addMethod($MethodName)->when(@{$NewParams})->thenReturn($ReturnValue);

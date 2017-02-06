@@ -56,16 +56,22 @@ sub call {
     my @Params = @_;
     if($self->{'ErrorType'}){
         die($self->{'ErrorType'});
+
     }elsif($self->{'ArrayValue'}){
         return @{$self->{'ArrayValue'}};
+
     }elsif($self->{'HashValue'}){
         return %{$self->{'HashValue'}};
+
     }elsif($self->{'UndefValue'}){
         return;
+
     }elsif($self->{'FunctionPointer'}){
         return $self->{'FunctionPointer'}->(@Params);
+
     }elsif($self->{'Value'}){
         return $self->{'Value'};
+
     }else{
         die('NoReturnValue');
     }

@@ -14,6 +14,7 @@ use Test::Mockify::Matcher qw (SupportedTypes);
 use Scalar::Util qw( blessed );
 use strict;
 use warnings;
+use Test::Mockify::CompatibilityTools qw (MigrateMatcherFormat);
 
 #---------------------------------------------------------------------
 sub new {
@@ -36,15 +37,9 @@ sub when {
     my @ParameterValues ;
     $self->_testTypeStore();
     foreach my $hParameter ( @Parameters ){
-         if( ref($hParameter) eq 'HASH') {
-            push(@Signature, $self->_getParameterKey($hParameter));
-            push(@ParameterValues, $self->_getParameterValue($hParameter));
-         }elsif(IsString($hParameter) && $hParameter ~~ SupportedTypes()){
-            push(@Signature, $hParameter);
-            push(@ParameterValues, 'NoExpectedParameter');
-         }else{
-             die("Found unsupported type, '$hParameter'. Use Test::Mockify:Matcher to define nice parameter types.");
-         }
+        $hParameter = MigrateMatcherFormat($hParameter);
+        push(@ParameterValues, $self->_getParameterValue($hParameter));
+        push(@Signature, $self->_getParameterKey($hParameter));
     }
     $self->_checkExpectedParameters(\@Signature, \@ParameterValues);
     return $self->_addToTypeStore(\@Signature, \@ParameterValues);
@@ -76,7 +71,7 @@ sub _getParameterValue {
 sub _checkExpectedParameters{
     my $self = shift;
     my ($Signatur, $NewExpectedParameters) = @_;
-    
+
     for(my $i = 0; $i < scalar @$NewExpectedParameters; $i++){
         my $Type = $Signatur->[$i];
         my $NewExpectedParameter = $NewExpectedParameters->[$i];
@@ -85,6 +80,7 @@ sub _checkExpectedParameters{
         $self->_testAnyStore($self->{'AnyStore'}->[$i], $Type);
         $self->{'AnyStore'}->[$i] = $Type;
     }
+
     my $SignaturKey = join('',@$Signatur);
     foreach my $ExistingParameter (@{$self->{'TypeStore'}{$SignaturKey}}){
         if($ExistingParameter->compareExpectedParameters($NewExpectedParameters)){

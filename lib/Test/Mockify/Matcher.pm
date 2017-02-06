@@ -81,7 +81,7 @@ sub _Type($;$){
     if($Value){
         return {$Type => $Value};
     }else{
-        return $Type;
+        return {$Type => 'NoExpectedParameter'};
     }
 }
 1;
