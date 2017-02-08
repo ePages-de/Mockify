@@ -32,9 +32,9 @@ sub testPlan{
 #------------------------------------------------------------------------
 sub test_String {
     my $self = shift;
-    is_deeply(String(), $self->_buildExpectedHash('string',undef,0) , 'proves that the any matcher for string, returns a hash with type and NoExpectedParameter-flag');
-    is_deeply(String('abc'), $self->_buildExpectedHash('string','abc',1), 'proves that the expected matcher for string, returns a hash with type and value');
-    is_deeply(String(123), $self->_buildExpectedHash('string', 123, 1) , 'proves that the expected matcher for string, returns a hash with type and value (perl can´t differ between numbers and strings))');
+    is_deeply(String(), $self->_buildExpectedHash('string',undef) , 'proves that the any matcher for string, returns a hash with type and NoExpectedParameter-flag');
+    is_deeply(String('abc'), $self->_buildExpectedHash('string','abc'), 'proves that the expected matcher for string, returns a hash with type and value');
+    is_deeply(String(123), $self->_buildExpectedHash('string', 123) , 'proves that the expected matcher for string, returns a hash with type and value (perl can´t differ between numbers and strings))');
     throws_ok( sub { String(['abc']) },
         qr/NotAString/,
         'proves that the string matcher don´t accept anything else as string'
@@ -43,10 +43,10 @@ sub test_String {
 #------------------------------------------------------------------------
 sub test_Number {
     my $self = shift;
-    is_deeply(Number(), $self->_buildExpectedHash('number', undef, 0) , 'proves that the any matcher for number, returns a hash with type and NoExpectedParameter-flag');
-    is_deeply(Number(123), $self->_buildExpectedHash('number', 123,1 ) , 'proves that the expected matcher for number, returns a hash with type and value');
-    is_deeply(Number('123'), $self->_buildExpectedHash('number', 123,1 ) , 'proves that the expected matcher for number, returns a hash with type and value (perl can´t differ between numbers and strings))');
-    is_deeply(Number(1.23), $self->_buildExpectedHash('number', 1.23,1 ) , 'proves that the expected matcher for number, returns a hash with type and value (also float))');
+    is_deeply(Number(), $self->_buildExpectedHash('number', undef) , 'proves that the any matcher for number, returns a hash with type and NoExpectedParameter-flag');
+    is_deeply(Number(123), $self->_buildExpectedHash('number', 123 ) , 'proves that the expected matcher for number, returns a hash with type and value');
+    is_deeply(Number('123'), $self->_buildExpectedHash('number', 123 ) , 'proves that the expected matcher for number, returns a hash with type and value (perl can´t differ between numbers and strings))');
+    is_deeply(Number(1.23), $self->_buildExpectedHash('number', 1.23 ) , 'proves that the expected matcher for number, returns a hash with type and value (also float))');
     throws_ok( sub { Number('abc') },
         qr/NotANumber/,
         'proves that the number matcher don´t accept anything else as numbers'
@@ -55,8 +55,8 @@ sub test_Number {
 #------------------------------------------------------------------------
 sub test_HashRef {
     my $self = shift;
-    is_deeply(HashRef(), $self->_buildExpectedHash('hashref', undef, 0) , 'proves that the any matcher for hashref, returns a hash with type and NoExpectedParameter-flag');
-    is_deeply(HashRef({'key'=>'value'}), $self->_buildExpectedHash('hashref', {'key'=>'value'},1) , 'proves that the expected matcher for hashref, returns a hash with type and value');
+    is_deeply(HashRef(), $self->_buildExpectedHash('hashref', undef) , 'proves that the any matcher for hashref, returns a hash with type and NoExpectedParameter-flag');
+    is_deeply(HashRef({'key'=>'value'}), $self->_buildExpectedHash('hashref', {'key'=>'value'}) , 'proves that the expected matcher for hashref, returns a hash with type and value');
     throws_ok( sub { HashRef('abc') },
         qr/NotAHashReference/,
         'proves that the hashref matcher don´t accept anything else as hashrefs'
@@ -65,8 +65,8 @@ sub test_HashRef {
 #------------------------------------------------------------------------
 sub test_ArrayRef {
     my $self = shift;
-    is_deeply(ArrayRef(), $self->_buildExpectedHash('arrayref', undef, 0) , 'proves that the any matcher for arrayref, returns a hash with type and NoExpectedParameter-flag');
-    is_deeply(ArrayRef(['one','two']), $self->_buildExpectedHash('arrayref',['one','two'], 1) , 'proves that the expected matcher for arrayref, returns a hash with type and value');
+    is_deeply(ArrayRef(), $self->_buildExpectedHash('arrayref', undef) , 'proves that the any matcher for arrayref, returns a hash with type and NoExpectedParameter-flag');
+    is_deeply(ArrayRef(['one','two']), $self->_buildExpectedHash('arrayref',['one','two']) , 'proves that the expected matcher for arrayref, returns a hash with type and value');
     throws_ok( sub { ArrayRef('abc') },
         qr/NotAnArrayReference/,
         'proves that the arrayref matcher don´t accept anything else as arrayrefs'
@@ -75,15 +75,15 @@ sub test_ArrayRef {
 #------------------------------------------------------------------------
 sub test_Function {
     my $self = shift;
-    is_deeply(Function(), $self->_buildExpectedHash('sub', undef, 0) , 'proves that the any matcher for sub, returns a hash with type and NoExpectedParameter-flag');
+    is_deeply(Function(), $self->_buildExpectedHash('sub', undef) , 'proves that the any matcher for sub, returns a hash with type and NoExpectedParameter-flag');
 
 }
 #------------------------------------------------------------------------
 sub test_Object {
     my $self = shift;
-    is_deeply(Object(), $self->_buildExpectedHash('object', undef, 0) , 'proves that the any matcher for object, returns a hash with type and NoExpectedParameter-flag');
-    is_deeply(Object('Test1::Package'), $self->_buildExpectedHash('object','Test1::Package', 1) , 'proves that the expected matcher for object, returns a hash with type and value');
-    is_deeply(Object('T3st'), $self->_buildExpectedHash('object','T3st', 1) , 'proves that the expected matcher for object, returns a hash with type and value');
+    is_deeply(Object(), $self->_buildExpectedHash('object', undef) , 'proves that the any matcher for object, returns a hash with type and NoExpectedParameter-flag');
+    is_deeply(Object('Test1::Package'), $self->_buildExpectedHash('object','Test1::Package') , 'proves that the expected matcher for object, returns a hash with type and value');
+    is_deeply(Object('T3st'), $self->_buildExpectedHash('object','T3st') , 'proves that the expected matcher for object, returns a hash with type and value');
     throws_ok( sub { Object('Test::Bla::shfjsdf::sljldfsd::') },
         qr/NotAnModulPath/,
         'proves that the object matcher don´t accept anything else as valid modul pathes'
@@ -96,21 +96,20 @@ sub test_Object {
 #------------------------------------------------------------------------
 sub test_Undef {
     my $self = shift;
-    is_deeply(Undef(), $self->_buildExpectedHash('undef', undef, 0) , 'proves that the any matcher for undef, returns a hash with type and NoExpectedParameter-flag');
+    is_deeply(Undef(), $self->_buildExpectedHash('undef', undef) , 'proves that the any matcher for undef, returns a hash with type and NoExpectedParameter-flag');
 }
 #------------------------------------------------------------------------
 sub test_Any {
     my $self = shift;
-    is_deeply(Any(), $self->_buildExpectedHash('any', undef, 0) , 'proves that the any matcher for any, returns a hash with type and NoExpectedParameter-flag');
+    is_deeply(Any(), $self->_buildExpectedHash('any', undef) , 'proves that the any matcher for any, returns a hash with type and NoExpectedParameter-flag');
 }
 #------------------------------------------------------------------------
 sub _buildExpectedHash {
     my $self = shift;
-    my ($Type, $Value, $HasValue) = @_;
+    my ($Type, $Value) = @_;
     return {
             'Type' => $Type,
             'Value' => $Value,
-            'HasValue' => $HasValue,
         };
 }
 

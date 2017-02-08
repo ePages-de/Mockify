@@ -38,7 +38,7 @@ use Test::Mockify::TypeTests qw ( IsInteger IsFloat IsString IsArrayReference Is
 use Test::Mockify::MethodCallCounter;
 use Test::Mockify::Method;
 use Test::MockObject::Extends;
-use Test::Mockify::CompatibilityTools qw (IntAndFloat2Number);
+use Test::Mockify::CompatibilityTools qw (IntAndFloat2Number MigrateMatcherFormat);
 use Data::Dumper;
 use Scalar::Util qw( blessed );
 use Data::Compare;
@@ -195,8 +195,9 @@ sub addMethodSpyWithParameterCheck {
     my ( $MethodName, $aParameterTypes ) = @_;
 
     my $PointerOriginalMethod = \&{$self->{'__MockedModulePath'}.'::'.$MethodName};
-    my $NewParams = IntAndFloat2Number($aParameterTypes);
-    $self->_addMethod($MethodName)->when(@{$NewParams})->thenCall(sub {
+    $aParameterTypes = IntAndFloat2Number($aParameterTypes);
+    $aParameterTypes = MigrateMatcherFormat($aParameterTypes);
+    $self->_addMethod($MethodName)->when(@{$aParameterTypes})->thenCall(sub {
         return $PointerOriginalMethod->($self->{'__MockedModule'}, @_);
     });
     return;
@@ -294,12 +295,13 @@ sub addMockWithReturnValueAndParameterCheck {
             'ParameterList' => $aParameterTypes,
         } );
     }
-    my $NewParams = IntAndFloat2Number($aParameterTypes);
+    $aParameterTypes = IntAndFloat2Number($aParameterTypes);
+    $aParameterTypes = MigrateMatcherFormat($aParameterTypes);
 
     if($ReturnValue){
-        $self->_addMethod($MethodName)->when(@{$NewParams})->thenReturn($ReturnValue);
+        $self->_addMethod($MethodName)->when(@{$aParameterTypes})->thenReturn($ReturnValue);
     }else {
-        $self->_addMethod($MethodName)->when(@{$NewParams})->thenReturnUndef();
+        $self->_addMethod($MethodName)->when(@{$aParameterTypes})->thenReturnUndef();
     }
 
     return;

@@ -42,7 +42,7 @@ sub matchWithExpectedParameters {
     return 0 unless (scalar @Params == scalar @{$self->{'ExpectedParams'}});
 
     for(my $i=0; $i < scalar @Params; $i++){
-        if(not $self->{'ExpectedParams'}->[$i]->{'HasValue'}){
+        if(not $self->{'ExpectedParams'}->[$i]->{'Value'}){
             next;
         }elsif(ref($Params[$i]) eq $self->{'ExpectedParams'}->[$i]->{'Value'}){# map package name
             next;

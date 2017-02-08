@@ -22,14 +22,12 @@ sub MigrateMatcherFormat {
         $Parameter = {
                 'Type' => $ParameterKeys[0],
                 'Value' => $ParameterValues[0],
-                'HasValue' => 1,
         };
     } else {
         if(IsString($Parameter) && $Parameter ~~ SupportedTypes()){
             $Parameter = {
                 'Type' => $Parameter,
                 'Value' => undef,
-                'HasValue' => 0,
             };
         }else{
             die("Found unsupported type, '$Parameter'. Use Test::Mockify:Matcher to define nice parameter types.");

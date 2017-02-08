@@ -191,19 +191,10 @@ sub Any() {
 
 sub _Type($;$){
     my ($Type, $Value) = @_;
-    if($Value) {
         return {
             'Type' => $Type,
             'Value' => $Value,
-            'HasValue' => 1,
         };
-    } else {
-        return {
-            'Type' => $Type,
-            'Value' => undef,
-            'HasValue' => 0,
-        };
-    }
 }
 1;
 __END__

@@ -14,7 +14,6 @@ use Test::Mockify::Matcher qw (SupportedTypes);
 use Scalar::Util qw( blessed );
 use strict;
 use warnings;
-use Test::Mockify::CompatibilityTools qw (MigrateMatcherFormat);
 
 #---------------------------------------------------------------------
 sub new {
@@ -34,14 +33,11 @@ sub when {
     my $self = shift;
     my @Parameters = @_;
     my @Signature;
-    my @ParameterValues ;
     $self->_testTypeStore();
     foreach my $hParameter ( @Parameters ){
-        $hParameter = MigrateMatcherFormat($hParameter);
         push(@Signature, $hParameter->{'Type'});
-        push(@ParameterValues, $hParameter->{'Value'});
     }
-    $self->_checkExpectedParameters(\@Signature, \@Parameters);
+    $self->_checkExpectedParameters(\@Parameters);
     return $self->_addToTypeStore(\@Signature, \@Parameters);
 }
 #---------------------------------------------------------------------
@@ -56,10 +52,11 @@ sub whenAny {
 #---------------------------------------------------------------------
 sub _checkExpectedParameters{
     my $self = shift;
-    my ($Signatur, $NewExpectedParameters) = @_;
-
+    my ( $NewExpectedParameters) = @_;
+    my $SignaturKey = '';
     for(my $i = 0; $i < scalar @$NewExpectedParameters; $i++){
-        my $Type = $Signatur->[$i];
+        my $Type = $NewExpectedParameters->[$i]->{'Type'};
+        $SignaturKey .= $Type;
         my $NewExpectedParameter = $NewExpectedParameters->[$i];
         $self->_testMatcherStore($self->{'MatcherStore'}{$Type}->[$i], $NewExpectedParameter);
         $self->{'MatcherStore'}{$Type}->[$i] = $NewExpectedParameter;
@@ -67,7 +64,6 @@ sub _checkExpectedParameters{
         $self->{'AnyStore'}->[$i] = $Type;
     }
 
-    my $SignaturKey = join('',@$Signatur);
     foreach my $ExistingParameter (@{$self->{'TypeStore'}{$SignaturKey}}){
         if($ExistingParameter->compareExpectedParameters($NewExpectedParameters)){
             die('It is not possible two add two times the same method signatur.');
@@ -86,14 +82,14 @@ sub _testTypeStore {
 #---------------------------------------------------------------------
 sub _testMatcherStore {
     my $self = shift;
-    my ($MatcherStore, $NewExpectedParameter) = @_;
-    if( not $NewExpectedParameter->{'HasValue'} ){
-        if($MatcherStore && $MatcherStore->{'HasValue'}){
-            die('It is not possibel to mix "any parameter" with previously set "expected parameter".');
+    my ($MatcherStore, $NewExpectedParameterValue) = @_;
+    if( $NewExpectedParameterValue->{'Value'} ){
+        if($MatcherStore and not $MatcherStore->{'Value'}){
+            die('It is not possibel to mix "expected parameter" with previously set "any parameter".');
         }
     } else {
-        if($MatcherStore and not $MatcherStore->{'HasValue'}){
-            die('It is not possibel to mix "expected parameter" with previously set "any parameter".');
+        if($MatcherStore && $MatcherStore->{'Value'}){
+            die('It is not possibel to mix "any parameter" with previously set "expected parameter".');
         }
     }
     return;
