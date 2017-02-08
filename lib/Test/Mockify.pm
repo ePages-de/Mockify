@@ -184,7 +184,7 @@ sub addMethodSpy {
 
 With this method it is possible to observe a method and check the parameters. That means, you keep the original functionality, but you can get meta data from the mockify- framework and use the parameter check, like *addMockWithReturnValueAndParameterCheck*.
 
-  my $aParameterTypes = ['string',{'string' => 'abcd'}];
+  my $aParameterTypes = [String(),String(abcd)];
   $MockObjectBuilder->addMethodSpyWithParameterCheck('myMethodName', $aParameterTypes);
 
 To define in a nice way the signatur you should use the L<< Test::Mockify::Matchers; >>.
@@ -278,7 +278,7 @@ You can check if they have a specific **data type** or even check if they have a
 
 In the following example two strings will be expected, and the second one has to have the value "abcd".
 
-  my $aParameterTypes = ['string',{'string' => 'abcd'}];
+  my $aParameterTypes = [String(),String('abcd')];
   $MockObjectBuilder->addMockWithReturnValueAndParameterCheck('myMethodName','the return value',$aParameterTypes);
 
 To define in a nice way the signatur you should use the L<< Test::Mockify::Matchers; >>.

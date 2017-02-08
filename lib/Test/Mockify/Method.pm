@@ -38,11 +38,11 @@ sub when {
     $self->_testTypeStore();
     foreach my $hParameter ( @Parameters ){
         $hParameter = MigrateMatcherFormat($hParameter);
-        push(@ParameterValues, $self->_getParameterValue($hParameter));
-        push(@Signature, $self->_getParameterKey($hParameter));
+        push(@Signature, $hParameter->{'Type'});
+        push(@ParameterValues, $hParameter->{'Value'});
     }
-    $self->_checkExpectedParameters(\@Signature, \@ParameterValues);
-    return $self->_addToTypeStore(\@Signature, \@ParameterValues);
+    $self->_checkExpectedParameters(\@Signature, \@Parameters);
+    return $self->_addToTypeStore(\@Signature, \@Parameters);
 }
 #---------------------------------------------------------------------
 sub whenAny {
@@ -54,20 +54,6 @@ sub whenAny {
     return $self->_addToTypeStore(['UsedWithWhenAny']);
 }
 #---------------------------------------------------------------------
-sub _getParameterKey {
-    my $self = shift;
-    my ($hParameter) = @_;
-    my @Keys =  keys %{$hParameter};
-    return $Keys[0];
-}
-#---------------------------------------------------------------------
-sub _getParameterValue {
-    my $self = shift;
-    my ($hParameter) = @_;
-    my @Values = values %{$hParameter};
-    return $Values[0];
-}
-#---------------------------------------------------------------------
 sub _checkExpectedParameters{
     my $self = shift;
     my ($Signatur, $NewExpectedParameters) = @_;
@@ -76,7 +62,7 @@ sub _checkExpectedParameters{
         my $Type = $Signatur->[$i];
         my $NewExpectedParameter = $NewExpectedParameters->[$i];
         $self->_testMatcherStore($self->{'MatcherStore'}{$Type}->[$i], $NewExpectedParameter);
-        $self->{'MatcherStore'}{$Type}->[$i] =  $NewExpectedParameter;
+        $self->{'MatcherStore'}{$Type}->[$i] = $NewExpectedParameter;
         $self->_testAnyStore($self->{'AnyStore'}->[$i], $Type);
         $self->{'AnyStore'}->[$i] = $Type;
     }
@@ -101,12 +87,12 @@ sub _testTypeStore {
 sub _testMatcherStore {
     my $self = shift;
     my ($MatcherStore, $NewExpectedParameter) = @_;
-    if($NewExpectedParameter eq 'NoExpectedParameter'){
-        if($MatcherStore && $MatcherStore ne 'NoExpectedParameter'){
+    if( not $NewExpectedParameter->{'HasValue'} ){
+        if($MatcherStore && $MatcherStore->{'HasValue'}){
             die('It is not possibel to mix "any parameter" with previously set "expected parameter".');
         }
     } else {
-        if($MatcherStore and $MatcherStore eq 'NoExpectedParameter'){
+        if($MatcherStore and not $MatcherStore->{'HasValue'}){
             die('It is not possibel to mix "expected parameter" with previously set "any parameter".');
         }
     }

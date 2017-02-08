@@ -38,13 +38,15 @@ sub testPlan{
 #---------------------------------------------------------------------------------
 sub _SignaturWithAnyMatcherAndExpectedMatcher {
     my $self = shift;
+
     my $Method = Test::Mockify::Method->new();
-    $Method->when(String('hello'), String() )->thenReturn('World');    
+    $Method->when(String('hello'), String() )->thenReturn('World');
     is($Method->call('hello','abcd'), 'World', 'first expected, second any');
     is($Method->call('hello','world'), 'World', 'first expected, second any');
 
+    my $Matcher2 = $self->_buildExpectedHash('string', 'World', 1);
     $Method = Test::Mockify::Method->new();
-    $Method->when(String(), String('World') )->thenReturn('Hello');    
+    $Method->when(String(), String('World'))->thenReturn('Hello');    
     is($Method->call('jaja','World'), 'Hello', 'first any, second expected');
     is($Method->call('something','World'), 'Hello', 'first expected, second any');
 }
@@ -218,6 +220,15 @@ sub _UndefinedType_Error {
                'unsuported type, not like string or number'
      );
 }
-
+#------------------------------------------------------------------------------------------
+sub _buildExpectedHash {
+    my $self = shift;
+    my ($Type, $Value, $HasValue) = @_;
+    return {
+            'Type' => $Type,
+            'Value' => $Value,
+            'HasValue' => $HasValue,
+        };
+}
 __PACKAGE__->RunTest();
 1;

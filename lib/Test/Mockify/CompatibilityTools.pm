@@ -13,9 +13,24 @@ our @EXPORT_OK = qw (
 sub MigrateMatcherFormat {
     my ( $Parameter ) = @_;
 
-    if( ref($Parameter) ne 'HASH') {
+    if( ref($Parameter) eq 'HASH'){
+        if($Parameter->{'Type'} ~~ SupportedTypes()){
+            return $Parameter;
+        }
+        my @ParameterKeys = keys %$Parameter;
+        my @ParameterValues = values %$Parameter;
+        $Parameter = {
+                'Type' => $ParameterKeys[0],
+                'Value' => $ParameterValues[0],
+                'HasValue' => 1,
+        };
+    } else {
         if(IsString($Parameter) && $Parameter ~~ SupportedTypes()){
-            $Parameter = { $Parameter => 'NoExpectedParameter'};
+            $Parameter = {
+                'Type' => $Parameter,
+                'Value' => undef,
+                'HasValue' => 0,
+            };
         }else{
             die("Found unsupported type, '$Parameter'. Use Test::Mockify:Matcher to define nice parameter types.");
         }

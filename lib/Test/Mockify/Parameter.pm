@@ -40,12 +40,13 @@ sub matchWithExpectedParameters {
     my $self = shift;
     my @Params = @_;
     return 0 unless (scalar @Params == scalar @{$self->{'ExpectedParams'}});
+
     for(my $i=0; $i < scalar @Params; $i++){
-        if(IsString($self->{'ExpectedParams'}->[$i]) && $self->{'ExpectedParams'}->[$i] eq 'NoExpectedParameter'){
+        if(not $self->{'ExpectedParams'}->[$i]->{'HasValue'}){
             next;
-        }elsif(ref($Params[$i]) eq $self->{'ExpectedParams'}->[$i]){# map package name
+        }elsif(ref($Params[$i]) eq $self->{'ExpectedParams'}->[$i]->{'Value'}){# map package name
             next;
-        }elsif(Data::Compare->new()->Cmp($Params[$i], $self->{'ExpectedParams'}->[$i])){
+        }elsif(Data::Compare->new()->Cmp($Params[$i], $self->{'ExpectedParams'}->[$i]->{'Value'})){
             next;
         } else{
             return 0;
