@@ -54,10 +54,10 @@ sub whenAny {
 sub _checkExpectedParameters{
     my $self = shift;
     my ( $NewExpectedParameters) = @_;
-    my $SignaturKey = '';
+    my $SignatureKey = '';
     for(my $i = 0; $i < scalar @$NewExpectedParameters; $i++){
         my $Type = $NewExpectedParameters->[$i]->{'Type'};
-        $SignaturKey .= $Type;
+        $SignatureKey .= $Type;
         my $NewExpectedParameter = $NewExpectedParameters->[$i];
         $self->_testMatcherStore($self->{'MatcherStore'}{$Type}->[$i], $NewExpectedParameter);
         $self->{'MatcherStore'}{$Type}->[$i] = $NewExpectedParameter;
@@ -65,17 +65,17 @@ sub _checkExpectedParameters{
         $self->{'AnyStore'}->[$i] = $Type;
     }
 
-    foreach my $ExistingParameter (@{$self->{'TypeStore'}{$SignaturKey}}){
+    foreach my $ExistingParameter (@{$self->{'TypeStore'}{$SignatureKey}}){
         if($ExistingParameter->compareExpectedParameters($NewExpectedParameters)){
-            die('It is not possible two add two times the same method signatur.');
+            die('It is not possible two add two times the same method Signature.');
         }
     }
 }
 #---------------------------------------------------------------------
 sub _testTypeStore {
     my $self = shift;
-    foreach my $Signatur (keys %{$self->{'TypeStore'}}){
-        if($Signatur eq 'UsedWithWhenAny'){
+    foreach my $Signature (keys %{$self->{'TypeStore'}}){
+        if($Signature eq 'UsedWithWhenAny'){
             die('It is not possible to use a mixture between "when" and "whenAny"');
         }
     }
@@ -112,34 +112,34 @@ sub _testAnyStore {
 #---------------------------------------------------------------------
 sub _addToTypeStore {
     my $self = shift;
-    my ($Signatur, $NewExpectedParameters) = @_;
-    my $SignaturKey = join('',@$Signatur);
+    my ($Signature, $NewExpectedParameters) = @_;
+    my $SignatureKey = join('',@$Signature);
     my $Parameter = Test::Mockify::Parameter->new($NewExpectedParameters);
-    push(@{$self->{'TypeStore'}{$SignaturKey}}, $Parameter );
+    push(@{$self->{'TypeStore'}{$SignatureKey}}, $Parameter );
     return $Parameter->buildReturn();
 }
 #---------------------------------------------------------------------
 sub call {
     my $self = shift;
     my @Parameters = @_;
-    my $SignaturKey = '';
+    my $SignatureKey = '';
     for(my $i = 0; $i < scalar @Parameters; $i++){
         if($self->{'AnyStore'}->[$i] && $self->{'AnyStore'}->[$i] eq 'any'){
-            $SignaturKey .= 'any';
+            $SignatureKey .= 'any';
         }else{
-            $SignaturKey .= $self->_getType($Parameters[$i]);
+            $SignatureKey .= $self->_getType($Parameters[$i]);
         }
     }
     if($self->{'TypeStore'}{'UsedWithWhenAny'}){
         return $self->{'TypeStore'}{'UsedWithWhenAny'}->[0]->call(@Parameters);
     }else {
-        foreach my $ExistingParameter (@{$self->{'TypeStore'}{$SignaturKey}}){
+        foreach my $ExistingParameter (@{$self->{'TypeStore'}{$SignatureKey}}){
             if($ExistingParameter->matchWithExpectedParameters(@Parameters)){
                 return $ExistingParameter->call(@Parameters);
             }
         }
     }
-    die ("No matching found for $SignaturKey -> ".Dumper(\@Parameters));
+    die ("No matching found for $SignatureKey -> ".Dumper(\@Parameters));
 }
 #---------------------------------------------------------------------
 sub _getType{

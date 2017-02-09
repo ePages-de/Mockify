@@ -6,9 +6,15 @@ use Test::Mockify::Matcher qw (SupportedTypes);
 use Test::Mockify::TypeTests qw ( IsString );
 
 our @EXPORT_OK = qw (
-    IntAndFloat2Number
-    MigrateMatcherFormat
+    MigrateOldMatchers
 );
+#---------------------------------------------------------------------------------------------------
+sub MigrateOldMatchers {
+    my ( $Parameters ) = @_;
+    $Parameters = IntAndFloat2Number( $Parameters );
+    $Parameters = MigrateMatcherFormat( $Parameters );
+    return $Parameters;
+}
 #---------------------------------------------------------------------------------------------------
 sub MigrateMatcherFormat {
     my ( $Parameters ) = @_;

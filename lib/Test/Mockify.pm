@@ -38,7 +38,7 @@ use Test::Mockify::TypeTests qw ( IsInteger IsFloat IsString IsArrayReference Is
 use Test::Mockify::MethodCallCounter;
 use Test::Mockify::Method;
 use Test::MockObject::Extends;
-use Test::Mockify::CompatibilityTools qw (IntAndFloat2Number MigrateMatcherFormat);
+use Test::Mockify::CompatibilityTools qw (MigrateOldMatchers);
 use Data::Dumper;
 use Scalar::Util qw( blessed );
 use Data::Compare;
@@ -69,18 +69,33 @@ sub new {
 
     LoadPackage( $FakeModulePath );
     my $FakeClass = $FakeModulePath->new( @{$aFakeParams} );
-    $self->{'__MockedModulePath'} = $FakeModulePath;
-    $self->{'__MockedModule'} = Test::MockObject::Extends->new( $FakeClass );
+    $self->_mockedModulPath($FakeModulePath);
+    $self->_mockedSelf(Test::MockObject::Extends->new( $FakeClass ));
     $self->_initMockedModule();
 
     return $self;
+
+}
+#----------------------------------------------------------------------------------------
+sub _mockedModulPath {
+    my $self = shift;
+    my ($ModulPath) = @_;
+    return $self->{'__MockedModulePath'} unless ($ModulPath);
+    $self->{'__MockedModulePath'} = $ModulPath;
+}
+#----------------------------------------------------------------------------------------
+sub _mockedSelf {
+    my $self = shift;
+    my ($MockedSelf) = @_;
+    return $self->{'__MockedModule'} unless ($MockedSelf);
+    $self->{'__MockedModule'} = $MockedSelf;
 }
 #----------------------------------------------------------------------------------------
 sub _initMockedModule {
     my $self = shift;
 
-    $self->{'__MockedModule'}->{'__MethodCallCounter'} = Test::Mockify::MethodCallCounter->new();
-    $self->{'__MockedModule'}->{'__isMockified'} = 1;
+    $self->_mockedSelf()->{'__MethodCallCounter'} = Test::Mockify::MethodCallCounter->new();
+    $self->_mockedSelf()->{'__isMockified'} = 1;
     $self->_addGetParameterFromMockifyCall();
 
     return;
@@ -100,7 +115,7 @@ Provides the actual mock object, which you can use in the test.
 =cut
 sub getMockObject {
     my $self = shift;
-    return $self->{'__MockedModule'};
+    return $self->_mockedSelf();
 }
 
 #----------------------------------------------------------------------------------------=
@@ -171,9 +186,9 @@ With this method it is possible to observe a method. That means, you keep the or
 sub addMethodSpy {
     my $self = shift;
     my ( $MethodName ) = @_;
-    my $PointerOriginalMethod = \&{$self->{'__MockedModulePath'}.'::'.$MethodName};
+    my $PointerOriginalMethod = \&{$self->_mockedModulPath().'::'.$MethodName};
     $self->_addMethod($MethodName)->whenAny()->thenCall(sub {
-        return $PointerOriginalMethod->($self->{'__MockedModule'}, @_);
+        return $PointerOriginalMethod->($self->_mockedSelf(), @_);
     });
     return;
 }
@@ -194,11 +209,10 @@ sub addMethodSpyWithParameterCheck {
     my $self = shift;
     my ( $MethodName, $aParameterTypes ) = @_;
 
-    my $PointerOriginalMethod = \&{$self->{'__MockedModulePath'}.'::'.$MethodName};
-    $aParameterTypes = IntAndFloat2Number($aParameterTypes);
-    $aParameterTypes = MigrateMatcherFormat($aParameterTypes);
+    my $PointerOriginalMethod = \&{$self->_mockedModulPath().'::'.$MethodName};
+    $aParameterTypes = MigrateOldMatchers($aParameterTypes);
     $self->_addMethod($MethodName)->when(@{$aParameterTypes})->thenCall(sub {
-        return $PointerOriginalMethod->($self->{'__MockedModule'}, @_);
+        return $PointerOriginalMethod->($self->_mockedSelf(), @_);
     });
     return;
 }
@@ -222,7 +236,7 @@ sub addMock {
     my ( $MethodName, $rSub ) = @_;
 
     $self->_addMethod($MethodName)->whenAny()->thenCall(sub {
-        return $rSub->($self->{'__MockedModule'}, @_);
+        return $rSub->($self->_mockedSelf(), @_);
     });
 
     return;
@@ -232,12 +246,12 @@ sub _addMethod {
     my $self = shift;
     my ( $MethodName ) = @_;
 
-    ExistsMethod( $self->{'__MockedModulePath'}, $MethodName );
-    $self->{'__MockedModule'}->{'__MethodCallCounter'}->addMethod( $MethodName );
+    ExistsMethod( $self->_mockedModulPath(), $MethodName );
+    $self->_mockedSelf()->{'__MethodCallCounter'}->addMethod( $MethodName );
     if(not $self->{'MethodStore'}{$MethodName}){
         $self->{'MethodStore'}{$MethodName} //= Test::Mockify::Method->new();
-        $self->{'__MockedModule'}->mock($MethodName, sub {
-            $self->{'__MockedModule'}->{'__MethodCallCounter'}->increment( $MethodName );
+        $self->_mockedSelf()->mock($MethodName, sub {
+            $self->_mockedSelf()->{'__MethodCallCounter'}->increment( $MethodName );
             my $MockedSelf = shift;
             my @MockedParameters = @_;
             $self->_storeParameters( $MethodName, $MockedSelf, \@MockedParameters );
@@ -291,12 +305,11 @@ sub addMockWithReturnValueAndParameterCheck {
 
     if ( not IsArrayReference( $aParameterTypes ) ){
         Error( 'ParameterTypesNotProvided', {
-            'Method' => $self->{'__MockedModulePath'}."->$MethodName",
+            'Method' => $self->_mockedModulPath()."->$MethodName",
             'ParameterList' => $aParameterTypes,
         } );
     }
-    $aParameterTypes = IntAndFloat2Number($aParameterTypes);
-    $aParameterTypes = MigrateMatcherFormat($aParameterTypes);
+    $aParameterTypes = MigrateOldMatchers($aParameterTypes);
 
     if($ReturnValue){
         $self->_addMethod($MethodName)->when(@{$aParameterTypes})->thenReturn($ReturnValue);
@@ -320,7 +333,7 @@ sub _storeParameters {
 sub _addGetParameterFromMockifyCall {
     my $self = shift;
 
-    $self->{'__MockedModule'}->mock('__getParametersFromMockifyCall',
+    $self->_mockedSelf()->mock('__getParametersFromMockifyCall',
         sub{
             my $MockedSelf = shift;
             my ( $MethodName, $Position ) = @_;
