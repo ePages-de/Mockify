@@ -405,7 +405,7 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck {
 
     my $aParameterList = [];
     my $MockObject = $self->_createMockObject($aParameterList);
-    my $aParameterCheckList = ['string','int','undef','hashref', 'arrayref', 'object',];
+    my $aParameterCheckList = ['string','int','undef','hashref', 'arrayref', 'object'];
     $MockObject->addMockWithReturnValueAndParameterCheck('DummmyMethodForTestOverriding', 'This is a return value', $aParameterCheckList);
     my $MockedFakeModule = $MockObject->getMockObject();
     my $TestObject = bless({}, 'Test::Object');

@@ -21,7 +21,7 @@ use Test::More;
 #------------------------------------------------------------------------
 sub testPlan{
     my $self = shift;
-    
+
     $self->_SignaturWithAnyMatcherAndExpectedMatcher();
     $self->_MultipleAnyMatcher();
     $self->_SingleExepctedMatcher();
@@ -215,7 +215,7 @@ sub _UndefinedType_Error {
     my $self = shift;
     my $Method = Test::Mockify::Method->new();
     throws_ok( sub { $Method->when('NotSuportedType')->thenReturn('Result for two strings.'); },
-               qr/Found unsupported type, 'NotSuportedType'./,
+               qr/Use Test::Mockify::Matcher to define proper matchers./,
                'unsuported type, not like string or number'
      );
 }

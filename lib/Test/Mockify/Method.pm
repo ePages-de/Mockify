@@ -35,6 +35,7 @@ sub when {
     my @Signature;
     $self->_testTypeStore();
     foreach my $hParameter ( @Parameters ){
+        die('Use Test::Mockify::Matcher to define proper matchers.') unless (ref($hParameter) eq 'HASH');
         push(@Signature, $hParameter->{'Type'});
     }
     $self->_checkExpectedParameters(\@Parameters);

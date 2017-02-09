@@ -11,30 +11,32 @@ our @EXPORT_OK = qw (
 );
 #---------------------------------------------------------------------------------------------------
 sub MigrateMatcherFormat {
-    my ( $Parameter ) = @_;
+    my ( $Parameters ) = @_;
 
-    if( ref($Parameter) eq 'HASH'){
-        if($Parameter->{'Type'} ~~ SupportedTypes()){
-            return $Parameter;
-        }
-        my @ParameterKeys = keys %$Parameter;
-        my @ParameterValues = values %$Parameter;
-        $Parameter = {
-                'Type' => $ParameterKeys[0],
-                'Value' => $ParameterValues[0],
-        };
-    } else {
-        if(IsString($Parameter) && $Parameter ~~ SupportedTypes()){
+    foreach my $Parameter (@{$Parameters}){
+        if( ref($Parameter) eq 'HASH'){
+            if($Parameter->{'Type'} ~~ SupportedTypes()){
+                return $Parameter;
+            }
+            my @ParameterKeys = keys %$Parameter;
+            my @ParameterValues = values %$Parameter;
             $Parameter = {
-                'Type' => $Parameter,
-                'Value' => undef,
+                    'Type' => $ParameterKeys[0],
+                    'Value' => $ParameterValues[0],
             };
-        }else{
-            die("Found unsupported type, '$Parameter'. Use Test::Mockify:Matcher to define nice parameter types.");
+        } else {
+            if(IsString($Parameter) && $Parameter ~~ SupportedTypes()){
+                $Parameter = {
+                    'Type' => $Parameter,
+                    'Value' => undef,
+                };
+            }else{
+                die("Found unsupported type, '$Parameter'. Use Test::Mockify:Matcher to define nice parameter types.");
+            }
         }
     }
 
-    return $Parameter;
+    return $Parameters;
 }
 #---------------------------------------------------------------------------------------------------
 sub IntAndFloat2Number {
