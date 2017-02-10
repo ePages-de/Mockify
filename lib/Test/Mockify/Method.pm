@@ -1,3 +1,16 @@
+=pod
+
+=head1 Matcher
+
+Test::Mockify::Method - chained setup
+
+=head1 DESCRIPTION
+
+L<Test::Mockify::Method> is used to provide the chained mock setup
+
+=head1 METHODS
+
+=cut
 package Test::Mockify::Method;
 use Test::Mockify::Parameter;
 use Data::Dumper;
@@ -28,7 +41,19 @@ sub new {
     }
     return $self;
 }
-#---------------------------------------------------------------------
+=pod
+
+=head2 when
+
+  when(String())
+  when(Number(),String('abc'))
+
+=head3 Options
+
+C<when> have to be called with a L<Test::Mockify::Matcher> to specify the expected parameter list (signature).
+This will create for every signature a Parameter Object which will stored and also returned. So it is possible to create multiple signatures for one Method.
+It is not possible to mix C<when> with C<whenAny>.
+=cut
 sub when {
     my $self = shift;
     my @Parameters = @_;
@@ -41,7 +66,18 @@ sub when {
     $self->_checkExpectedParameters(\@Parameters);
     return $self->_addToTypeStore(\@Signature, \@Parameters);
 }
-#---------------------------------------------------------------------
+=pod
+
+=head2 whenAny
+
+  whenAny()
+
+=head3 Options
+
+C<whenAny> have to be called without parameter, later it will accept any type and amount of parameter. It will return a Parameter Object.
+It is not possible to mix C<whenAny> with C<when>.
+
+=cut
 sub whenAny {
     my $self = shift;
     die ('"whenAny" don`t allow any parameters' ) if (@_);
@@ -118,7 +154,17 @@ sub _addToTypeStore {
     push(@{$self->{'TypeStore'}{$SignatureKey}}, $Parameter );
     return $Parameter->buildReturn();
 }
-#---------------------------------------------------------------------
+=pod
+
+=head2 call
+
+  call()
+
+=head3 Options
+
+C<call> will be called with a list of parameters. If the signatur of this parameters match a stored signatur it will call the coresponding parameter object.
+
+=cut
 sub call {
     my $self = shift;
     my @Parameters = @_;
@@ -156,3 +202,18 @@ sub _getType{
 }
 
 1;
+
+__END__
+
+=head1 LICENSE
+
+Copyright (C) 2017 ePages GmbH
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=head1 AUTHOR
+
+Christian Breitkreutz E<lt>cbreitkreutz@epages.comE<gt>
+
+=cut
