@@ -162,7 +162,7 @@ sub _addToTypeStore {
 
 =head3 Options
 
-C<call> will be called with a list of parameters. If the signatur of this parameters match a stored signatur it will call the coresponding parameter object.
+C<call> will be called with a list of parameters. If the signature of this parameters match a stored signature it will call the corresponding parameter object.
 
 =cut
 sub call {

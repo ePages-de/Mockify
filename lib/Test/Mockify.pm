@@ -234,7 +234,9 @@ Only handover the **name** and a **method pointer**. Mockify will automatically 
 sub addMock {
     my $self = shift;
     my ( $MethodName, $rSub ) = @_;
-
+    if (warnings::enabled("deprecated")) {
+        warnings::warn('deprecated', "addMock is deprecated, use mock('name')->whenAny()->thenCall(sub{})");
+    }
     $self->_addMethod($MethodName)->whenAny()->thenCall(sub {
         return $rSub->($self->_mockedSelf(), @_);
     });
@@ -273,7 +275,9 @@ Does the same as C<addMock>, but here you can handover a **value** which will be
 sub addMockWithReturnValue {
     my $self = shift;
     my ( $MethodName, $ReturnValue ) = @_;
-
+    if (warnings::enabled("deprecated")) {
+        warnings::warn('deprecated', "addMockWithReturnValue is deprecated, use mock('name')->when()->thenReturn('Value')");
+    }
     if($ReturnValue){
         $self->_addMethod($MethodName)->when()->thenReturn($ReturnValue);
     }else {
@@ -302,7 +306,9 @@ To define in a nice way the signatur you should use the L<< Test::Mockify::Match
 sub addMockWithReturnValueAndParameterCheck {
     my $self = shift;
     my ( $MethodName, $ReturnValue, $aParameterTypes ) = @_;
-
+    if (warnings::enabled("deprecated")) {
+        warnings::warn('deprecated', "addMockWithReturnValue is deprecated, use mock('name')->when(String('abc'))->thenReturn('Value')");
+    }
     if ( not IsArrayReference( $aParameterTypes ) ){
         Error( 'ParameterTypesNotProvided', {
             'Method' => $self->_mockedModulPath()."->$MethodName",
