@@ -58,7 +58,11 @@ sub when {
     my $self = shift;
     my @Parameters = @_;
     my @Signature;
-    $self->_testTypeStore();
+    foreach my $Signature (keys %{$self->{'TypeStore'}}){
+        if($Signature eq 'UsedWithWhenAny'){
+            die('It is not possible to use a mixture between "when" and "whenAny"');
+        }
+    }
     foreach my $hParameter ( @Parameters ){
         die('Use Test::Mockify::Matcher to define proper matchers.') unless (ref($hParameter) eq 'HASH');
         push(@Signature, $hParameter->{'Type'});
@@ -107,15 +111,7 @@ sub _checkExpectedParameters{
         }
     }
 }
-#---------------------------------------------------------------------
-sub _testTypeStore {
-    my $self = shift;
-    foreach my $Signature (keys %{$self->{'TypeStore'}}){
-        if($Signature eq 'UsedWithWhenAny'){
-            die('It is not possible to use a mixture between "when" and "whenAny"');
-        }
-    }
-}
+
 #---------------------------------------------------------------------
 sub _testMatcherStore {
     my $self = shift;
