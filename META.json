@@ -79,16 +79,16 @@
    "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/ChristianBreitkreutz/Mockify/issues"
+         "web" : "https://github.com/ePages-de/Mockify/issues"
       },
-      "homepage" : "https://github.com/ChristianBreitkreutz/Mockify",
+      "homepage" : "https://github.com/ePages-de/Mockify",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/ChristianBreitkreutz/Mockify.git",
-         "web" : "https://github.com/ChristianBreitkreutz/Mockify"
+         "url" : "git://github.com/ePages-de/Mockify.git",
+         "web" : "https://github.com/ePages-de/Mockify"
       }
    },
-   "version" : "0.9.3",
+   "version" : "0.9.4",
    "x_authority" : "cpan:CHRISBR",
    "x_contributors" : [
       "Christian Breitkreutz <c.breitkreutz@epages.com>",

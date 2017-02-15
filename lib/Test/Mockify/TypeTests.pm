@@ -10,6 +10,7 @@ our @EXPORT_OK = qw (
         IsArrayReference
         IsHashReference
         IsObjectReference
+        IsCodeReference
     );
 
 #------------------------------------------------------------------------
@@ -88,6 +89,18 @@ sub IsHashReference {
     return $IsHash;
 }
 #------------------------------------------------------------------------
+sub IsCodeReference {
+    my ( $hValue ) = @_;
+
+    my $IsCode = 0;
+
+    if ( ref($hValue) eq 'CODE' ) {
+        $IsCode = 1;
+    }
+
+    return $IsCode;
+}
+#------------------------------------------------------------------------
 sub IsObjectReference {
     my ( $Value ) = @_;
 
@@ -99,4 +112,5 @@ sub IsObjectReference {
 
     return $IsObject;
 }
+
 1;

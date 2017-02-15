@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/ChristianBreitkreutz/Mockify.svg?branch=master)](https://travis-ci.org/ChristianBreitkreutz/Mockify) [![MetaCPAN Release](https://badge.fury.io/pl/Test-Mockify.svg)](https://metacpan.org/release/Test-Mockify)
-# NAME
+[![Build Status](https://travis-ci.org/ePages-de/Mockify.svg?branch=master)](https://travis-ci.org/ePages-de/Mockify) [![MetaCPAN Release](https://badge.fury.io/pl/Test-Mockify.svg)](https://metacpan.org/release/Test-Mockify)
+# Mockify
 
 Test::Mockify - minimal mocking framework for perl
 
@@ -7,18 +7,17 @@ Test::Mockify - minimal mocking framework for perl
 
     use Test::Mockify;
     use Test::Mockify::Verify qw ( WasCalled );
+    use Test::Mockify::Matcher qw ( String );
 
     # build a new mocked object
     my $MockObjectBuilder = Test::Mockify->new('SampleLogger', []);
-    my $returnValue = undef;
-    my $expectedParameterTypes = ['string'];
-    $MockObjectBuilder->mock('log', $returnValue, $expectedParameterTypes);
+    $MockObjectBuilder->mock('log')->when(String())->thenReturnUndef();
     my $MockedLogger = $MockLoggerBuilder->getMockObject();
-    
+
     # inject mocked object into the code you want to test
     my $App = SampleApp->new('logger'=> $MockedLogger);
     $App->do_something();
-    
+
     # verify that the mock object was called
     ok(WasCalled($MockedLogger, 'log'), 'log was called');
     done_testing();
@@ -36,8 +35,7 @@ verify the interactions with your mocks.
 
 ### Options
 
-The `new` method creates a new mock object builder. Use `getMockObject` to obtain the final
-mock object.
+The `new` method creates a new mock object builder. Use `getMockObject` to obtain the final mock object.
 
 ## getMockObject
 
@@ -49,15 +47,35 @@ Provides the actual mock object, which you can use in the test.
 
 ## mock
 
-This is a short cut for \*addMock\*, \*addMockWithReturnValue\* and \*addMockWithReturnValueAndParameterCheck\*. \*mock\* detects the required method with given parameters.
+This is place where the mocked methods are defined. The method also proves that the method you like to mock actually exists.
 
-    $MockObjectBuilder->mock('MethodName', sub{});
-    $MockObjectBuilder->mock('MethodName', 'someValue');
-    $MockObjectBuilder->mock('MethodName', 'someValue', ['string',{'string' => 'abcd'}]);
+### synopsis
+
+This method takes one parameter, which is the name of the method you like to mock.
+Because you need to specify more detailed the behaviour of this mock you have to chain the method signature (when) and the expected return value (then...). 
+
+For example, the next line will create a mocked version of the method log, but only if this method is called with any string and the number 123. In this case it will return the String 'Hello World'. Mockify will throw an error if this method is called somehow else.
+
+`$MockObjectBuilder->mock('log')->when(String(), Number(123))->thenReturn('Hello World');`
+
+`is($SampleLogger->log('abc',123), 'Hello World');`
+
+### when
+
+To define the signatur in the needed structure you should use the [Test::Mockify::Matchers](https://metacpan.org/pod/Test::Mockify::Matchers).
+
+### whenAny
+
+If you don't want to specify the method signatur at all, you can use whenAny.
+It is not possible to mix `whenAny` and `when` for the same method.
+
+### then ...
+
+For possible return types please look in [Test::Mockify::ReturnValue](https://metacpan.org/pod/Test::Mockify::ReturnValue)
 
 ## addMethodSpy
 
-With this method it is possible to observe a method. That means, you keep the original functionality, but you can get meta data from the mockify- framework.
+With this method it is possible to observe a method. That means, you keep the original functionality but you can get meta data from the mockify-framework.
 
     $MockObjectBuilder->addMethodSpy('myMethodName');
 
@@ -65,20 +83,10 @@ With this method it is possible to observe a method. That means, you keep the or
 
 With this method it is possible to observe a method and check the parameters. That means, you keep the original functionality, but you can get meta data from the mockify- framework and use the parameter check, like \*addMockWithReturnValueAndParameterCheck\*.
 
-    my $aParameterTypes = ['string',{'string' => 'abcd'}];
+    my $aParameterTypes = [String(),String(abcd)];
     $MockObjectBuilder->addMethodSpyWithParameterCheck('myMethodName', $aParameterTypes);
 
-### Options
-
-Pure types
-
-    ['string', 'int', 'hashref', 'float', 'arrayref', 'object', 'undef', 'any']
-
-or types with expected values
-
-    [{'string'=>'abcdef'}, {'int' => 123}, {'float' => 1.23}, {'hashref' => {'key'=>'value'}}, {'arrayref'=>['one', 'two']}, {'object'=> 'PAth::to:Obejct}]
-
-If you use \*any\*, you have to verify this value explicitly in the test, see \*\*GetParametersFromMockifyCall\*\* in [Test::Mockify::Verify](https://metacpan.org/pod/Test::Mockify::Verify).
+To define in a nice way the signatur you should use the [Test::Mockify::Matchers;](https://metacpan.org/pod/Test::Mockify::Matchers;).
 
 ## addMock
 
@@ -105,20 +113,10 @@ You can check if they have a specific \*\*data type\*\* or even check if they ha
 
 In the following example two strings will be expected, and the second one has to have the value "abcd".
 
-    my $aParameterTypes = ['string',{'string' => 'abcd'}];
+    my $aParameterTypes = [String(),String('abcd')];
     $MockObjectBuilder->addMockWithReturnValueAndParameterCheck('myMethodName','the return value',$aParameterTypes);
 
-### Options
-
-Pure types
-
-    ['string', 'int', 'float', 'hashref', 'arrayref', 'object', 'undef', 'any']
-
-or types with expected values
-
-    [{'string'=>'abcdef'}, {'int' => 123}, {'float' => 1.23}, {'hashref' => {'key'=>'value'}}, {'arrayref'=>['one', 'two']}, {'object'=> 'PAth::to:Obejct}]
-
-If you use \*\*any\*\*, you have to verify this value explicitly in the test, see +\*GetParametersFromMockifyCall\*\* in [Test::Mockify::Verify](https://metacpan.org/pod/Test::Mockify::Verify).
+To define in a nice way the signatur you should use the [Test::Mockify::Matchers;](https://metacpan.org/pod/Test::Mockify::Matchers;).
 
 # LICENSE
 
