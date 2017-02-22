@@ -47,7 +47,7 @@ use experimental 'switch';
 
 use strict;
 
-our $VERSION = '0.9.4';
+our $VERSION = '0.10.0';
 
 sub new {
     my $class = shift;

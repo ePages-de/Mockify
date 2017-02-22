@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/ePages-de/Mockify.svg?branch=master)](https://travis-ci.org/ePages-de/Mockify) [![MetaCPAN Release](https://badge.fury.io/pl/Test-Mockify.svg)](https://metacpan.org/release/Test-Mockify)
-# Mockify
+# NAME
 
 Test::Mockify - minimal mocking framework for perl
 
@@ -29,14 +29,6 @@ verify the interactions with your mocks.
 
 # METHODS
 
-## new
-
-    my $MockObjectBuilder = Test::Mockify->new('Module::To::Mock', ['Constructor Parameters']);
-
-### Options
-
-The `new` method creates a new mock object builder. Use `getMockObject` to obtain the final mock object.
-
 ## getMockObject
 
 Provides the actual mock object, which you can use in the test.
@@ -56,20 +48,21 @@ Because you need to specify more detailed the behaviour of this mock you have to
 
 For example, the next line will create a mocked version of the method log, but only if this method is called with any string and the number 123. In this case it will return the String 'Hello World'. Mockify will throw an error if this method is called somehow else.
 
-`$MockObjectBuilder->mock('log')->when(String(), Number(123))->thenReturn('Hello World');`
+    my $MockObjectBuilder = Test::Mockify->new( 'Sample::Logger', [] );
+    $MockObjectBuilder->mock('log')->when(String(), Number(123))->thenReturn('Hello World');
+    my $SampleLogger = $MockObjectBuilder->getMockObject();
+    is($SampleLogger->log('abc',123), 'Hello World');
 
-`is($SampleLogger->log('abc',123), 'Hello World');`
-
-### when
+#### when
 
 To define the signatur in the needed structure you should use the [Test::Mockify::Matchers](https://metacpan.org/pod/Test::Mockify::Matchers).
 
-### whenAny
+#### whenAny
 
 If you don't want to specify the method signatur at all, you can use whenAny.
 It is not possible to mix `whenAny` and `when` for the same method.
 
-### then ...
+#### then ...
 
 For possible return types please look in [Test::Mockify::ReturnValue](https://metacpan.org/pod/Test::Mockify::ReturnValue)
 
@@ -81,35 +74,35 @@ With this method it is possible to observe a method. That means, you keep the or
 
 ## addMethodSpyWithParameterCheck
 
-With this method it is possible to observe a method and check the parameters. That means, you keep the original functionality, but you can get meta data from the mockify- framework and use the parameter check, like \*addMockWithReturnValueAndParameterCheck\*.
+With this method it is possible to observe a method and check the parameters. That means, you keep the original functionality, but you can get meta data from the mockify- framework and use the parameter check, like **addMockWithReturnValueAndParameterCheck**.
 
     my $aParameterTypes = [String(),String(abcd)];
     $MockObjectBuilder->addMethodSpyWithParameterCheck('myMethodName', $aParameterTypes);
 
 To define in a nice way the signatur you should use the [Test::Mockify::Matchers;](https://metacpan.org/pod/Test::Mockify::Matchers;).
 
-## addMock
+## addMock _(deprecated)_
 
-This is the simplest case. It works like the mock-method from Test::MockObject.
+This is the simplest case. It works like the mock-method from [Test::MockObject](https://metacpan.org/pod/Test::MockObject).
 
-Only handover the \*\*name\*\* and a \*\*method pointer\*\*. Mockify will automatically check if the method exists in the original object.
+Only handover the **name** and a **method pointer**. Mockify will automatically check if the method exists in the original object.
 
     $MockObjectBuilder->addMock('myMethodName', sub {
                                       # Your implementation
                                    }
     );
 
-## addMockWithReturnValue
+## addMockWithReturnValue _(deprecated)_
 
-Does the same as `addMock`, but here you can handover a \*\*value\*\* which will be returned if you call the mocked method.
+Does the same as `addMock`, but here you can handover a **value** which will be returned if you call the mocked method.
 
     $MockObjectBuilder->addMockWithReturnValue('myMethodName','the return value');
 
-## addMockWithReturnValueAndParameterCheck
+## addMockWithReturnValueAndParameterCheck _(deprecated)_
 
-This method is an extension of \*addMockWithReturnValue\*. Here you can also check the parameters which will be passed.
+This method is an extension of **addMockWithReturnValue**. Here you can also check the parameters which will be passed.
 
-You can check if they have a specific \*\*data type\*\* or even check if they have a given \*\*value\*\*.
+You can check if they have a specific **data type** or even check if they have a given **value**.
 
 In the following example two strings will be expected, and the second one has to have the value "abcd".
 
@@ -127,4 +120,4 @@ it under the same terms as Perl itself.
 
 # AUTHOR
 
-Christian Breitkreutz <cbreitkreutz@epages.com>
+Christian Breitkreutz <christianbreitkreutz@gmx.de>

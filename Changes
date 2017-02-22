@@ -2,6 +2,9 @@ Revision history for Perl extension Devel-Mockify
 
 {{$NEXT}}
 
+0.10.0 2017-02-22T19:44:56Z
+    - fix documentation and versionsnumber issues
+
 0.9.4 2017-02-15T19:43:47Z
     - new chained mocksetup approach
 
