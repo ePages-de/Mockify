@@ -1,6 +1,6 @@
 =pod
 
-=head1 Matcher
+=head1 Name
 
 Test::Mockify::Matcher - To define parameter matchers
 
@@ -37,11 +37,9 @@ our @EXPORT_OK = qw (
 
 =head2 SupportedTypes
 
-  SupportedTypes();
-
-=head3 Options
-
 The C<SupportedTypes> will return all supported matcher types as an array ref.
+
+  SupportedTypes();
 
 =cut
 sub SupportedTypes{
@@ -60,13 +58,11 @@ sub SupportedTypes{
 
 =head2 String
 
-  String();
-  String('abc');
-
-=head3 Options
-
 The C<String> method will create the matcher in the needed structure to match a string.
 If called with parameter, it will be proved that this value is actually a string. If not, it will create an error.
+
+  String();
+  String('abc');
 
 =cut
 sub String(;$) {
@@ -78,13 +74,12 @@ sub String(;$) {
 
 =head2 Number
 
-  Number();
-  Number(123);
-
-=head3 Options
-
 The C<Number> method will create the matcher in the needed structure to match a number.
 If called with parameter, it will be proved that this value is actually a number. If not, it will create an error.
+
+  Number();
+  Number(123);
+  Number(45.67);
 
 =cut
 sub Number(;$) {
@@ -96,13 +91,11 @@ sub Number(;$) {
 
 =head2 HashRef
 
-  HashRef();
-  HashRef({1 => 23});
-
-=head3 Options
-
 The C<HashRef> method will create the matcher in the needed structure  to match a hash reference.
 If called with parameter, it will be proved that this value is actually a hash reference. If not, it will create an error.
+
+  HashRef();
+  HashRef({1 => 23});
 
 =cut
 sub HashRef(;$) {
@@ -114,13 +107,11 @@ sub HashRef(;$) {
 
 =head2 ArrayRef
 
-  ArrayRef();
-  ArrayRef([1,23]);
-
-=head3 Options
-
 The C<ArrayRef> method will create the matcher in the needed structure to match an array reference.
 If called with parameter, it will be proved that this value is actually an array reference. If not, it will create an error.
+
+  ArrayRef();
+  ArrayRef([1,23]);
 
 =cut
 sub ArrayRef(;$) {
@@ -132,13 +123,11 @@ sub ArrayRef(;$) {
 
 =head2 Object
 
-  Object();
-  Object('Path::To::Object');
-
-=head3 Options
-
 The C<Object> method will create the matcher in the needed structure to match an object.
 If called with parameter, it will be proved that this value is actually an string of the object path. If not, it will create an error.
+
+  Object();
+  Object('Path::To::Object');
 
 =cut
 sub Object(;$) {
@@ -150,11 +139,9 @@ sub Object(;$) {
 
 =head2 Function
 
-  Function();
-
-=head3 Options
-
 The C<Function> method will create the matcher in the needed structure to match a function pointer.
+
+  Function();
 
 =cut
 sub Function(;$) {
@@ -164,11 +151,9 @@ sub Function(;$) {
 
 =head2 Undef
 
-  Undef();
-
-=head3 Options
-
 The C<Undef> method will create the matcher in the needed structure to match an undefined value.
+
+  Undef();
 
 =cut
 sub Undef() {
@@ -178,11 +163,9 @@ sub Undef() {
 
 =head2 Any
 
-  Any();
-
-=head3 Options
-
 The C<Any> method will create the matcher in the needed structure to match any type of parameter.
+
+  Any();
 
 =cut
 sub Any() {
@@ -208,7 +191,7 @@ it under the same terms as Perl itself.
 
 =head1 AUTHOR
 
-Christian Breitkreutz E<lt>cbreitkreutz@epages.comE<gt>
+Christian Breitkreutz E<lt>christianbreitkreutz@gmx.deE<gt>
 
 =cut
 

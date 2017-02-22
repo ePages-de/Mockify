@@ -1,6 +1,6 @@
 =pod
 
-=head1 Matcher
+=head1 Name
 
 Test::Mockify::Method - chained setup
 
@@ -45,14 +45,13 @@ sub new {
 
 =head2 when
 
-  when(String())
-  when(Number(),String('abc'))
-
-=head3 Options
-
 C<when> have to be called with a L<Test::Mockify::Matcher> to specify the expected parameter list (signature).
 This will create for every signature a Parameter Object which will stored and also returned. So it is possible to create multiple signatures for one Method.
 It is not possible to mix C<when> with C<whenAny>.
+
+  when(String())
+  when(Number(),String('abc'))
+
 =cut
 sub when {
     my $self = shift;
@@ -74,12 +73,10 @@ sub when {
 
 =head2 whenAny
 
-  whenAny()
-
-=head3 Options
-
-C<whenAny> have to be called without parameter, later it will accept any type and amount of parameter. It will return a Parameter Object.
+C<whenAny> have to be called without parameter, when called it will accept any type and amount of parameter. It will return a Parameter Object.
 It is not possible to mix C<whenAny> with C<when>.
+
+  whenAny()
 
 =cut
 sub whenAny {
@@ -154,11 +151,9 @@ sub _addToTypeStore {
 
 =head2 call
 
-  call()
-
-=head3 Options
-
 C<call> will be called with a list of parameters. If the signature of this parameters match a stored signature it will call the corresponding parameter object.
+
+  call()
 
 =cut
 sub call {
@@ -210,6 +205,6 @@ it under the same terms as Perl itself.
 
 =head1 AUTHOR
 
-Christian Breitkreutz E<lt>cbreitkreutz@epages.comE<gt>
+Christian Breitkreutz E<lt>christianbreitkreutz@gmx.deE<gt>
 
 =cut
