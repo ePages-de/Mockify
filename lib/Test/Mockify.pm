@@ -37,6 +37,7 @@ use Test::Mockify::Tools qw ( Error ExistsMethod IsValid LoadPackage Isa );
 use Test::Mockify::TypeTests qw ( IsInteger IsFloat IsString IsArrayReference IsHashReference IsObjectReference );
 use Test::Mockify::MethodCallCounter;
 use Test::Mockify::Method;
+use Test::Mockify::MethodSpy;
 use Test::MockObject::Extends;
 use Test::Mockify::CompatibilityTools qw (MigrateOldMatchers);
 use Data::Dumper;
@@ -145,7 +146,7 @@ sub mock {
     my @Parameters = @_;
     my $ParameterAmount = scalar @Parameters;
     if($ParameterAmount == 1 && IsString($Parameters[0]) ){
-        return $self->_addMethod($Parameters[0]);
+        return $self->_addMockWithMethod($Parameters[0]);
     }
     if($ParameterAmount == 2){
         my ( $MethodName, $ReturnValueOrFunctionPointer ) = @Parameters;
@@ -161,6 +162,16 @@ sub mock {
     }
     return;
 }
+#todo: doku
+sub spy {
+    my $self = shift;
+    my ($MethodName) = @_;
+    my $PointerOriginalMethod = \&{$self->_mockedModulPath().'::'.$MethodName};
+    #In Order to have the current obejct availible in the parameter list, it have to be injected here.
+    return $self->_addMockWithMethodSpy($MethodName, sub {
+        return $PointerOriginalMethod->($self->_mockedSelf(), @_);
+    });
+}
 #----------------------------------------------------------------------------------------
 =pod
 
@@ -174,10 +185,7 @@ With this method it is possible to observe a method. That means, you keep the or
 sub addMethodSpy {
     my $self = shift;
     my ( $MethodName ) = @_;
-    my $PointerOriginalMethod = \&{$self->_mockedModulPath().'::'.$MethodName};
-    $self->_addMethod($MethodName)->whenAny()->thenCall(sub {
-        return $PointerOriginalMethod->($self->_mockedSelf(), @_);
-    });
+    $self->spy($MethodName)->whenAny();
     return;
 }
 #----------------------------------------------------------------------------------------
@@ -197,13 +205,11 @@ sub addMethodSpyWithParameterCheck {
     my $self = shift;
     my ( $MethodName, $aParameterTypes ) = @_;
 
-    my $PointerOriginalMethod = \&{$self->_mockedModulPath().'::'.$MethodName};
-    $aParameterTypes = MigrateOldMatchers($aParameterTypes);
-    $self->_addMethod($MethodName)->when(@{$aParameterTypes})->thenCall(sub {
-        return $PointerOriginalMethod->($self->_mockedSelf(), @_);
-    });
+    my $aMigratedMatchers = MigrateOldMatchers($aParameterTypes);
+    $self->spy($MethodName)->when(@{$aMigratedMatchers});
     return;
 }
+
 #----------------------------------------------------------------------------------------
 =pod
 
@@ -225,21 +231,33 @@ sub addMock {
     if (warnings::enabled("deprecated")) {
         warnings::warn('deprecated', "addMock is deprecated, use mock('name')->whenAny()->thenCall(sub{})");
     }
-    $self->_addMethod($MethodName)->whenAny()->thenCall(sub {
+    $self->_addMockWithMethod($MethodName)->whenAny()->thenCall(sub {
         return $rSub->($self->_mockedSelf(), @_);
     });
 
     return;
 }
 #-------------------------------------------------------------------------------------
-sub _addMethod {
+sub _addMockWithMethod {
     my $self = shift;
     my ( $MethodName ) = @_;
+    return $self->_addMock($MethodName, Test::Mockify::Method->new());
+}
+#-------------------------------------------------------------------------------------
+sub _addMockWithMethodSpy {
+    my $self = shift;
+    my ( $MethodName, $PointerOriginalMethod ) = @_;
+    return $self->_addMock($MethodName, Test::Mockify::MethodSpy->new($PointerOriginalMethod));
+}
+#-------------------------------------------------------------------------------------
+sub _addMock {
+    my $self = shift;
+    my ( $MethodName, $Method) = @_;
 
     ExistsMethod( $self->_mockedModulPath(), $MethodName );
     $self->_mockedSelf()->{'__MethodCallCounter'}->addMethod( $MethodName );
     if(not $self->{'MethodStore'}{$MethodName}){
-        $self->{'MethodStore'}{$MethodName} //= Test::Mockify::Method->new();
+        $self->{'MethodStore'}{$MethodName} //= $Method;
         $self->_mockedSelf()->mock($MethodName, sub {
             $self->_mockedSelf()->{'__MethodCallCounter'}->increment( $MethodName );
             my $MockedSelf = shift;
@@ -267,9 +285,9 @@ sub addMockWithReturnValue {
         warnings::warn('deprecated', "addMockWithReturnValue is deprecated, use mock('name')->when()->thenReturn('Value')");
     }
     if($ReturnValue){
-        $self->_addMethod($MethodName)->when()->thenReturn($ReturnValue);
+        $self->_addMockWithMethod($MethodName)->when()->thenReturn($ReturnValue);
     }else {
-        $self->_addMethod($MethodName)->when()->thenReturnUndef();
+        $self->_addMockWithMethod($MethodName)->when()->thenReturnUndef();
     }
 
     return;
@@ -306,9 +324,9 @@ sub addMockWithReturnValueAndParameterCheck {
     $aParameterTypes = MigrateOldMatchers($aParameterTypes);
 
     if($ReturnValue){
-        $self->_addMethod($MethodName)->when(@{$aParameterTypes})->thenReturn($ReturnValue);
+        $self->_addMockWithMethod($MethodName)->when(@{$aParameterTypes})->thenReturn($ReturnValue);
     }else {
-        $self->_addMethod($MethodName)->when(@{$aParameterTypes})->thenReturnUndef();
+        $self->_addMockWithMethod($MethodName)->when(@{$aParameterTypes})->thenReturnUndef();
     }
 
     return;
