@@ -129,7 +129,7 @@ For example, the next line will create a mocked version of the method log, but o
 
 =head4 when
 
-To define the signatur in the needed structure you should use the L<< Test::Mockify::Matchers >>.
+To define the signatur in the needed structure you should use the L<< Test::Mockify::Matcher >>.
 
 =head4 whenAny
 
