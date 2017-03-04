@@ -1,4 +1,4 @@
-package Mockify_Methodwhen;
+package Mockify_MethodSpy;
 use strict;
 use FindBin;
 use lib ($FindBin::Bin);
@@ -24,6 +24,7 @@ sub testPlan{
     $self->integrationTest_ExpectedTypes();
     $self->integrationTest_whenAny();
     $self->integrationTest_Verify();
+    $self->integrationTest_MixSpyAndMock();
     return;
 }
 #------------------------------------------------------------------------
@@ -81,12 +82,33 @@ sub integrationTest_Verify {
         qr/No matching found for string/,
         'proves that an unexpected value will throw an Error.'
     );
-    ;
-    
 
     is(GetCallCount($FakeModule,'returnParameterListNew'),2 , 'proves that the get call count works fine');
     is(WasCalled($FakeModule,'DummmyMethodForTestOverriding'),1 , 'proves that the verifyer for wasCalled works fine');
     is(GetParametersFromMockifyCall($FakeModule,'DummmyMethodForTestOverriding')->[0],'SomeParameter' , 'proves that the verifyer for getparams. works fine');
+}
+
+#------------------------------------------------------------------------
+sub integrationTest_MixSpyAndMock {
+    my $self = shift;
+
+    my $Mockify = Test::Mockify->new('FakeModuleForMockifyTest', ['one','two']);
+    $Mockify->spy('returnParameterListNew')->when(String('Parameter'));
+    throws_ok( sub { $Mockify->mock('returnParameterListNew') },
+        qr/It is not possible to mix spy and mock/,
+        'proves that it is not possible to use first spy and than mock for the same method'
+    );
+
+    $Mockify->mock('DummmyMethodForTestOverriding')->whenAny()->thenReturn('hello');
+    throws_ok( sub { $Mockify->spy('DummmyMethodForTestOverriding') },
+        qr/It is not possible to mix spy and mock/,
+        'proves that it is not possible to use first mock and than spy for the same method'
+    );
+
+    my $FakeModule = $Mockify->getMockObject();
+
+    is_deeply($FakeModule->returnParameterListNew('Parameter'),['one','two'] , 'proves that the parameters will be passed');
+    is($FakeModule->DummmyMethodForTestOverriding(),'hello' , 'proves that the mock was called');
 }
 __PACKAGE__->RunTest();
 1;

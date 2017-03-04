@@ -69,15 +69,15 @@ sub new {
 sub _mockedModulPath {
     my $self = shift;
     my ($ModulPath) = @_;
-    return $self->{'__MockedModulePath'} unless ($ModulPath);
-    $self->{'__MockedModulePath'} = $ModulPath;
+    return $self->{'MockedModulePath'} unless ($ModulPath);
+    $self->{'MockedModulePath'} = $ModulPath;
 }
 #----------------------------------------------------------------------------------------
 sub _mockedSelf {
     my $self = shift;
     my ($MockedSelf) = @_;
-    return $self->{'__MockedModule'} unless ($MockedSelf);
-    $self->{'__MockedModule'} = $MockedSelf;
+    return $self->{'MockedModule'} unless ($MockedSelf);
+    $self->{'MockedModule'} = $MockedSelf;
 }
 #----------------------------------------------------------------------------------------
 sub _initMockedModule {
@@ -144,6 +144,7 @@ For possible return types please look in L<Test::Mockify::ReturnValue>
 sub mock {
     my $self = shift;
     my @Parameters = @_;
+    
     my $ParameterAmount = scalar @Parameters;
     if($ParameterAmount == 1 && IsString($Parameters[0]) ){
         return $self->_addMockWithMethod($Parameters[0]);
@@ -162,7 +163,39 @@ sub mock {
     }
     return;
 }
-#todo: doku
+=pod
+
+=head2 spy
+
+with this methods you can observe a method. You can use the L<Test::Mockify::Verify> to ensure that the method was called with the expected parameters.
+
+=head3 synopsis
+
+This method takes one parameter, which is the name of the method you like to spy.
+Because you need to specify more detailed the behaviour of this spy you have to chain the method signature (when) and the expected return value (then...). 
+
+For example, the next line will create a method spy of the method log, but only if this method is called with any string and the number 123. Mockify will throw an error if this method is called somehow else.
+
+  my $MockObjectBuilder = Test::Mockify->new( 'Sample::Logger', [] );
+  $MockObjectBuilder->spy('log')->when(String(), Number(123));
+  my $SampleLogger = $MockObjectBuilder->getMockObject();
+  todo for verify
+
+
+=head4 when
+
+To define the signatur in the needed structure you should use the L<< Test::Mockify::Matcher >>.
+
+=head4 whenAny
+
+If you don't want to specify the method signatur at all, you can use whenAny.
+It is not possible to mix C<whenAny> and C<when> for the same method.
+
+=head4 then ...
+
+For possible return types please look in L<Test::Mockify::ReturnValue>
+
+=cut
 sub spy {
     my $self = shift;
     my ($MethodName) = @_;
@@ -172,10 +205,11 @@ sub spy {
         return $PointerOriginalMethod->($self->_mockedSelf(), @_);
     });
 }
+
 #----------------------------------------------------------------------------------------
 =pod
 
-=head2 addMethodSpy
+=head2 addMethodSpy I<(deprecated)>
 
 With this method it is possible to observe a method. That means, you keep the original functionality but you can get meta data from the mockify-framework.
 
@@ -185,13 +219,16 @@ With this method it is possible to observe a method. That means, you keep the or
 sub addMethodSpy {
     my $self = shift;
     my ( $MethodName ) = @_;
+    if (warnings::enabled("deprecated")) {
+        warnings::warn('deprecated', "addMethodSpy is deprecated, use spy('name')->whenAny()");
+    }
     $self->spy($MethodName)->whenAny();
     return;
 }
 #----------------------------------------------------------------------------------------
 =pod
 
-=head2 addMethodSpyWithParameterCheck
+=head2 addMethodSpyWithParameterCheck I<(deprecated)>
 
 With this method it is possible to observe a method and check the parameters. That means, you keep the original functionality, but you can get meta data from the mockify- framework and use the parameter check, like B<addMockWithReturnValueAndParameterCheck>.
 
@@ -204,7 +241,9 @@ To define in a nice way the signatur you should use the L<< Test::Mockify::Match
 sub addMethodSpyWithParameterCheck {
     my $self = shift;
     my ( $MethodName, $aParameterTypes ) = @_;
-
+    if (warnings::enabled("deprecated")) {
+        warnings::warn('deprecated', "addMethodSpyWithParameterCheck is deprecated, use spy('name')->when(String('abc'))");
+    }
     my $aMigratedMatchers = MigrateOldMatchers($aParameterTypes);
     $self->spy($MethodName)->when(@{$aMigratedMatchers});
     return;
@@ -241,12 +280,14 @@ sub addMock {
 sub _addMockWithMethod {
     my $self = shift;
     my ( $MethodName ) = @_;
+    $self->_testMockTypeUsage($MethodName);
     return $self->_addMock($MethodName, Test::Mockify::Method->new());
 }
 #-------------------------------------------------------------------------------------
 sub _addMockWithMethodSpy {
     my $self = shift;
     my ( $MethodName, $PointerOriginalMethod ) = @_;
+    $self->_testMockTypeUsage($MethodName);
     return $self->_addMock($MethodName, Test::Mockify::MethodSpy->new($PointerOriginalMethod));
 }
 #-------------------------------------------------------------------------------------
@@ -370,7 +411,19 @@ sub _addGetParameterFromMockifyCall {
 
     return;
 }
-
+#----------------------------------------------------------------------------------------
+sub _testMockTypeUsage {
+    my $self = shift;
+    my ($MethodName) = @_;
+    my $PositionInCallerStack = 2;
+    my $MethodMockType = (caller($PositionInCallerStack))[3]; # autodetect mock type (spy or mock)
+    if($self->{'MethodMockType'}{$MethodName} && $self->{'MethodMockType'}{$MethodName} ne $MethodMockType){
+        die('It is not possible to mix spy and mock');
+    }else{
+        $self->{'MethodMockType'}{$MethodName} = $MethodMockType;
+    }
+    return;
+}
 1;
 
 __END__
