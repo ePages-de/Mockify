@@ -19,7 +19,7 @@ Test::Mockify - minimal mocking framework for perl
   my $App = SampleApp->new('logger'=> $MockedLogger);
   $App->do_something();
 
-  # verify that the mock object was called
+  # verify that the mocked method was called
   ok(WasCalled($MockedLogger, 'log'), 'log was called');
   done_testing();
 
@@ -129,7 +129,7 @@ For example, the next line will create a mocked version of the method log, but o
 
 =head4 when
 
-To define the signatur in the needed structure you should use the L<< Test::Mockify::Matcher >>.
+To define the signatur in the needed structure you must use the L<< Test::Mockify::Matcher >>.
 
 =head4 whenAny
 
@@ -172,35 +172,35 @@ with this methods you can observe a method. You can use the L<Test::Mockify::Ver
 =head3 synopsis
 
 This method takes one parameter, which is the name of the method you like to spy.
-Because you need to specify more detailed the behaviour of this spy you have to chain the method signature (when) and the expected return value (then...). 
+Because you need to specify more detailed the behaviour of this spy you have to define the method signature with C<when>
 
 For example, the next line will create a method spy of the method log, but only if this method is called with any string and the number 123. Mockify will throw an error if this method is called somehow else.
 
   my $MockObjectBuilder = Test::Mockify->new( 'Sample::Logger', [] );
   $MockObjectBuilder->spy('log')->when(String(), Number(123));
   my $SampleLogger = $MockObjectBuilder->getMockObject();
-  todo for verify
 
+  # call spied method
+  $SampleLogger->log('abc', 123);
+
+  # verify that the spied method was called
+  is_deeply(GetParametersFromMockifyCall($MockedLogger, 'log'),['abc', 123], 'Check parameters of first call');
 
 =head4 when
 
-To define the signatur in the needed structure you should use the L<< Test::Mockify::Matcher >>.
+To define the signatur in the needed structure you must use the L<< Test::Mockify::Matcher >>.
 
 =head4 whenAny
 
 If you don't want to specify the method signatur at all, you can use whenAny.
 It is not possible to mix C<whenAny> and C<when> for the same method.
 
-=head4 then ...
-
-For possible return types please look in L<Test::Mockify::ReturnValue>
-
 =cut
 sub spy {
     my $self = shift;
     my ($MethodName) = @_;
     my $PointerOriginalMethod = \&{$self->_mockedModulPath().'::'.$MethodName};
-    #In Order to have the current obejct availible in the parameter list, it have to be injected here.
+    #In Order to have the current object availible in the parameter list, it have to be injected here.
     return $self->_addMockWithMethodSpy($MethodName, sub {
         return $PointerOriginalMethod->($self->_mockedSelf(), @_);
     });
@@ -235,7 +235,7 @@ With this method it is possible to observe a method and check the parameters. Th
   my $aParameterTypes = [String(),String(abcd)];
   $MockObjectBuilder->addMethodSpyWithParameterCheck('myMethodName', $aParameterTypes);
 
-To define in a nice way the signatur you should use the L<< Test::Mockify::Matchers; >>.
+To define in a nice way the signatur you must use the L<< Test::Mockify::Matcher; >>.
 
 =cut
 sub addMethodSpyWithParameterCheck {
@@ -347,7 +347,7 @@ In the following example two strings will be expected, and the second one has to
   my $aParameterTypes = [String(),String('abcd')];
   $MockObjectBuilder->addMockWithReturnValueAndParameterCheck('myMethodName','the return value',$aParameterTypes);
 
-To define in a nice way the signatur you should use the L<< Test::Mockify::Matchers; >>.
+To define in a nice way the signatur you must use the L<< Test::Mockify::Matcher; >>.
 
 =cut
 sub addMockWithReturnValueAndParameterCheck {
