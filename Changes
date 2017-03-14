@@ -1,6 +1,8 @@
 Revision history for Perl extension Devel-Mockify
 
 {{$NEXT}}
+
+0.10.1 2017-03-14T12:34:29Z
     - add method spy [#17]
     - fix issue typo in docu [#18]
 
