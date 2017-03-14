@@ -18,7 +18,7 @@ Test::Mockify - minimal mocking framework for perl
     my $App = SampleApp->new('logger'=> $MockedLogger);
     $App->do_something();
 
-    # verify that the mock object was called
+    # verify that the mocked method was called
     ok(WasCalled($MockedLogger, 'log'), 'log was called');
     done_testing();
 
@@ -55,31 +55,61 @@ For example, the next line will create a mocked version of the method log, but o
 
 #### when
 
-To define the signatur in the needed structure you should use the [Test::Mockify::Matchers](https://metacpan.org/pod/Test::Mockify::Matchers).
+To define the signature in the needed structure you must use the [Test::Mockify::Matcher](https://metacpan.org/pod/Test::Mockify::Matcher).
 
 #### whenAny
 
-If you don't want to specify the method signatur at all, you can use whenAny.
+If you don't want to specify the method signature at all, you can use whenAny.
 It is not possible to mix `whenAny` and `when` for the same method.
 
 #### then ...
 
 For possible return types please look in [Test::Mockify::ReturnValue](https://metacpan.org/pod/Test::Mockify::ReturnValue)
 
-## addMethodSpy
+## spy
+
+Use spy if you want to observe a method. You can use the [Test::Mockify::Verify](https://metacpan.org/pod/Test::Mockify::Verify) to ensure that the method was called with the expected parameters.
+
+### synopsis
+
+This method takes one parameter, which is the name of the method you like to spy.
+Because you need to specify more detailed the behaviour of this spy you have to define the method signature with `when`
+
+For example, the next line will create a method spy of the method log, but only if this method is called with any string and the number 123. Mockify will throw an error if this method is called in another way.
+
+    my $MockObjectBuilder = Test::Mockify->new( 'Sample::Logger', [] );
+    $MockObjectBuilder->spy('log')->when(String(), Number(123));
+    my $SampleLogger = $MockObjectBuilder->getMockObject();
+
+    # call spied method
+    $SampleLogger->log('abc', 123);
+
+    # verify that the spied method was called
+    is_deeply(GetParametersFromMockifyCall($MockedLogger, 'log'),['abc', 123], 'Check parameters of first call');
+
+#### when
+
+To define the signature in the needed structure you must use the [Test::Mockify::Matcher](https://metacpan.org/pod/Test::Mockify::Matcher).
+
+#### whenAny
+
+If you don't want to specify the method signature at all, you can use whenAny.
+It is not possible to mix `whenAny` and `when` for the same method.
+
+## addMethodSpy _(deprecated)_
 
 With this method it is possible to observe a method. That means, you keep the original functionality but you can get meta data from the mockify-framework.
 
     $MockObjectBuilder->addMethodSpy('myMethodName');
 
-## addMethodSpyWithParameterCheck
+## addMethodSpyWithParameterCheck _(deprecated)_
 
 With this method it is possible to observe a method and check the parameters. That means, you keep the original functionality, but you can get meta data from the mockify- framework and use the parameter check, like **addMockWithReturnValueAndParameterCheck**.
 
     my $aParameterTypes = [String(),String(abcd)];
     $MockObjectBuilder->addMethodSpyWithParameterCheck('myMethodName', $aParameterTypes);
 
-To define in a nice way the signatur you should use the [Test::Mockify::Matchers;](https://metacpan.org/pod/Test::Mockify::Matchers;).
+To define it in a nice way the signature you must use the [Test::Mockify::Matcher;](https://metacpan.org/pod/Test::Mockify::Matcher;).
 
 ## addMock _(deprecated)_
 
@@ -109,7 +139,7 @@ In the following example two strings will be expected, and the second one has to
     my $aParameterTypes = [String(),String('abcd')];
     $MockObjectBuilder->addMockWithReturnValueAndParameterCheck('myMethodName','the return value',$aParameterTypes);
 
-To define in a nice way the signatur you should use the [Test::Mockify::Matchers;](https://metacpan.org/pod/Test::Mockify::Matchers;).
+To define it in a nice way the signature you must use the [Test::Mockify::Matcher;](https://metacpan.org/pod/Test::Mockify::Matcher;).
 
 # LICENSE
 
