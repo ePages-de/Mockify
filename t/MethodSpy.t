@@ -1,4 +1,4 @@
-package YouPackage;
+package MethodSpy;
 use strict;
 use FindBin;
 use lib ($FindBin::Bin);

@@ -129,11 +129,11 @@ For example, the next line will create a mocked version of the method log, but o
 
 =head4 when
 
-To define the signatur in the needed structure you must use the L<< Test::Mockify::Matcher >>.
+To define the signature in the needed structure you must use the L<< Test::Mockify::Matcher >>.
 
 =head4 whenAny
 
-If you don't want to specify the method signatur at all, you can use whenAny.
+If you don't want to specify the method signature at all, you can use whenAny.
 It is not possible to mix C<whenAny> and C<when> for the same method.
 
 =head4 then ...
@@ -167,14 +167,14 @@ sub mock {
 
 =head2 spy
 
-with this methods you can observe a method. You can use the L<Test::Mockify::Verify> to ensure that the method was called with the expected parameters.
+Use spy if you want to observe a method. You can use the L<Test::Mockify::Verify> to ensure that the method was called with the expected parameters.
 
 =head3 synopsis
 
 This method takes one parameter, which is the name of the method you like to spy.
 Because you need to specify more detailed the behaviour of this spy you have to define the method signature with C<when>
 
-For example, the next line will create a method spy of the method log, but only if this method is called with any string and the number 123. Mockify will throw an error if this method is called somehow else.
+For example, the next line will create a method spy of the method log, but only if this method is called with any string and the number 123. Mockify will throw an error if this method is called in another way.
 
   my $MockObjectBuilder = Test::Mockify->new( 'Sample::Logger', [] );
   $MockObjectBuilder->spy('log')->when(String(), Number(123));
@@ -188,11 +188,11 @@ For example, the next line will create a method spy of the method log, but only 
 
 =head4 when
 
-To define the signatur in the needed structure you must use the L<< Test::Mockify::Matcher >>.
+To define the signature in the needed structure you must use the L<< Test::Mockify::Matcher >>.
 
 =head4 whenAny
 
-If you don't want to specify the method signatur at all, you can use whenAny.
+If you don't want to specify the method signature at all, you can use whenAny.
 It is not possible to mix C<whenAny> and C<when> for the same method.
 
 =cut
@@ -200,7 +200,7 @@ sub spy {
     my $self = shift;
     my ($MethodName) = @_;
     my $PointerOriginalMethod = \&{$self->_mockedModulPath().'::'.$MethodName};
-    #In Order to have the current object availible in the parameter list, it have to be injected here.
+    #In order to have the current object available in the parameter list, it has to be injected here.
     return $self->_addMockWithMethodSpy($MethodName, sub {
         return $PointerOriginalMethod->($self->_mockedSelf(), @_);
     });
@@ -235,7 +235,7 @@ With this method it is possible to observe a method and check the parameters. Th
   my $aParameterTypes = [String(),String(abcd)];
   $MockObjectBuilder->addMethodSpyWithParameterCheck('myMethodName', $aParameterTypes);
 
-To define in a nice way the signatur you must use the L<< Test::Mockify::Matcher; >>.
+To define it in a nice way the signature you must use the L<< Test::Mockify::Matcher; >>.
 
 =cut
 sub addMethodSpyWithParameterCheck {
@@ -347,7 +347,7 @@ In the following example two strings will be expected, and the second one has to
   my $aParameterTypes = [String(),String('abcd')];
   $MockObjectBuilder->addMockWithReturnValueAndParameterCheck('myMethodName','the return value',$aParameterTypes);
 
-To define in a nice way the signatur you must use the L<< Test::Mockify::Matcher; >>.
+To define it in a nice way the signature you must use the L<< Test::Mockify::Matcher; >>.
 
 =cut
 sub addMockWithReturnValueAndParameterCheck {
