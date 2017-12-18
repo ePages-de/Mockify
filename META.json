@@ -88,13 +88,14 @@
          "web" : "https://github.com/ePages-de/Mockify"
       }
    },
-   "version" : "0.10.2",
+   "version" : "0.10.3",
    "x_authority" : "cpan:CHRBR",
    "x_contributors" : [
       "Alexander Sandau <a.sandau@epages.com>",
       "Birgit Bader <b.bader@epages.com>",
       "Christian Breitkreutz <c.breitkreutz@epages.com>",
       "Christian Breitkreutz <cbreitkreutz@epages.com>",
+      "Mohammad S Anwar <mohammad.anwar@yahoo.com>",
       "Oliver Trosien <otrosien@epages.com>"
    ],
    "x_serialization_backend" : "JSON::PP version 2.27300"
