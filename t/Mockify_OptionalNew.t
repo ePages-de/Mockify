@@ -5,7 +5,7 @@ use FindBin;
 use lib ($FindBin::Bin);
 
 use parent 'TestBase';
-use Test::Mockify qw () ;
+use Test::Mockify;
 use Test::More;
 use warnings;
 no warnings 'deprecated';
