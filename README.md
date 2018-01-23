@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ePages-de/Mockify.svg?branch=master)](https://travis-ci.org/ePages-de/Mockify) [![MetaCPAN Release](https://badge.fury.io/pl/Test-Mockify.svg)](https://metacpan.org/release/Test-Mockify)
+[![Build Status](https://travis-ci.org/dbucky/Mockify.svg?branch=master)](https://travis-ci.org/dbucky/Mockify) [![MetaCPAN Release](https://badge.fury.io/pl/Test-Mockify.svg)](https://metacpan.org/release/Test-Mockify)
 # NAME
 
 Test::Mockify - minimal mocking framework for perl
@@ -150,4 +150,4 @@ it under the same terms as Perl itself.
 
 # AUTHOR
 
-Christian Breitkreutz &lt;christianbreitkreutz@gmx.de>
+Christian Breitkreutz <christianbreitkreutz@gmx.de>
