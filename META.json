@@ -4,7 +4,7 @@
       "ePages GmbH"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.14, CPAN::Meta::Converter version 2.150005",
+   "generated_by" : "Minilla/v3.0.14, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -60,6 +60,7 @@
             "Exporter" : "0",
             "Module::Load" : "0",
             "Scalar::Util" : "0",
+            "Sub::Override" : "0",
             "Test::MockObject::Extends" : "0",
             "experimental" : "0",
             "parent" : "0",
@@ -78,13 +79,13 @@
    "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/ePages-de/Mockify/issues"
+         "web" : "https://github.com/dbucky/Mockify/issues"
       },
-      "homepage" : "https://github.com/ePages-de/Mockify",
+      "homepage" : "https://github.com/dbucky/Mockify",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/ePages-de/Mockify.git",
-         "web" : "https://github.com/ePages-de/Mockify"
+         "url" : "git://github.com/dbucky/Mockify.git",
+         "web" : "https://github.com/dbucky/Mockify"
       }
    },
    "version" : "1.2",
@@ -98,5 +99,5 @@
       "Oliver Trosien <otrosien@epages.com>",
       "Unknown <dustin.buckenmeyer@gmail.com>"
    ],
-   "x_serialization_backend" : "JSON::PP version 2.27300"
+   "x_serialization_backend" : "JSON::PP version 2.27300_01"
 }

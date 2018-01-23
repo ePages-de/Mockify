@@ -2,6 +2,7 @@ requires 'perl', '5.10.1';
 
 requires 'Module::Load';
 requires 'Test::MockObject::Extends';
+requires 'Sub::Override';
 requires 'Data::Compare';
 requires 'Data::Dumper';
 requires 'Exporter';
