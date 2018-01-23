@@ -68,9 +68,9 @@ sub new {
 #----------------------------------------------------------------------------------------
 sub _mockedModulePath {
     my $self = shift;
-    my ($ModulPath) = @_;
-    return $self->{'MockedModulePath'} unless ($ModulPath);
-    $self->{'MockedModulePath'} = $ModulPath;
+    my ($ModulePath) = @_;
+    return $self->{'MockedModulePath'} unless ($ModulePath);
+    $self->{'MockedModulePath'} = $ModulePath;
 }
 #----------------------------------------------------------------------------------------
 sub _mockedSelf {
