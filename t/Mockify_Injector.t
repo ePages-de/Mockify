@@ -26,6 +26,8 @@ sub testPlan {
     $self->injector_throws_error_when_incorrect_type_received();
     $self->injected_spy_method_receives_expected_parameters();
     $self->injected_methods_affect_call_metadata();
+    $self->useMethodWhichUsesStaticFunction();
+    $self->useMethodWhichUsesStaticFunction_withHelperMethod();
 }
 #----------------------------------------------------------------------------------------
 sub mocked_method_is_injected {
@@ -164,6 +166,53 @@ sub injected_methods_affect_call_metadata {
     FakeModuleWithoutNew::DummyMethodForTestOverriding();
 
     is(GetCallCount($mockObject, 'DummyMethodForTestOverriding'), 2, 'Call count is 2 after calling the injected FakeModuleWithoutNew::DummyMethodForTestOverriding');
+}
+#----------------------------------------------------------------------------------------
+sub useMethodWhichUsesStaticFunction {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $SUT = FakeModuleForMockifyTest->new();
+    is($SUT->useStaticFunction('Pre'), 'Pre Hallo Welt',"$SubTestName - test the not mocked version of ReturnHelloWorld ");
+
+    my $Mockify = Test::Mockify->new('FakeStaticTools');
+    $Mockify->mock('ReturnHelloWorld')->whenAny()->thenReturn('Saluton mondon');
+    {
+        my $injector = Test::Mockify::Injector->new();
+        $injector->inject($Mockify);
+
+        is($SUT->useStaticFunction('Pre'), 'Pre Saluton mondon',"$SubTestName - proves the internal call with FakeStaticTools::ReturnHelloWorld");
+        is($SUT->useImportedStaticFunction('Pre'), 'Pre Saluton mondon',"$SubTestName - proves the internal call with imported ReturnHelloWorld ");
+    }
+    is($SUT->useStaticFunction('Pre'), 'Pre Hallo Welt',"$SubTestName - test the not mocked version of ReturnHelloWorld ");
+}
+#----------------------------------------------------------------------------------------
+sub useMethodWhichUsesStaticFunction_withHelperMethod {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $SUT = FakeModuleForMockifyTest->new();
+    is($SUT->useStaticFunction('Pre'), 'Pre Hallo Welt',"$SubTestName - test the not mocked version of ReturnHelloWorld ");
+
+    my $Mockify = Test::Mockify->new('FakeStaticTools');
+    $Mockify->mock('ReturnHelloWorld')->whenAny()->thenReturn('Saluton mondon');
+    {
+        #The var $injector needs to be here in this scope, this is a bit unexpected (magic)
+        my $injector = $self->_helperMethodForInjection($Mockify);
+
+        is($SUT->useStaticFunction('Pre'), 'Pre Saluton mondon',"$SubTestName - proves the internal call with FakeStaticTools::ReturnHelloWorld");
+        is($SUT->useImportedStaticFunction('Pre'), 'Pre Saluton mondon',"$SubTestName - proves the internal call with imported ReturnHelloWorld ");
+    }
+    is($SUT->useStaticFunction('Pre'), 'Pre Hallo Welt',"$SubTestName - test the not mocked version of ReturnHelloWorld ");
+}
+
+#------------------------------------------------------------------------
+sub _helperMethodForInjection {
+    my $self = shift;
+    my ($Mockify) = @_;
+    my $injector = Test::Mockify::Injector->new();
+        $injector->inject($Mockify);
+    return $injector;
 }
 #------------------------------------------------------------------------
 sub _getErrorRegEx_ErrorInjectorReceivesIncorrectType {

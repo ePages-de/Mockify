@@ -1,7 +1,7 @@
 package FakeModuleForMockifyTest;
 
 use strict;
-
+use FakeStaticTools qw ( ReturnHelloWorld );
 sub new {
     my $class = shift;
     my @ParameterList = @_;
@@ -42,6 +42,7 @@ sub useImportedStaticFunction {
     my $self = shift;
     my ($PreFix) = @_;
     return $PreFix. ' ' . ReturnHelloWorld($PreFix.'++');
+
 }
 
 1;
