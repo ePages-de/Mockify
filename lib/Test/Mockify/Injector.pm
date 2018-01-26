@@ -43,12 +43,17 @@ sub _addMock {
     $self->_mockedSelf()->{'__MethodCallCounter'}->addMethod( $MethodName );
     if(not $self->{'MethodStore'}{$MethodName}){
         $self->{'MethodStore'}{$MethodName} //= $Method;
-        $self->{'override'}->replace($MethodName, sub {
+        my $MockedMethodBody = sub {
             $self->_mockedSelf()->{'__MethodCallCounter'}->increment( $MethodName );
             my @MockedParameters = @_;
             $self->_storeParameters( $MethodName, $self->_mockedSelf(), \@MockedParameters );
             return $self->{'MethodStore'}{$MethodName}->call(@MockedParameters);
-        });
+        };
+        # mock with full path
+        $self->{'override'}->replace($MethodName, $MockedMethodBody);
+        my ($path, $FunctionName) = $MethodName =~ /(.*)::([^:]+$)/x;
+        # mock for imported method(it will complain if you did't imported it)
+        $self->{'override'}->replace($self->_mockedModulePath().'::'.$FunctionName, $MockedMethodBody);
     }
     return $self->{'MethodStore'}{$MethodName};
 }
