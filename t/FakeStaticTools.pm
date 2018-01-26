@@ -8,5 +8,5 @@ our @EXPORT_OK = qw (
     
 sub ReturnHelloWorld {
     #this method could, for example, access the database
-    return 'Hallo Welt';
+    return 'Hello World';
 }
