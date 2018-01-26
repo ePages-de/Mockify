@@ -4,7 +4,6 @@ use parent 'Test::Mockify';
 use Sub::Override;
 use strict;
 use warnings;
-use Test::Mockify::Tools qw ( ExistsMethod );
 use Test::Mockify::Tools qw ( Error ExistsMethod IsValid LoadPackage Isa );
 use Test::Mockify::TypeTests qw ( IsInteger IsFloat IsString IsArrayReference IsHashReference IsObjectReference );
 use Test::Mockify::MethodCallCounter;
@@ -15,6 +14,7 @@ use Test::Mockify::CompatibilityTools qw (MigrateOldMatchers);
 use Data::Dumper;
 use Scalar::Util qw( blessed );
 use Data::Compare;
+#----------------------------------------------------------------------------------------
 sub new {
     my $class = shift;
     my $self = $class->SUPER::new(@_);
@@ -23,16 +23,21 @@ sub new {
     return $self;
 }
 #----------------------------------------------------------------------------------------
-sub staticFunctionOverride {
+sub mockStatic {
     my $self = shift;
     my @Parameters = @_;
 
     my $ParameterAmount = scalar @Parameters;
-    if($ParameterAmount == 1 && IsString($Parameters[0]) ){
-        return $self->_addMockWithMethod($Parameters[0]);
+    if($ParameterAmount == 1 && IsString($Parameters[0])){
+        if( $Parameters[0] =~ /.*::.*/x ){
+            return $self->_addMockWithMethod($Parameters[0]);
+        }else{
+            Error("The function name needs to be with full path. e.g. 'Path::To::Your::$Parameters[0]' instead of only '$Parameters[0]'");
+        }
     }else{
-        Error('no no no');
+        Error('The Parameter needs to be defined and a String. e.g. Path::To::Your::Function');
     }
+
 }
 #-------------------------------------------------------------------------------------
 sub _addMock {
@@ -57,9 +62,9 @@ sub _addMock {
     }
     return $self->{'MethodStore'}{$MethodName};
 }
+#----------------------------------------------------------------------------------------
 sub getSystemUnderTest {
     my $self = shift;
-    my ($Arguments) = @_;
-    return $self->getMockObject();
+    return $self->getMockObject(@_);
 }
 1;

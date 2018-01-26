@@ -6,13 +6,13 @@ use FakeStaticTools qw ( ReturnHelloWorld );
 sub useStaticFunction {
     my $self = shift;
     my ($PreFix) = @_;
-    return $PreFix . ': '.FakeStaticTools::ReturnHelloWorld($PreFix);
+    return $PreFix . ': '.FakeStaticTools::ReturnHelloWorld(@_);
 }
 
 sub useImportedStaticFunction {
     my $self = shift;
     my ($PreFix) = @_;
-    return $PreFix . ': '.ReturnHelloWorld($PreFix);
+    return $PreFix . ': '.ReturnHelloWorld(@_);
 
 }
 1;
