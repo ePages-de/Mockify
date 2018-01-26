@@ -1,8 +1,7 @@
 package FakeModuleForMockifyTest;
 
 use strict;
-use FakeStaticTools qw ( ReturnHelloWorld );
-use Test::Mockify::Tools qw (Isa);
+
 sub new {
     my $class = shift;
     my @ParameterList = @_;
@@ -31,19 +30,6 @@ sub dummyMethodWithParameterReturn {
 sub returnParameterListNew {
     my $self = shift;
     return $self->{'ParameterListNew'};
-}
-
-sub useStaticFunction {
-    my $self = shift;
-    my ($PreFix) = @_;
-    return Test::Mockify::Tools::Isa(bless({},'Static::Function'), $PreFix);
-}
-
-sub useImportedStaticFunction {
-    my $self = shift;
-    my ($PreFix) = @_;
-    return Isa(bless({},'Static::Function'), $PreFix);
-
 }
 
 1;
