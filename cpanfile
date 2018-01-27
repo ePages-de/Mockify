@@ -10,6 +10,8 @@ requires 'Scalar::Util';
 requires 'experimental';
 requires 'strict';
 requires 'parent';
+requires 'Sub::Override';
+
 
 on 'test' => sub {
     requires 'Test::More', '0.98';
