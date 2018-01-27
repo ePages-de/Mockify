@@ -1,4 +1,4 @@
-package Mockify_Injector;
+package Mockify_StaticInjection;
 
 use FindBin;
 use lib ($FindBin::Bin);
@@ -6,7 +6,6 @@ use lib ($FindBin::Bin);
 use parent 'TestBase';
 use Test::Exception;
 use Test::Mockify;
-use Test::Mockify::Injector;
 use Test::Mockify::Verify qw (WasCalled GetCallCount);
 use Test::More;
 use Test::Mockify::Matcher qw (String Number);
@@ -33,11 +32,11 @@ sub test_useMethodWhichUsesStaticFunction {
     my $SubTestName = (caller(0))[3];
     my $SUT;
     {
-        my $Injector = Test::Mockify::Injector->new('FakeModulStaticInjection');
+        my $Injector = Test::Mockify->new('FakeModulStaticInjection',[]);
         $Injector->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('German'))->thenReturn('Hallo Welt');
         $Injector->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('Spanish'))->thenReturn('Hola Mundo');
         $Injector->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('Esperanto'))->thenReturn('Saluton mondon');
-        $SUT = $Injector->getSystemUnderTest();
+        $SUT = $Injector->getMockObject();
 
         is($SUT->useStaticFunction('German'), 'German: Hallo Welt',"$SubTestName - prove full path call- german");
         is($SUT->useImportedStaticFunction('German'), 'German: Hallo Welt',"$SubTestName - prove that the same mock can handle also the imported call - german");
@@ -56,7 +55,7 @@ sub test_useMethodWhichUsesStaticFunction {
 sub test_functionNameFormating {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
-    my $Injector = Test::Mockify::Injector->new('FakeModulStaticInjection');
+    my $Injector = Test::Mockify->new('FakeModulStaticInjection',[]);
     throws_ok( sub { $Injector->mockStatic() },
                    qr/The Parameter needs to be defined and a String. e.g. Path::To::Your::Function/,
                    "$SubTestName - prove the an unfdefined will fail"
@@ -70,7 +69,7 @@ sub test_functionNameFormating {
 sub test_someSelectedMockifyFeatures {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
-    my $Injector = Test::Mockify::Injector->new('FakeModulStaticInjection');
+    my $Injector = Test::Mockify->new('FakeModulStaticInjection',[]);
     $Injector->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('Error'))->thenThrowError('TestError');
     $Injector->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('caller'))->thenCall(sub{return 'returnValue'});
     $Injector->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('undef'), String('abc'))->thenReturnUndef();
@@ -79,7 +78,7 @@ sub test_someSelectedMockifyFeatures {
     $Injector->spy('overrideMethod_spy')->when(String('spyme'));
     $Injector->addMock('overrideMethod_addMock', sub {return 'overridden Value (addMock)'});
     #spy
-    my $SUT = $Injector->getSystemUnderTest();
+    my $SUT = $Injector->getMockObject();
     throws_ok( sub{$SUT->useStaticFunction('Error') },
                    qr/TestError/,
                    "$SubTestName - prove if thenThrowError will fail"
