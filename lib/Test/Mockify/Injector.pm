@@ -20,6 +20,7 @@ sub new {
     my $self = $class->SUPER::new(@_);
 
     $self->{'override'} = Sub::Override->new();
+    $self->{'IsStaticMockStore'} = undef;
     return $self;
 }
 #----------------------------------------------------------------------------------------
@@ -30,6 +31,7 @@ sub mockStatic {
     my $ParameterAmount = scalar @Parameters;
     if($ParameterAmount == 1 && IsString($Parameters[0])){
         if( $Parameters[0] =~ /.*::.*/x ){
+            $self->{'IsStaticMockStore'}{$Parameters[0]} = 1;
             return $self->_addMockWithMethod($Parameters[0]);
         }else{
             Error("The function name needs to be with full path. e.g. 'Path::To::Your::$Parameters[0]' instead of only '$Parameters[0]'");
@@ -38,6 +40,43 @@ sub mockStatic {
         Error('The Parameter needs to be defined and a String. e.g. Path::To::Your::Function');
     }
 
+}
+#----------------------------------------------------------------------------------------
+sub spyStatic {
+    my $self = shift;
+    my ($MethodName) = @_;
+    if( $MethodName =~ /.*::.*/x ){
+        $self->{'IsStaticMockStore'}{$MethodName} = 1;
+            my $PointerOriginalMethod = \&{$MethodName};
+            #In order to have the current object available in the parameter list, it has to be injected here.
+            return $self->_addMockWithMethodSpy($MethodName, sub {
+                return $PointerOriginalMethod->($self->_mockedSelf(), @_);
+            });
+    }else{
+        Error("The function name needs to be with full path. e.g. 'Path::To::Your::$MethodName' instead of only '$MethodName'");
+    }
+}
+#----------------------------------------------------------------------------------------
+sub _addMockWithMethod {
+    my $self = shift;
+    my ( $MethodName ) = @_;
+    $self->_testMockTypeUsage($MethodName);
+    if($self->{'IsStaticMockStore'}{$MethodName}){
+        return $self->_addMock($MethodName, Test::Mockify::Method->new());
+    }else{
+        return $self->SUPER::_addMock($MethodName, Test::Mockify::Method->new());
+    }
+}
+#----------------------------------------------------------------------------------------
+sub _addMockWithMethodSpy {
+    my $self = shift;
+    my ( $MethodName, $PointerOriginalMethod ) = @_;
+    $self->_testMockTypeUsage($MethodName);
+    if($self->{'IsStaticMockStore'}{$MethodName}){
+        return $self->_addMock($MethodName, Test::Mockify::MethodSpy->new($PointerOriginalMethod));
+    }else{
+        return $self->SUPER::_addMock($MethodName, Test::Mockify::MethodSpy->new($PointerOriginalMethod));
+    }
 }
 #-------------------------------------------------------------------------------------
 sub _addMock {
@@ -56,7 +95,7 @@ sub _addMock {
         };
         # mock with full path
         $self->{'override'}->replace($MethodName, $MockedMethodBody);
-        my ($path, $FunctionName) = $MethodName =~ /(.*)::([^:]+$)/x;
+        my ($FunctionName) = $MethodName =~ /.*::([^:]+$)/x;
         # mock for imported method(it will complain if you did't imported it)
         $self->{'override'}->replace($self->_mockedModulePath().'::'.$FunctionName, $MockedMethodBody);
     }

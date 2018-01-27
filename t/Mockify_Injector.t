@@ -74,6 +74,11 @@ sub test_someSelectedMockifyFeatures {
     $Injector->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('Error'))->thenThrowError('TestError');
     $Injector->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('caller'))->thenCall(sub{return 'returnValue'});
     $Injector->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('undef'), String('abc'))->thenReturnUndef();
+    $Injector->spyStatic('FakeStaticTools::HelloSpy')->when(String('And you are?'));
+    $Injector->mock('overrideMethod')->when(String('override'))->thenReturn('overridden Value');
+    $Injector->spy('overrideMethod_spy')->when(String('spyme'));
+    $Injector->addMock('overrideMethod_addMock', sub {return 'overridden Value (addMock)'});
+    #spy
     my $SUT = $Injector->getSystemUnderTest();
     throws_ok( sub{$SUT->useStaticFunction('Error') },
                    qr/TestError/,
@@ -81,5 +86,15 @@ sub test_someSelectedMockifyFeatures {
     );
     is($SUT->useStaticFunction('caller'), 'caller: returnValue',"$SubTestName - prove thenCall");
     is($SUT->useStaticFunction('undef', 'abc'), 'undef: ',"$SubTestName - prove thenReturnUndef");
+    is($SUT->overrideMethod('override'), 'overridden Value',"$SubTestName - prove mock Works");
+    $SUT->overrideMethod_spy('spyme'); #1
+    $SUT->overrideMethod_spy('spyme'); #2
+    is(GetCallCount($SUT,'overrideMethod_spy'), 2,"$SubTestName - prove verify works for override");
+    is($SUT->useStaticFunctionSpy('And you are?'), 'And you are?: Bond, James Bond!', "$SubTestName - prove static spy Works - call 1");
+    is($SUT->useStaticFunctionSpy('And you are?'), 'And you are?: Bond, James Bond!', "$SubTestName - prove static spy Works- call 2");
+    is($SUT->useImportedStaticFunctionSpy('And you are?'), 'And you are?: Bond, James Bond!', "$SubTestName - prove static spy Works. - call 3");
+    is(GetCallCount($SUT,'FakeStaticTools::HelloSpy'), 3,"$SubTestName - prove verify works for spy");
+    is($SUT->overrideMethod_addMock(), 'overridden Value (addMock)',"$SubTestName - prove mock Works for 'addMock'");
 }
+
 __PACKAGE__->RunTest();

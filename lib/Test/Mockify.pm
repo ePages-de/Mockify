@@ -144,7 +144,7 @@ For possible return types please look in L<Test::Mockify::ReturnValue>
 sub mock {
     my $self = shift;
     my @Parameters = @_;
-    
+
     my $ParameterAmount = scalar @Parameters;
     if($ParameterAmount == 1 && IsString($Parameters[0]) ){
         return $self->_addMockWithMethod($Parameters[0]);
