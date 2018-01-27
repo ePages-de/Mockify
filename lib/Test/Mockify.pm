@@ -33,18 +33,15 @@ verify the interactions with your mocks.
 =cut
 
 package Test::Mockify;
-use Test::Mockify::Tools qw ( Error ExistsMethod IsValid LoadPackage Isa );
-use Test::Mockify::TypeTests qw ( IsInteger IsFloat IsString IsArrayReference IsHashReference IsObjectReference );
+use Test::Mockify::Tools qw ( Error ExistsMethod LoadPackage );
+use Test::Mockify::TypeTests qw ( IsString IsArrayReference);
 use Test::Mockify::MethodCallCounter;
 use Test::Mockify::Method;
 use Test::Mockify::MethodSpy;
 use Test::MockObject::Extends;
 use Test::Mockify::CompatibilityTools qw (MigrateOldMatchers);
-use Data::Dumper;
 use Scalar::Util qw( blessed );
-use Data::Compare;
 use Sub::Override;
-use experimental 'switch';
 
 use strict;
 
@@ -166,6 +163,15 @@ sub mock {
     return;
 }
 #----------------------------------------------------------------------------------------
+=pod
+
+=head2 mockStatic
+
+Provides the possiblity to mock static methods inside the mock.
+
+  TOD0
+
+=cut
 sub mockStatic {
     my $self = shift;
     my @Parameters = @_;
@@ -227,6 +233,15 @@ sub spy {
     });
 }
 #----------------------------------------------------------------------------------------
+=pod
+
+=head2 mockStatic
+
+Provides the possiblity to mock static methods inside the mock.
+
+  TOD0
+
+=cut
 sub spyStatic {
     my $self = shift;
     my ($MethodName) = @_;
@@ -311,6 +326,7 @@ sub addMock {
 
     return;
 }
+#----------------------------------------------------------------------------------------
 sub _addStaticMock {
     my $self = shift;
     my ( $MethodName, $Method) = @_;
