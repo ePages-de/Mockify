@@ -19,7 +19,7 @@ on 'test' => sub {
     requires 'FindBin';
 };
 
-on 'build' => sub {
+on 'build' => sub { 
     requires 'Module::Build::Tiny', '0.039';
 };
 
@@ -30,6 +30,7 @@ on 'develop' => sub {
     requires 'Devel::Cover', '1.23';
     requires 'Devel::Cover::Report::Clover', '1.01';
     requires 'TAP::Harness::Archive', '0.18';
+    requires 'Module::Install', '1.19';
     requires 'Minilla', '3.0.0';
     requires 'CPAN::Uploader';
 };
