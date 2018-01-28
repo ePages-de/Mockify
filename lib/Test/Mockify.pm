@@ -167,9 +167,36 @@ sub mock {
 
 =head2 mockStatic
 
-Provides the possiblity to mock static methods inside the mock.
+Provides the possibility to mock static functions inside the mock/sut.
+Sometimes it is not possible to inject the dependencies from outside. This is especially the case when the package uses imports of static functions.
 
-  TOD0
+  package SUT;
+  use Magic::Tools qw ( Rabbit ); # Rabbit could use a webservice
+  sub pullCylinder {
+      my ($Color) = @_;
+      if(Rabbit($Color)){ # imported
+          return 'wow';
+      }
+      if(! Magic::Tools::Rabbit($Color)){ #full path
+          return 'buh';
+      }
+  }
+  1;
+
+In the Test it can be mocked
+  package Test_SUT;
+  my $MockObjectBuilder = Test::Mockify->new( 'SUT', [] );
+  $MockObjectBuilder->mockStatic('Magic::Tools::Rabbit')->when(String('White'))->thenReturn(1);
+  $MockObjectBuilder->mockStatic('Magic::Tools::Rabbit')->when(String('Black'))->thenReturn(0);
+  my $SUT = $MockObjectBuilder->getMockObject();
+  is($SUT->pullCylinder('White'), 'wow');
+  is($SUT->pullCylinder('Black'), 'buh');
+  1;
+
+It can be mixed with normal C<spy> and C<mock>
+
+=head4
+Thx to @dbucky for this amazing idea
 
 =cut
 sub mockStatic {
@@ -235,11 +262,36 @@ sub spy {
 #----------------------------------------------------------------------------------------
 =pod
 
-=head2 mockStatic
+=head2 spyStatic
 
-Provides the possiblity to mock static methods inside the mock.
+Provides the possibility to spy static functions inside the mock/sut.
 
-  TOD0
+  package SUT;
+  use Magic::Tools qw ( Rabbit ); # Rabbit could use a webservice
+  sub pullCylinder {
+      my ($Color) = @_;
+      if(Rabbit($Color)){ # imported
+          return 'wow';
+      }
+      if(! Magic::Tools::Rabbit($Color)){ #full path
+          return 'buh';
+      }
+  }
+  1;
+
+In the Test it can be mocked
+
+  package Test_SUT;
+  my $MockObjectBuilder = Test::Mockify->new( 'SUT', [] );
+  $MockObjectBuilder->spyStatic('Magic::Tools::Rabbit')->whenAny();
+  my $SUT = $MockObjectBuilder->getMockObject();
+
+  is($SUT->pullCylinder('White'), 'wow');
+  is($SUT->pullCylinder('Black'), 'buh');
+  is(GetCallCount($SUT, 'pullCylinder), 2);
+  1;
+
+It can be mixed with normal C<spy> and C<mock> For more options see, C<mockStatic>
 
 =cut
 sub spyStatic {
