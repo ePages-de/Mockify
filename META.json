@@ -43,6 +43,7 @@
             "Devel::Cover::Report::Clover" : "1.01",
             "Fatal" : "0",
             "Minilla" : "v3.0.0",
+            "Module::Install" : "1.19",
             "Perl::Critic" : "1.123",
             "TAP::Harness::Archive" : "0.18",
             "Test::CPAN::Meta" : "0",
@@ -79,13 +80,13 @@
    "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/dbucky/Mockify/issues"
+         "web" : "https://github.com/ChristianBreitkreutz/Mockify/issues"
       },
-      "homepage" : "https://github.com/dbucky/Mockify",
+      "homepage" : "https://github.com/ChristianBreitkreutz/Mockify",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/dbucky/Mockify.git",
-         "web" : "https://github.com/dbucky/Mockify"
+         "url" : "git://github.com/ChristianBreitkreutz/Mockify.git",
+         "web" : "https://github.com/ChristianBreitkreutz/Mockify"
       }
    },
    "version" : "1.2",
@@ -95,9 +96,9 @@
       "Birgit Bader <b.bader@epages.com>",
       "Christian Breitkreutz <c.breitkreutz@epages.com>",
       "Christian Breitkreutz <cbreitkreutz@epages.com>",
+      "Dustin Buckenmeyer <dustin.buckenmeyer@gmail.com>",
       "Mohammad S Anwar <mohammad.anwar@yahoo.com>",
-      "Oliver Trosien <otrosien@epages.com>",
-      "Dustin Buckenmeyer <dustin.buckenmeyer@gmail.com>"
+      "Oliver Trosien <otrosien@epages.com>"
    ],
-   "x_serialization_backend" : "JSON::PP version 2.27300_01"
+   "x_serialization_backend" : "JSON::PP version 2.27400_02"
 }
