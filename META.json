@@ -4,7 +4,7 @@
       "ePages GmbH"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.14, CPAN::Meta::Converter version 2.150005",
+   "generated_by" : "Minilla/v3.0.14, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -43,6 +43,7 @@
             "Devel::Cover::Report::Clover" : "1.01",
             "Fatal" : "0",
             "Minilla" : "v3.0.0",
+            "Module::Install" : "1.19",
             "Perl::Critic" : "1.123",
             "TAP::Harness::Archive" : "0.18",
             "Test::CPAN::Meta" : "0",
@@ -60,6 +61,7 @@
             "Exporter" : "0",
             "Module::Load" : "0",
             "Scalar::Util" : "0",
+            "Sub::Override" : "0",
             "Test::MockObject::Extends" : "0",
             "experimental" : "0",
             "parent" : "0",
@@ -78,25 +80,25 @@
    "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/ePages-de/Mockify/issues"
+         "web" : "https://github.com/ChristianBreitkreutz/Mockify/issues"
       },
-      "homepage" : "https://github.com/ePages-de/Mockify",
+      "homepage" : "https://github.com/ChristianBreitkreutz/Mockify",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/ePages-de/Mockify.git",
-         "web" : "https://github.com/ePages-de/Mockify"
+         "url" : "git://github.com/ChristianBreitkreutz/Mockify.git",
+         "web" : "https://github.com/ChristianBreitkreutz/Mockify"
       }
    },
-   "version" : "1.2",
+   "version" : "1.3",
    "x_authority" : "cpan:CHRBR",
    "x_contributors" : [
       "Alexander Sandau <a.sandau@epages.com>",
       "Birgit Bader <b.bader@epages.com>",
       "Christian Breitkreutz <c.breitkreutz@epages.com>",
       "Christian Breitkreutz <cbreitkreutz@epages.com>",
+      "Dustin Buckenmeyer <dustin.buckenmeyer@gmail.com>",
       "Mohammad S Anwar <mohammad.anwar@yahoo.com>",
-      "Oliver Trosien <otrosien@epages.com>",
-      "Unknown <dustin.buckenmeyer@gmail.com>"
+      "Oliver Trosien <otrosien@epages.com>"
    ],
-   "x_serialization_backend" : "JSON::PP version 2.27300"
+   "x_serialization_backend" : "JSON::PP version 2.27400_02"
 }
