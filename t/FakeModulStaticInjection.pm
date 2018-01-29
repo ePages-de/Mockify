@@ -1,7 +1,7 @@
 package FakeModulStaticInjection;
 
 use strict;
-use FakeStaticTools qw ( ReturnHelloWorld HelloSpy);
+use FakeStaticTools qw ( ReturnHelloWorld HelloSpy HappyOverride);
 
 sub overrideMethod {
     my $self = shift;
@@ -11,9 +11,17 @@ sub overrideMethod_spy {
     my $self = shift;
     return 'original Value';
 }
-sub overrideMethod_addMock {
+
+sub methodStaticHappyOverride {
     my $self = shift;
-    return 'original Value';
+    return FakeStaticTools::HappyOverride();
+}
+sub methodImportedHappyOverride {
+    my $self = shift;
+    return HappyOverride();
+}
+sub HappyOverride{ #This overrides the imported Function use FakeStaticTools qw ( HappyOverride );
+    return 'original in FakeModulStaticInjection';
 }
 
 sub useStaticFunctionSpy {
