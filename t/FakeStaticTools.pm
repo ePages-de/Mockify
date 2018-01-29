@@ -5,6 +5,7 @@ use base qw( Exporter );
 our @EXPORT_OK = qw (
         ReturnHelloWorld
         HelloSpy
+        HappyOverride
     );
     
 sub ReturnHelloWorld {
@@ -14,4 +15,8 @@ sub ReturnHelloWorld {
 
 sub HelloSpy {
     return 'Bond, James Bond!';
+}
+
+sub HappyOverride {
+    return 'original in FakeStaticTools';
 }

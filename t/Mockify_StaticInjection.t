@@ -23,10 +23,11 @@ sub testPlan {
     my $self = shift;
 
     $self->test_mockStatic();
-    $self->test_verify();
+    $self->test_verify_with_mockAndSpy();
     $self->test_functionNameFormatingErrorHandling();
-#    $self->test_someSelectedMockifyFeatures();
-#   #split between spy and mock
+    $self->test_MethodAndImportedFunctionHaveTheSameName();
+    $self->test_someSelectedMockifyFeatures();
+
 }
 #----------------------------------------------------------------------------------------
 sub test_mockStatic {
@@ -51,7 +52,7 @@ sub test_mockStatic {
 
 }
 #----------------------------------------------------------------------------------------
-sub test_verify{
+sub test_verify_with_mockAndSpy{
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
@@ -78,7 +79,26 @@ sub test_verify{
     is(scalar @{$aParamsCallHelloSpy}, 1 , "$SubTestName - prove amount of parameters for 'HelloSpy'");
     is($aParamsCallHelloSpy->[0], 'And you are?' , "$SubTestName - prove that the value of parameter 1 of helloSpy is 'And you are?'");
 }
+#----------------------------------------------------------------------------------------
+sub test_MethodAndImportedFunctionHaveTheSameName {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
 
+    my $Mockify = Test::Mockify->new('FakeModulStaticInjection',[]);
+    my $SUT = $Mockify->getMockObject();
+
+    # Perl can't differ between imported and actual methods of a package.
+    # Since this package implements a method which is also imported as static function,
+    #    the implemented method will override the imported one since the own implementaion is loaded later in time.
+    #    (the perl interpreter complains too)
+    is($SUT->methodImportedHappyOverride(), 'original in FakeModulStaticInjection', "$SubTestName - prove return value before mocking!! it is not 'original in FakeStaticTools' as you would expect.");
+    is($SUT->methodStaticHappyOverride(), 'original in FakeStaticTools', "$SubTestName - Prove the static call behaves normal");
+    
+    $Mockify->mockStatic('FakeStaticTools::HappyOverride')->whenAny()->thenReturn('i am mocked'); # This will override the method and the imported Function
+
+    is($SUT->methodImportedHappyOverride(), 'i am mocked', "$SubTestName - prove now it returns always the mock and will hide the perl 'Bug'");
+    is($SUT->methodStaticHappyOverride(), 'i am mocked', "$SubTestName - Prove will be mocked as expected");
+}
 #----------------------------------------------------------------------------------------
 sub test_functionNameFormatingErrorHandling {
     my $self = shift;
@@ -101,27 +121,26 @@ sub test_someSelectedMockifyFeatures {
     $Mockify->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('Error'))->thenThrowError('TestError');
     $Mockify->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('caller'))->thenCall(sub{return 'returnValue'});
     $Mockify->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('undef'), String('abc'))->thenReturnUndef();
-    $Mockify->spyStatic('FakeStaticTools::HelloSpy')->when(String('And you are?'));
+    
     $Mockify->mock('overrideMethod')->when(String('override'))->thenReturn('overridden Value');
     $Mockify->spy('overrideMethod_spy')->when(String('spyme'));
-    $Mockify->addMock('overrideMethod_addMock', sub {return 'overridden Value (addMock)'});
-    
     my $SUT = $Mockify->getMockObject();
+
+    #Error
     throws_ok( sub{$SUT->useStaticFunction('Error') },
                    qr/TestError/,
                    "$SubTestName - prove if thenThrowError will fail"
     );
+    # anonymous function pointer mock
     is($SUT->useStaticFunction('caller'), 'caller: returnValue',"$SubTestName - prove thenCall");
+    # undef
     is($SUT->useStaticFunction('undef', 'abc'), 'undef: ',"$SubTestName - prove thenReturnUndef");
+    # normal mock
     is($SUT->overrideMethod('override'), 'overridden Value',"$SubTestName - prove mock Works");
+    # normal spy
     $SUT->overrideMethod_spy('spyme'); #1
     $SUT->overrideMethod_spy('spyme'); #2
     is(GetCallCount($SUT,'overrideMethod_spy'), 2,"$SubTestName - prove verify works for override");
-    is($SUT->useStaticFunctionSpy('And you are?'), 'And you are?: Bond, James Bond!', "$SubTestName - prove static spy Works - call 1");
-    is($SUT->useStaticFunctionSpy('And you are?'), 'And you are?: Bond, James Bond!', "$SubTestName - prove static spy Works- call 2");
-    is($SUT->useImportedStaticFunctionSpy('And you are?'), 'And you are?: Bond, James Bond!', "$SubTestName - prove static spy Works. - call 3");
-    is(GetCallCount($SUT,'FakeStaticTools::HelloSpy'), 3,"$SubTestName - prove verify works for spy");
-    is($SUT->overrideMethod_addMock(), 'overridden Value (addMock)',"$SubTestName - prove mock Works for 'addMock'");
 }
 
 __PACKAGE__->RunTest();
