@@ -18,6 +18,7 @@ no warnings 'deprecated';
 
 use FakeModuleForMockifyTest;
 use FakeModuleWithoutNew;
+use Dog;
 
 sub testPlan {
     my $self = shift;
@@ -27,7 +28,9 @@ sub testPlan {
     $self->test_functionNameFormatingErrorHandling();
     $self->test_MethodAndImportedFunctionHaveTheSameName();
     $self->test_someSelectedMockifyFeatures();
-
+#    $self->test_mockRevertsWhenInjectorGoesOutOfScope();
+#    $self->test_mockDogOriginalApproach();
+#    $self->test_mockDogStaticApproach();
 }
 #----------------------------------------------------------------------------------------
 sub test_mockStatic {
@@ -141,6 +144,56 @@ sub test_someSelectedMockifyFeatures {
     $SUT->overrideMethod_spy('spyme'); #1
     $SUT->overrideMethod_spy('spyme'); #2
     is(GetCallCount($SUT,'overrideMethod_spy'), 2,"$SubTestName - prove verify works for override");
+}
+#----------------------------------------------------------------------------------------
+sub test_mockRevertsWhenInjectorGoesOutOfScope {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $originalValue = FakeModuleForMockifyTest::DummyMethodForTestOverriding();
+    my $mockValue = 'A mock dummy method';
+
+    {
+        my $Mockify = Test::Mockify->new('FakeModuleForMockifyTest');
+        $Mockify->mockStatic('FakeModuleForMockifyTest::DummyMethodForTestOverriding')->when()->thenReturn($mockValue);
+
+        is(FakeModuleForMockifyTest::DummyMethodForTestOverriding(), $mockValue, "$SubTestName - prove mock is injection");
+    }
+
+    is(FakeModuleForMockifyTest::DummyMethodForTestOverriding(), $originalValue, "$SubTestName - prove mock is reverted");
+}
+#----------------------------------------------------------------------------------------
+sub test_mockDogOriginalApproach {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $dog = Dog->new('Dalmatian');
+    is($dog->breed(), 'Dalmatian', "$SubTestName - Original is a Dalmatian");
+
+    my $mockify = Test::Mockify->new('Dog', ['Dalmatian']);
+    $mockify->mock('breed')->whenAny()->thenReturn('Great Dane');
+    my $mockObject = $mockify->getMockObject();
+
+    is($mockObject->breed(), 'Great Dane', "$SubTestName - Mock is a Great Dane");
+    is($dog->breed(), 'Dalmatian', "$SubTestName - Original is a Dalmatian");
+
+    ok(WasCalled($mockObject, 'breed'), "$SubTestName - Mocked breed method was called");
+}
+#----------------------------------------------------------------------------------------
+sub test_mockDogStaticApproach {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $dog = Dog->new('Dalmatian');
+    is($dog->breed(), 'Dalmatian', "$SubTestName - Original is a Dalmatian");
+
+    my $injector = Test::Mockify->new('Dog'); # should not call Dog->new() or need constructor parameters
+    $injector->mockStatic('breed')->whenAny()->thenReturn('Great Dane');
+
+    is(Dog->breed(), 'Great Dane', "$SubTestName - Mock is a Great Dane");
+    is($dog->breed(), 'Great Dane', "$SubTestName - Original is now a Great Dane");
+
+    ok(WasCalled($injector, 'breed'), "$SubTestName - Mocked breed method was called");
 }
 
 __PACKAGE__->RunTest();
