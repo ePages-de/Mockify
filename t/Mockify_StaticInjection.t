@@ -29,6 +29,7 @@ sub testPlan {
     $self->test_MethodAndImportedFunctionHaveTheSameName();
     $self->test_someSelectedMockifyFeatures();
 #    $self->test_mockRevertsWhenInjectorGoesOutOfScope();
+#    $self->test_thisTestIsNotAffectedByPrevious();
 #    $self->test_mockDogOriginalApproach();
 #    $self->test_mockDogStaticApproach();
 }
@@ -38,7 +39,7 @@ sub test_mockStatic {
     my $SubTestName = (caller(0))[3];
     my $SUT;
     {
-        my $Mockify = Test::Mockify->new('FakeModulStaticInjection',[]);
+        my $Mockify = Test::Mockify->new('FakeModuleStaticInjection',[]);
         $Mockify->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('German'))->thenReturn('Hallo Welt');
         $Mockify->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('Spanish'))->thenReturn('Hola Mundo');
         $Mockify->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('Esperanto'))->thenReturn('Saluton mondon');
@@ -59,7 +60,7 @@ sub test_verify_with_mockAndSpy{
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $Mockify = Test::Mockify->new('FakeModulStaticInjection',[]);
+    my $Mockify = Test::Mockify->new('FakeModuleStaticInjection',[]);
     $Mockify->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('German'))->thenReturn('Hallo Welt');
     $Mockify->spyStatic('FakeStaticTools::HelloSpy')->when(String('And you are?'));
     my $SUT = $Mockify->getMockObject();
@@ -87,14 +88,14 @@ sub test_MethodAndImportedFunctionHaveTheSameName {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $Mockify = Test::Mockify->new('FakeModulStaticInjection',[]);
+    my $Mockify = Test::Mockify->new('FakeModuleStaticInjection',[]);
     my $SUT = $Mockify->getMockObject();
 
     # Perl can't differ between imported and actual methods of a package.
     # Since this package implements a method which is also imported as static function,
     #    the implemented method will override the imported one since the own implementaion is loaded later in time.
     #    (the perl interpreter complains too)
-    is($SUT->methodImportedHappyOverride(), 'original in FakeModulStaticInjection', "$SubTestName - prove return value before mocking!! it is not 'original in FakeStaticTools' as you would expect.");
+    is($SUT->methodImportedHappyOverride(), 'original in FakeModuleStaticInjection', "$SubTestName - prove return value before mocking!! it is not 'original in FakeStaticTools' as you would expect.");
     is($SUT->methodStaticHappyOverride(), 'original in FakeStaticTools', "$SubTestName - Prove the static call behaves normal");
     
     $Mockify->mockStatic('FakeStaticTools::HappyOverride')->whenAny()->thenReturn('i am mocked'); # This will override the method and the imported Function
@@ -106,7 +107,7 @@ sub test_MethodAndImportedFunctionHaveTheSameName {
 sub test_functionNameFormatingErrorHandling {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
-    my $Mockify = Test::Mockify->new('FakeModulStaticInjection',[]);
+    my $Mockify = Test::Mockify->new('FakeModuleStaticInjection',[]);
     throws_ok( sub { $Mockify->mockStatic() },
                    qr/The Parameter needs to be defined and a String. e.g. Path::To::Your::Function/,
                    "$SubTestName - prove the an undefined will fail"
@@ -120,7 +121,7 @@ sub test_functionNameFormatingErrorHandling {
 sub test_someSelectedMockifyFeatures {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
-    my $Mockify = Test::Mockify->new('FakeModulStaticInjection',[]);
+    my $Mockify = Test::Mockify->new('FakeModuleStaticInjection',[]);
     $Mockify->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('Error'))->thenThrowError('TestError');
     $Mockify->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('caller'))->thenCall(sub{return 'returnValue'});
     $Mockify->mockStatic('FakeStaticTools::ReturnHelloWorld')->when(String('undef'), String('abc'))->thenReturnUndef();
@@ -157,10 +158,17 @@ sub test_mockRevertsWhenInjectorGoesOutOfScope {
         my $Mockify = Test::Mockify->new('FakeModuleForMockifyTest');
         $Mockify->mockStatic('FakeModuleForMockifyTest::DummyMethodForTestOverriding')->when()->thenReturn($mockValue);
 
-        is(FakeModuleForMockifyTest::DummyMethodForTestOverriding(), $mockValue, "$SubTestName - prove mock is injection");
+        is(FakeModuleForMockifyTest::DummyMethodForTestOverriding(), $mockValue, "$SubTestName - prove mock is injected");
     }
 
     is(FakeModuleForMockifyTest::DummyMethodForTestOverriding(), $originalValue, "$SubTestName - prove mock is reverted");
+}
+#----------------------------------------------------------------------------------------
+sub test_thisTestIsNotAffectedByPrevious {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    is(FakeModuleForMockifyTest::DummyMethodForTestOverriding(), 'A dummy method', "$SubTestName - prove SUT is not still mocked from previous");
 }
 #----------------------------------------------------------------------------------------
 sub test_mockDogOriginalApproach {

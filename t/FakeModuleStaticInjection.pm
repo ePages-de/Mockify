@@ -1,4 +1,4 @@
-package FakeModulStaticInjection;
+package FakeModuleStaticInjection;
 
 use strict;
 use FakeStaticTools qw ( ReturnHelloWorld HelloSpy HappyOverride);
@@ -21,7 +21,7 @@ sub methodImportedHappyOverride {
     return HappyOverride();
 }
 sub HappyOverride{ #This overrides the imported Function use FakeStaticTools qw ( HappyOverride );
-    return 'original in FakeModulStaticInjection';
+    return 'original in FakeModuleStaticInjection';
 }
 
 sub useStaticFunctionSpy {
