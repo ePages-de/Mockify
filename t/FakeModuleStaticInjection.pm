@@ -1,6 +1,8 @@
 package FakeModuleStaticInjection;
 
 use strict;
+use warnings;
+
 use FakeStaticTools qw ( ReturnHelloWorld HelloSpy HappyOverride);
 
 sub overrideMethod {
