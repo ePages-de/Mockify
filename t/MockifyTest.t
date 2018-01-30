@@ -350,7 +350,7 @@ sub test_MockModule_addMock_overrideNotExistingMethod {
     my $MockObject = $self->_createMockObject($aParameterList);
     throws_ok(
         sub { $MockObject->addMockWithReturnValue('aNotExistingMethod', sub {}); },
-        qr/FakeModuleForMockifyTest donsn't have a method like: aNotExistingMethod/,
+        qr/FakeModuleForMockifyTest doesn't have a method like: aNotExistingMethod/,
         "$SubTestName - test if the mocked method throw an Error if the method don't exists in the module"
     );
 

@@ -23,23 +23,23 @@ use Test::More;
 sub testPlan{
     my $self = shift;
 
-    $self->_SignaturWithAnyMatcherAndExpectedMatcher();
+    $self->_SignatureWithAnyMatcherAndExpectedMatcher();
     $self->_MultipleAnyMatcher();
-    $self->_SingleExepctedMatcher();
+    $self->_SingleExpectedMatcher();
     $self->_NullProblems();
     $self->_MockifiedObjectCheck();
     $self->_AnyMatcher();
     $self->_AnyParameter();
     $self->_FunctionCall();
-    $self->_MixedExepctedMatcherAndAnyMatcher_Error();
-    $self->_MixedAnyMatcherWithDifferntTypes();
+    $self->_MixedExpectedMatcherAndAnyMatcher_Error();
+    $self->_MixedAnyMatcherWithDifferentTypes();
     $self->_DefineSignatureTwice_Error();
-    $self->_UndefinedSignatur_Error();
+    $self->_UndefinedSignature_Error();
     $self->_UndefinedType_Error();
     return;
 }
 #---------------------------------------------------------------------------------
-sub _SignaturWithAnyMatcherAndExpectedMatcher {
+sub _SignatureWithAnyMatcherAndExpectedMatcher {
     my $self = shift;
 
     my $Method = Test::Mockify::Method->new();
@@ -120,7 +120,7 @@ sub _AnyParameter {
 }
 
 #---------------------------------------------------------------------------------
-sub _SingleExepctedMatcher {
+sub _SingleExpectedMatcher {
     my $self = shift;
     my $Method = Test::Mockify::Method->new();
     $Method->when(String('OneString'))->thenReturn('Result for one string.');
@@ -157,7 +157,7 @@ sub _NullProblems {
 
     is($Method->call(0), 'Result for zero number.', 'single expected parameter type number (0)');
     is($Method->call('0'), 'Result for zero number.', 'single expected parameter type number, even though it is a String');
-    is($Method->call(''), 'Result for empty string.', 'expected return value for empty string signatur');
+    is($Method->call(''), 'Result for empty string.', 'expected return value for empty string signature');
 }
 #---------------------------------------------------------------------------------
 sub _MockifiedObjectCheck {
@@ -190,7 +190,7 @@ sub _SingleAnyParameter {
     is($Method->call(123), 'Result for one number.', 'single any parameter type number');	
 }
 #---------------------------------------------------------------------------------
-sub _MixedExepctedMatcherAndAnyMatcher_Error {
+sub _MixedExpectedMatcherAndAnyMatcher_Error {
     my $self = shift;    
     
     my $Method = Test::Mockify::Method->new();
@@ -208,7 +208,7 @@ sub _MixedExepctedMatcherAndAnyMatcher_Error {
      );
 } 
 #---------------------------------------------------------------------------------
-sub _MixedAnyMatcherWithDifferntTypes {
+sub _MixedAnyMatcherWithDifferentTypes {
     my $self = shift;    
     
     my $Method = Test::Mockify::Method->new();
@@ -227,22 +227,22 @@ sub _DefineSignatureTwice_Error{
     $Method->when(String('FirstString'))->thenReturn('Result for two strings.');
     throws_ok( sub { $Method->when( String('FirstString') )->thenReturn('Hello World'); },
                qr/It is not possible two add two times the same method Signature./,
-               'define signatur twice - expected matcher'
+               'define signature twice - expected matcher'
      );
     $Method = Test::Mockify::Method->new();
     $Method->when(String())->thenReturn('Result for two strings.');
     throws_ok( sub { $Method->when( String() )->thenReturn('Hello World'); },
                qr/It is not possible two add two times the same method Signature./,
-               'define signatur twice - any matcher'
+               'define signature twice - any matcher'
      );
 }
 #---------------------------------------------------------------------------------
-sub _UndefinedSignatur_Error {
+sub _UndefinedSignature_Error {
     my $self = shift;
     my $Method = Test::Mockify::Method->new();
     $Method->when(String())->thenReturn('Hello World');
-    throws_ok( sub { $Method->call('not','mocked Signatur') },
-    	qr/No matching found for stringstring/,
+    throws_ok( sub { $Method->call('not','mocked Signature') },
+    	qr/No matching found for string/,
                'unsupported amount of parameters'
      );
 }
@@ -250,9 +250,9 @@ sub _UndefinedSignatur_Error {
 sub _UndefinedType_Error {
     my $self = shift;
     my $Method = Test::Mockify::Method->new();
-    throws_ok( sub { $Method->when('NotSuportedType')->thenReturn('Result for two strings.'); },
+    throws_ok( sub { $Method->when('UnsupportedType')->thenReturn('Result for two strings.'); },
                qr/Use Test::Mockify::Matcher to define proper matchers./,
-               'unsuported type, not like string or number'
+               'unsupported type, not like string or number'
      );
 }
 __PACKAGE__->RunTest();
