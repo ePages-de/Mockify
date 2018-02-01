@@ -21,22 +21,22 @@ Test::Mockify - minimal mocking framework for perl
 
 =head1 SYNOPSIS
 
-  use Test::Mockify;
-  use Test::Mockify::Verify qw ( WasCalled );
-  use Test::Mockify::Matcher qw ( String );
+    use Test::Mockify;
+    use Test::Mockify::Verify qw ( WasCalled );
+    use Test::Mockify::Matcher qw ( String );
 
-  # build a new mocked object
-  my $MockObjectBuilder = Test::Mockify->new('SampleLogger', []);
-  $MockObjectBuilder->mock('log')->when(String())->thenReturnUndef();
-  my $MockedLogger = $MockLoggerBuilder->getMockObject();
+    # build a new mocked object
+    my $MockObjectBuilder = Test::Mockify->new('SampleLogger', []);
+    $MockObjectBuilder->mock('log')->when(String())->thenReturnUndef();
+    my $MockedLogger = $MockLoggerBuilder->getMockObject();
 
-  # inject mocked object into the code you want to test
-  my $App = SampleApp->new('logger'=> $MockedLogger);
-  $App->do_something();
+    # inject mocked object into the code you want to test
+    my $App = SampleApp->new('logger'=> $MockedLogger);
+    $App->do_something();
 
-  # verify that the mocked method was called
-  ok(WasCalled($MockedLogger, 'log'), 'log was called');
-  done_testing();
+    # verify that the mocked method was called
+    ok(WasCalled($MockedLogger, 'log'), 'log was called');
+    done_testing();
 
 =head1 DESCRIPTION
 
@@ -56,11 +56,10 @@ Because you need to specify more detailed the behaviour of this mock you have to
 
 For example, the next line will create a mocked version of the method log, but only if this method is called with any string and the number 123. In this case it will return the String 'Hello World'. Mockify will throw an error if this method is called somehow else.
 
-  my $MockObjectBuilder = Test::Mockify->new( 'Sample::Logger', [] );
-  $MockObjectBuilder->mock('log')->when(String(), Number(123))->thenReturn('Hello World');
-  my $SampleLogger = $MockObjectBuilder->getMockObject();
-  is($SampleLogger->log('abc',123), 'Hello World');
-
+    my $MockObjectBuilder = Test::Mockify->new( 'Sample::Logger', [] );
+    $MockObjectBuilder->mock('log')->when(String(), Number(123))->thenReturn('Hello World');
+    my $SampleLogger = $MockObjectBuilder->getMockObject();
+    is($SampleLogger->log('abc',123), 'Hello World');
 
 =head4 when
 
@@ -86,15 +85,15 @@ Because you need to specify more detailed the behaviour of this spy you have to 
 
 For example, the next line will create a method spy of the method log, but only if this method is called with any string and the number 123. Mockify will throw an error if this method is called in another way.
 
-  my $MockObjectBuilder = Test::Mockify->new( 'Sample::Logger', [] );
-  $MockObjectBuilder->spy('log')->when(String(), Number(123));
-  my $SampleLogger = $MockObjectBuilder->getMockObject();
+    my $MockObjectBuilder = Test::Mockify->new( 'Sample::Logger', [] );
+    $MockObjectBuilder->spy('log')->when(String(), Number(123));
+    my $SampleLogger = $MockObjectBuilder->getMockObject();
 
-  # call spied method
-  $SampleLogger->log('abc', 123);
+    # call spied method
+    $SampleLogger->log('abc', 123);
 
-  # verify that the spied method was called
-  is_deeply(GetParametersFromMockifyCall($MockedLogger, 'log'),['abc', 123], 'Check parameters of first call');
+    # verify that the spied method was called
+    is_deeply(GetParametersFromMockifyCall($MockedLogger, 'log'),['abc', 123], 'Check parameters of first call');
 
 =head4 when
 
@@ -109,22 +108,22 @@ It is not possible to mix C<whenAny> and C<when> for the same method.
 
 Provides the actual mock object, which you can use in the test.
 
-  my $aParameterList = ['SomeValueForConstructor'];
-  my $MockObjectBuilder = Test::Mockify->new( 'My::Module', $aParameterList );
-  my $MyModuleObject = $MockObjectBuilder->getMockObject();
+    my $aParameterList = ['SomeValueForConstructor'];
+    my $MockObjectBuilder = Test::Mockify->new( 'My::Module', $aParameterList );
+    my $MyModuleObject = $MockObjectBuilder->getMockObject();
 
 =head2 addMethodSpy I<(deprecated)>
 
 With this method it is possible to observe a method. That means, you keep the original functionality but you can get meta data from the mockify-framework.
 
-  $MockObjectBuilder->addMethodSpy('myMethodName');
+    $MockObjectBuilder->addMethodSpy('myMethodName');
 
 =head2 addMethodSpyWithParameterCheck I<(deprecated)>
 
 With this method it is possible to observe a method and check the parameters. That means, you keep the original functionality, but you can get meta data from the mockify- framework and use the parameter check, like B<addMockWithReturnValueAndParameterCheck>.
 
-  my $aParameterTypes = [String(),String(abcd)];
-  $MockObjectBuilder->addMethodSpyWithParameterCheck('myMethodName', $aParameterTypes);
+    my $aParameterTypes = [String(),String(abcd)];
+    $MockObjectBuilder->addMethodSpyWithParameterCheck('myMethodName', $aParameterTypes);
 
 To define it in a nice way the signature you must use the L<< Test::Mockify::Matcher; >>.
 
@@ -134,16 +133,15 @@ This is the simplest case. It works like the mock-method from L<Test::MockObject
 
 Only handover the B<name> and a B<method pointer>. Mockify will automatically check if the method exists in the original object.
 
-  $MockObjectBuilder->addMock('myMethodName', sub {
-                                    # Your implementation
-                                 }
-  );
+    $MockObjectBuilder->addMock('myMethodName', sub {
+            # Your implementation
+         });
 
 =head2 addMockWithReturnValue I<(deprecated)>
 
 Does the same as C<addMock>, but here you can handover a B<value> which will be returned if you call the mocked method.
 
-  $MockObjectBuilder->addMockWithReturnValue('myMethodName','the return value');
+    $MockObjectBuilder->addMockWithReturnValue('myMethodName','the return value');
 
 =head2 addMockWithReturnValueAndParameterCheck I<(deprecated)>
 
@@ -153,8 +151,8 @@ You can check if they have a specific B<data type> or even check if they have a 
 
 In the following example two strings will be expected, and the second one has to have the value "abcd".
 
-  my $aParameterTypes = [String(),String('abcd')];
-  $MockObjectBuilder->addMockWithReturnValueAndParameterCheck('myMethodName','the return value',$aParameterTypes);
+    my $aParameterTypes = [String(),String('abcd')];
+    $MockObjectBuilder->addMockWithReturnValueAndParameterCheck('myMethodName','the return value',$aParameterTypes);
 
 To define it in a nice way the signature you must use the L<< Test::Mockify::Matcher; >>.
 

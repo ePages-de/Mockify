@@ -52,65 +52,67 @@ This could be the case for a variety of reasons, namely the SUT instantiates a n
 a static method, or imports a function from another module. L<Test::Mockify::Injector> allows you to redefine the behavior
 of those dependencies for which you can't provide a test double.
 
-  package SUT;
-  use Magic::Tools qw ( Rabbit ); # Rabbit could use a webservice
-  sub pullCylinder {
-      shift;
-      if(Rabbit('white') && not Magic::Tools::Rabbit('black')){ # imported && full path
-          return 1;
-      }else{
-          return 0;
-      }
-  }
-  1;
+    package SUT;
+    use Mailer;
 
-In the Test it can be mocked
+    sub sendMessage {
+        my ($self, $recipient, $message) = @_;
+        if (Mailer::send($recipient, $message)) {
+            print 'Message sent successfully';
+        } else {
+            print 'Message failed to send';
+        }
+    }
 
-  package Test_SUT;
-  my $MockObjectBuilder = Test::Mockify->new( 'SUT', [] );
-  $MockObjectBuilder->mockStatic('Magic::Tools::Rabbit')->when(String('white'))->thenReturn(1);
-  $MockObjectBuilder->mockStatic('Magic::Tools::Rabbit')->when(String('black'))->thenReturn(0);
+    1;
 
-  my $SUT = $MockObjectBuilder->getMockObject();
-  is($SUT->pullCylinder(), 1);
-  1;
+Example usage
 
+    package Test_SUT;
 
-It can be mixed with normal C<spy> and C<mock>
+    my $injector = Test::Mockify::Injector->new('Mailer');
+    $injector->mock('send')->when(String('this@will.fail'), String("You're invited!"))->thenReturn(0);
+    $injector->mock('send')->when(String('this@will.succeed'), String("You're invited!"))->thenReturn(1);
 
-=head4 Thx
+    SUT->sendMessage('this@will.fail', "You're invited!"); # prints 'Message failed to send'
+    SUT->sendMessage('this@will.succeed', "You're invited!"); # prints 'Message sent successfully'
 
-to @dbucky for this amazing idea
+    1;
 
 =head2 spy
 
-Provides the possibility to spy static functions inside the mock/sut.
+Spies allow you to observe interactions with classes and objects, rather than redefine their behavior.
+NOTE: Mocks have the same verification capabilities as spies.
 
-  package SUT;
-  use Magic::Tools qw ( Rabbit ); # Rabbit could use a webservice
-  sub pullCylinder {
-      shift;
-      if(Rabbit('white') && not Magic::Tools::Rabbit('black')){ # imported && full path
-          return 1;
-      }else{
-          return 0;
-      }
-  }
-  1;
+    package SUT;
+    use Mailer;
 
-In the Test it can be mocked
+    sub sendMessage {
+        my ($self, $recipient, $message) = @_;
+        if (Mailer::send($recipient, $message)) {
+            print 'Message sent successfully';
+        } else {
+            print 'Message failed to send';
+        }
+    }
 
-  package Test_SUT;
-  my $MockObjectBuilder = Test::Mockify->new( 'SUT', [] );
-  $MockObjectBuilder->spyStatic('Magic::Tools::Rabbit')->whenAny();
-  my $SUT = $MockObjectBuilder->getMockObject();
+    1;
 
-  $SUT->pullCylinder();
-  is(GetCallCount($SUT, 'pullCylinder), 1);
+Example usage
 
-  1;
+    package Test_SUT;
 
-It can be mixed with normal C<spy> and C<mock>. For more options see, C<mockStatic>
+    my $injector = Test::Mockify::Injector->new('Mailer');
+    $injector->spy('send')->whenAny();
+
+    SUT->sendMessage('a@b.c', 'Happy birthday!');
+    SUT->sendMessage('x@y.z', 'Happy Holidays!');
+
+    my $verifier = $injector->getVerifier();
+    ok(WasCalled($verifier, 'send'), 'The mailer's send method was called');
+    is(GetCallCount($verifier, 'send'), 2, 'The mailer's send method was called twice');
+
+    1;
 
 =head1 AUTHOR
 
