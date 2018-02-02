@@ -49,4 +49,12 @@ sub useImportedStaticFunction {
     return $PreFix . ': '.ReturnHelloWorld(@_);
 
 }
+sub dependency {
+    my ($self, $arg) = @_;
+    return "$arg dependency";
+}
+sub client {
+    my $self = shift;
+    return $self->dependency('client');
+}
 1;

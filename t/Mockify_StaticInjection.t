@@ -33,6 +33,7 @@ sub testPlan {
     $self->test_mockDogOriginalApproach();
     $self->test_mockDogStaticApproach();
     $self->test_newNotCalled();
+#    $self->test_mockSUT();
 }
 #----------------------------------------------------------------------------------------
 sub test_mockStatic {
@@ -152,11 +153,13 @@ sub test_mockRevertsWhenInjectorGoesOutOfScope {
     my $originalValue2 = FakeModuleForMockifyTest::secondDummyMethodForTestOverriding();
     my $mockValue = 'A mock dummy method';
     my $mockValue2 = 'A second mock dummy method';
+    my $verifier;
 
     {
         my $injector = Test::Mockify::Injector->new('FakeModuleForMockifyTest');
         $injector->mock('DummyMethodForTestOverriding')->when()->thenReturn($mockValue);
         $injector->addMock('secondDummyMethodForTestOverriding', sub { $mockValue2 });
+        $verifier = $injector->getVerifier();
 
         is(FakeModuleForMockifyTest::DummyMethodForTestOverriding(), $mockValue, "$SubTestName - prove mock is injected");
         is(FakeModuleForMockifyTest::secondDummyMethodForTestOverriding(), $mockValue2, "$SubTestName - prove second mock is injected");
@@ -167,6 +170,7 @@ sub test_mockRevertsWhenInjectorGoesOutOfScope {
 
     is(FakeModuleForMockifyTest::DummyMethodForTestOverriding(), $originalValue, "$SubTestName - prove mock is reverted");
     is(FakeModuleForMockifyTest::secondDummyMethodForTestOverriding(), $originalValue2, "$SubTestName - prove second mock is reverted");
+    ok(WasCalled($verifier, 'DummyMethodForTestOverriding'), "$SubTestName - prove verifier can live past injector");
 }
 #----------------------------------------------------------------------------------------
 sub test_thisTestIsNotAffectedByPrevious {
@@ -220,6 +224,17 @@ sub test_newNotCalled() {
     my $injector = Test::Mockify::Injector->new('Dog');
     ok(!$injector->getVerifier()->isa('Dog'), "$SubTestName - verifier isnota Dog");
 }
+#----------------------------------------------------------------------------------------
+sub test_mockSUT {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
 
+    my $injector = Test::Mockify::Injector->new('FakeModuleStaticInjection');
+    $injector->spy('dependency')->when();
+
+    FakeModuleStaticInjection->client();
+
+    ok(WasCalled($injector->getVerifier(), 'dependency'), "$SubTestName - prove SUT can be mocked directly")
+}
 
 __PACKAGE__->RunTest();
