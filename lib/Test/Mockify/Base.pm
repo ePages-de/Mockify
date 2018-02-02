@@ -53,9 +53,10 @@ sub spy {
     my $self = shift;
     my ($MethodName) = @_;
     my $PointerOriginalMethod = \&{$self->_mockedModulePath().'::'.$MethodName};
+    my $mockedSelf = $self->_mockedSelf();
     #In order to have the current object available in the parameter list, it has to be injected here.
     return $self->_addMockWithMethodSpy($MethodName, sub {
-            return $PointerOriginalMethod->($self->_mockedSelf(), @_);
+            return $PointerOriginalMethod->($mockedSelf, @_);
         });
 }
 
@@ -71,8 +72,9 @@ sub addMock {
     if (warnings::enabled("deprecated")) {
         warnings::warn('deprecated', "addMock is deprecated, use mock('name')->whenAny()->thenCall(sub{})");
     }
+    my $mockedSelf = $self->_mockedSelf();
     $self->_addMockWithMethod($MethodName)->whenAny()->thenCall(sub {
-        return $rSub->($self->_mockedSelf(), @_);
+        return $rSub->($mockedSelf, @_);
     });
 
     return;
@@ -185,30 +187,21 @@ sub _addMockWithMethodSpy {
 
 sub _addMock {
     my $self = shift;
-    my ( $MethodName, $Method) = @_;
+    my ($MethodName, $Method) = @_;
 
     ExistsMethod( $self->_mockedModulePath(), $MethodName );
     $self->_mockedSelf()->{'__MethodCallCounter'}->addMethod( $MethodName );
     if(not $self->{'MethodStore'}{$MethodName}){
         $self->{'MethodStore'}{$MethodName} //= $Method;
         $self->_mockedSelf()->mock($MethodName, sub {
-                $self->_mockedSelf()->{'__MethodCallCounter'}->increment( $MethodName );
                 my $MockedSelf = shift;
                 my @MockedParameters = @_;
-                $self->_storeParameters( $MethodName, $MockedSelf, \@MockedParameters );
-                return $self->{'MethodStore'}{$MethodName}->call(@MockedParameters);
+                $MockedSelf->{'__MethodCallCounter'}->increment( $MethodName );
+                push @{$MockedSelf->{$MethodName.'_MockifyParams'}}, \@MockedParameters;
+                return $Method->call(@MockedParameters);
             });
     }
     return $self->{'MethodStore'}{$MethodName};
-}
-
-sub _storeParameters {
-    my $self = shift;
-    my ( $MethodName, $MockedSelf, $aMockedParameters ) = @_;
-
-    push( @{$MockedSelf->{$MethodName.'_MockifyParams'}}, $aMockedParameters );
-
-    return;
 }
 
 sub _addGetParameterFromMockifyCall {

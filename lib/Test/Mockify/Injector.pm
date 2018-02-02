@@ -20,17 +20,18 @@ sub _getFakeClass {
 
 sub _addMock {
     my $self = shift;
-    my ( $MethodName, $Method) = @_;
+    my ($MethodName, $Method) = @_;
 
     ExistsMethod( $self->_mockedModulePath(), $MethodName );
-    $self->_mockedSelf()->{'__MethodCallCounter'}->addMethod( $MethodName );
+    my $mockedSelf = $self->_mockedSelf();
+    $mockedSelf->{'__MethodCallCounter'}->addMethod( $MethodName );
     if(not $self->{'MethodStore'}{$MethodName}){
         $self->{'MethodStore'}{$MethodName} //= $Method;
         my $MockedMethodBody = sub {
-            $self->_mockedSelf()->{'__MethodCallCounter'}->increment( $MethodName );
             my @MockedParameters = @_;
-            $self->_storeParameters( $MethodName, $self->_mockedSelf(), \@MockedParameters );
-            return $self->{'MethodStore'}{$MethodName}->call(@MockedParameters);
+            $mockedSelf->{'__MethodCallCounter'}->increment( $MethodName );
+            push @{$mockedSelf->{$MethodName.'_MockifyParams'}}, \@MockedParameters;
+            return $Method->call(@MockedParameters);
         };
         $self->{'override'}->replace($self->_mockedModulePath().'::'.$MethodName, $MockedMethodBody);
     }

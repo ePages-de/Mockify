@@ -28,8 +28,8 @@ sub testPlan {
     $self->test_verify_with_mockAndSpy();
     $self->test_MethodAndImportedFunctionHaveTheSameName();
 #    $self->test_someSelectedMockifyFeatures();
-#    $self->test_mockRevertsWhenInjectorGoesOutOfScope();
-#    $self->test_thisTestIsNotAffectedByPrevious();
+    $self->test_mockRevertsWhenInjectorGoesOutOfScope();
+    $self->test_thisTestIsNotAffectedByPrevious();
     $self->test_mockDogOriginalApproach();
     $self->test_mockDogStaticApproach();
     $self->test_newNotCalled();
@@ -149,16 +149,24 @@ sub test_mockRevertsWhenInjectorGoesOutOfScope {
     my $SubTestName = (caller(0))[3];
 
     my $originalValue = FakeModuleForMockifyTest::DummyMethodForTestOverriding();
+    my $originalValue2 = FakeModuleForMockifyTest::secondDummyMethodForTestOverriding();
     my $mockValue = 'A mock dummy method';
+    my $mockValue2 = 'A second mock dummy method';
 
     {
-        my $Mockify = Test::Mockify::Injector->new('FakeModuleForMockifyTest');
-        $Mockify->mock('DummyMethodForTestOverriding')->when()->thenReturn($mockValue);
+        my $injector = Test::Mockify::Injector->new('FakeModuleForMockifyTest');
+        $injector->mock('DummyMethodForTestOverriding')->when()->thenReturn($mockValue);
+        $injector->addMock('secondDummyMethodForTestOverriding', sub { $mockValue2 });
 
         is(FakeModuleForMockifyTest::DummyMethodForTestOverriding(), $mockValue, "$SubTestName - prove mock is injected");
+        is(FakeModuleForMockifyTest::secondDummyMethodForTestOverriding(), $mockValue2, "$SubTestName - prove second mock is injected");
+
+        # make sure GetParametersFromMockifyCall doesn't interfere with releasing the $injector when it goes out of scope
+        GetParametersFromMockifyCall($injector->getVerifier(), 'DummyMethodForTestOverriding');
     }
 
     is(FakeModuleForMockifyTest::DummyMethodForTestOverriding(), $originalValue, "$SubTestName - prove mock is reverted");
+    is(FakeModuleForMockifyTest::secondDummyMethodForTestOverriding(), $originalValue2, "$SubTestName - prove second mock is reverted");
 }
 #----------------------------------------------------------------------------------------
 sub test_thisTestIsNotAffectedByPrevious {
