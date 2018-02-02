@@ -118,6 +118,11 @@ Example usage
 =head1 AUTHOR
 
 Dustin Buckenmeyer E<lt>dustin.buckenmeyer@gmail.comE<gt>
+
+=head1 ACKNOWLEDGEMENTS
+
 Thanks to L<ECS Tuning|https://www.ecstuning.com/> for allowing me to pursue this idea and ultimately give it back to the community!
+
+I also grateful to the main author, Christian Breitkreutz E<lt>christianbreitkreutz@gmx.deE<gt>, for providing guidance on the implementation.
 
 =cut
