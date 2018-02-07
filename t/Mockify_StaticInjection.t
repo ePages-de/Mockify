@@ -10,7 +10,6 @@ use Test::Mockify::Injector;
 use Test::Mockify::Verify qw (WasCalled GetCallCount GetParametersFromMockifyCall);
 use Test::More;
 use Test::Mockify::Matcher qw (String Number);
-use Test::MockModule;
 
 use strict;
 use warnings;
