@@ -5,6 +5,9 @@ use warnings;
 
 use FakeStaticTools qw ( ReturnHelloWorld HelloSpy HappyOverride);
 
+# TODO: remove my $self = shift; from these functions
+# TODO: make sure invocations to these functions use :: and not ->
+
 sub overrideMethod {
     my $self = shift;
     return 'original Value';
