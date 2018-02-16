@@ -41,7 +41,7 @@ sub ExistsMethod {
         if( IsValid( ref( $PathOrObject ) ) ){
             $PathOrObject = ref( $PathOrObject );
         }
-        Error( $PathOrObject." donsn't have a method like: $MethodName", {'Method' => $MethodName});
+        Error( $PathOrObject." doesn't have a method like: $MethodName", {'Method' => $MethodName});
     }
 
     return 1;

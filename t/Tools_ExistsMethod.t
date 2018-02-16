@@ -29,7 +29,7 @@ sub ExistsMethod_WithObject_positiv {
         "$SubTestName - tests if ExistsMethod works with an object"
     );
     throws_ok( sub{ExistsMethod($FakeModuleForMockifyTest,'NotExistingMethod')},
-        qr/FakeModuleForMockifyTest donsn't have a method like: NotExistingMethod/,
+        qr/FakeModuleForMockifyTest doesn't have a method like: NotExistingMethod/,
         "$SubTestName - tests if ExistsMethod throws error if method not exists with an object"
     ); 
 
@@ -44,7 +44,7 @@ sub ExistsMethod_WithPath_positiv {
         "$SubTestName - tests if ExistsMethod works with the object path"
     );
     throws_ok( sub{ExistsMethod('FakeModuleForMockifyTest','NotExistingMethod')},
-        qr/FakeModuleForMockifyTest donsn't have a method like: NotExistingMethod/,
+        qr/FakeModuleForMockifyTest doesn't have a method like: NotExistingMethod/,
         "$SubTestName - tests if ExistsMethod throws error if method not exists with the object path"
     );
 
