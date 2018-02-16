@@ -157,7 +157,7 @@ sub test_mockRevertsWhenInjectorGoesOutOfScope {
     {
         my $injector = Test::Mockify::Injector->new('FakeModuleForMockifyTest');
         $injector->mock('DummyMethodForTestOverriding')->when()->thenReturn($mockValue);
-        $injector->addMock('secondDummyMethodForTestOverriding', sub { $mockValue2 });
+        $injector->addMock('secondDummyMethodForTestOverriding', sub { return $mockValue2; });
         $verifier = $injector->getVerifier();
 
         is(FakeModuleForMockifyTest::DummyMethodForTestOverriding(), $mockValue, "$SubTestName - prove mock is injected");
