@@ -388,11 +388,13 @@ sub _addStaticMock {
     $self->_mockedSelf()->{'__MethodCallCounter'}->addMethod( $MethodName );
     if(not $self->{'MethodStore'}{$MethodName}){
         $self->{'MethodStore'}{$MethodName} //= $Method;
+        my $MockedSelf = $self->_mockedSelf();
         my $MockedMethodBody = sub {
-            $self->_mockedSelf()->{'__MethodCallCounter'}->increment( $MethodName );
+            $MockedSelf->{'__MethodCallCounter'}->increment( $MethodName );
             my @MockedParameters = @_;
-            $self->_storeParameters( $MethodName, $self->_mockedSelf(), \@MockedParameters );
-            return $self->{'MethodStore'}{$MethodName}->call(@MockedParameters);
+            #$self->_storeParameters( $MethodName, $self->_mockedSelf(), \@MockedParameters );
+            push( @{$MockedSelf->{$MethodName.'_MockifyParams'}}, \@MockedParameters );
+            return $Method->call(@MockedParameters);
         };
         # mock with full path
         $self->{'override'}->replace($MethodName, $MockedMethodBody);
@@ -427,18 +429,18 @@ sub _addMockWithMethodSpy {
 #-------------------------------------------------------------------------------------
 sub _addMock {
     my $self = shift;
-    my ( $MethodName, $Method) = @_;
+    my ($MethodName, $Method) = @_;
 
     ExistsMethod( $self->_mockedModulePath(), $MethodName );
     $self->_mockedSelf()->{'__MethodCallCounter'}->addMethod( $MethodName );
     if(not $self->{'MethodStore'}{$MethodName}){
         $self->{'MethodStore'}{$MethodName} //= $Method;
         $self->_mockedSelf()->mock($MethodName, sub {
-            $self->_mockedSelf()->{'__MethodCallCounter'}->increment( $MethodName );
             my $MockedSelf = shift;
+            $MockedSelf->{'__MethodCallCounter'}->increment( $MethodName );
             my @MockedParameters = @_;
-            $self->_storeParameters( $MethodName, $MockedSelf, \@MockedParameters );
-            return $self->{'MethodStore'}{$MethodName}->call(@MockedParameters);
+            push @{$MockedSelf->{$MethodName.'_MockifyParams'}}, \@MockedParameters;
+            return $Method->call(@MockedParameters);
         });
     }
     return $self->{'MethodStore'}{$MethodName};
