@@ -46,9 +46,9 @@ sub test_mockStatic {
         is($SUT->useStaticFunction('Spanish'), 'Spanish: Hola Mundo',"$SubTestName - prove full path call - spanish");
         is($SUT->useImportedStaticFunction('Spanish'), 'Spanish: Hola Mundo',"$SubTestName - prove imported call - spanish");
     }
-    # With this approach it also is not binded anymore to the scope. The Override stays with the mocked object
-    is($SUT->useStaticFunction('Esperanto'), 'Esperanto: Saluton mondon',"$SubTestName - prove full path call, scope independent- german");
-    is($SUT->useImportedStaticFunction('Esperanto'), 'Esperanto: Saluton mondon',"$SubTestName - prove that the same mock can handle also the imported call, scope independent - german");
+
+    is($SUT->useStaticFunction('Esperanto'), 'Esperanto: Hello World',"$SubTestName - prove full path call, scope independent- german");
+    is($SUT->useImportedStaticFunction('Esperanto'), 'Esperanto: Hello World',"$SubTestName - prove that the same mock can handle also the imported call, scope independent - german");
 
 }
 #----------------------------------------------------------------------------------------
