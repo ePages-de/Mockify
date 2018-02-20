@@ -1,0 +1,14 @@
+package t::ExampleProject::MagicShow::Rabbit;
+sub new {
+    return bless({},$_[0]);
+}
+sub isSnappyToday {
+    my $self = shift;
+    if(int(rand(10)) > 5){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+1;
