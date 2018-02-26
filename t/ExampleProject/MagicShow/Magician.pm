@@ -1,5 +1,6 @@
 package t::ExampleProject::MagicShow::Magician;
-
+use t::ExampleProject::MagicShow::Rabbit;
+use strict;
 sub new {
     my $class = shift;
     my ($Rabbit) = @_;
@@ -11,7 +12,11 @@ sub new {
 
 sub pullRabbit {
     my $self = shift;
-    return $self->{'Rabbit'};
+    my $Say = 'Tada!';
+    if($self->{'Rabbit'}->isSnappyToday()){
+        return $Say.' ouch';
+    }
+    return $Say;
 }
 
 1;

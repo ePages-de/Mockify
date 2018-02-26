@@ -54,7 +54,7 @@ sub new {
     my $self = bless {}, $class;
 
     LoadPackage( $FakeModulePath );
-    my $FakeClass = $FakeModulePath->can('new') ? $FakeModulePath->new( @{$aFakeParams} ) : $FakeModulePath;
+    my $FakeClass = $aFakeParams ? $FakeModulePath->new( @{$aFakeParams} ) : $FakeModulePath;
     $self->_mockedModulePath($FakeModulePath);
     $self->_mockedSelf(Test::MockObject::Extends->new( $FakeClass ));
     $self->_initMockedModule();
