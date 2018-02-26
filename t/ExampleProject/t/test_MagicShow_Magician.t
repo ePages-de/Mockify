@@ -1,4 +1,4 @@
-package test_MagicShow_magician;
+package test_MagicShow_Magician;
 use strict;
 use FindBin;
 use lib ($FindBin::Bin);
@@ -19,7 +19,7 @@ sub test_HappyPath {
     my $SubTestName = (caller(0))[3];
 
     # It is very practical to put this mock creation into a method
-    my $Mockify = Test::Mockify->new( 't::ExampleProject::MagicShow::Rabbit', [] );
+    my $Mockify = Test::Mockify->new( 't::ExampleProject::MagicShow::Rabbit');
     my $RabitIsSnappy = 0;
     $Mockify->mock('isSnappyToday')->when()->thenReturn($RabitIsSnappy);
     my $Rabbit = $Mockify->getMockObject();

@@ -13,13 +13,7 @@ sub watch {
 }
 sub _watchMagician {
     my $self = shift;
-    my ($Arguments) = @_;
     my $Magician = t::ExampleProject::Magician->new();
-    my $Rabbit = $Magician->pullRabbit();
-    my $Say = 'Magician: Tada!';
-    if($Rabbit->isSnappyToday()){
-        return $Say.' ouch';
-    }
-    return $Say;
+    return 'Magician said: '. $Magician->pullRabbit();
 }
 1;
