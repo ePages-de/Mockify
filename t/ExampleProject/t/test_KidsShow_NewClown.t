@@ -1,20 +1,17 @@
-package test_MagicShow_rabbit;
+package test_KidsShow_NewClown;
 use strict;
 use FindBin;
 use lib ($FindBin::Bin);
 use parent 'TestBase';
 use Test::More;
 use t::ExampleProject::MagicShow::Rabbit;
+use t::ExampleProject::KidsShow::NewClown qw ( ShowOfWeight );
 #------------------------------------------------------------------------
 sub testPlan{
     my $self = shift;
 
-    my $Rabbit = t::ExampleProject::MagicShow::Rabbit->new();
-    my $IsSnappy = $Rabbit->isSnappyToday();
-    if($IsSnappy >=0 && $IsSnappy <= 1){
-        ok(1,"Snappy returns a number between 0 and 1");
-    }
-    return;
+    my $LitersOfWater = 10;
+    is(ShowOfWeight($LitersOfWater), 10000, 'Prove new clown weight calculation');
 }
 
 __PACKAGE__->RunTest();
