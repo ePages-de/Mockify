@@ -1,4 +1,5 @@
 package t::ExampleProject::MagicShow::Rabbit;
+use strict;
 sub new {
     return bless({},$_[0]);
 }
