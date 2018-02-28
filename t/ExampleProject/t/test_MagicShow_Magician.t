@@ -1,7 +1,8 @@
 package test_MagicShow_Magician;
 use strict;
 use FindBin;
-use lib ($FindBin::Bin);
+use lib ("$FindBin::Bin/../.."); #Path to test base
+use lib ("$FindBin::Bin/../../.."); #Path to example project
 use parent 'TestBase';
 use Test::More;
 use Test::Mockify;
