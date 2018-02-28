@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Test::Mockify::Matcher qw (SupportedTypes);
 use Test::Mockify::TypeTests qw ( IsString );
-
+no if $] >= 5.017011, warnings => 'experimental::smartmatch';
 our @EXPORT_OK = qw (
     MigrateOldMatchers
 );
