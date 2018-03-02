@@ -242,7 +242,7 @@ sub _UndefinedSignatur_Error {
     my $Method = Test::Mockify::Method->new();
     $Method->when(String())->thenReturn('Hello World');
     throws_ok( sub { $Method->call('not','mocked Signatur') },
-    	qr/No matching found for stringstring/,
+    qr/No matching found for signatur type 'stringstring'.*'not'.*'mocked Signatur'/s,
                'unsupported amount of parameters'
      );
 }

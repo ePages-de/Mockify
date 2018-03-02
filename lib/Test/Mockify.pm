@@ -86,6 +86,7 @@ sub _initMockedModule {
 
     $self->{'override'} = Sub::Override->new();
     $self->{'IsStaticMockStore'} = undef;
+    $self->{'IsImportedMockStore'} = undef;
     return;
 }
 
@@ -218,6 +219,23 @@ sub mockStatic {
     }
 
 }
+sub mockImported {
+    my $self = shift;
+    my @Parameters = @_;
+
+    my $ParameterAmount = scalar @Parameters;
+    if($ParameterAmount == 2 && IsString($Parameters[0]) && IsString($Parameters[1])){
+            $self->{'IsImportedMockStore'}{$Parameters[1]} = {
+                'Path' => $Parameters[0],
+                'MethodName' => $Parameters[1],
+            };
+            return $self->_addMockWithMethod($Parameters[1]);
+    }else{
+        Error('The Parameters needs to be defined and Strings. e.g. "Path::To::Your", "Function"');
+    }
+
+}
+
 =pod
 
 
@@ -379,31 +397,7 @@ sub addMock {
 
     return;
 }
-#----------------------------------------------------------------------------------------
-sub _addStaticMock {
-    my $self = shift;
-    my ( $MethodName, $Method) = @_;
 
-    ExistsMethod( $self->_mockedModulePath(), $MethodName );
-    $self->_mockedSelf()->{'__MethodCallCounter'}->addMethod( $MethodName );
-    if(not $self->{'MethodStore'}{$MethodName}){
-        $self->{'MethodStore'}{$MethodName} //= $Method;
-        my $MockedSelf = $self->_mockedSelf();
-        my $MockedMethodBody = sub {
-            $MockedSelf->{'__MethodCallCounter'}->increment( $MethodName );
-            my @MockedParameters = @_;
-            #$self->_storeParameters( $MethodName, $self->_mockedSelf(), \@MockedParameters );
-            push( @{$MockedSelf->{$MethodName.'_MockifyParams'}}, \@MockedParameters );
-            return $Method->call(@MockedParameters);
-        };
-        # mock with full path
-        $self->{'override'}->replace($MethodName, $MockedMethodBody);
-        my ($FunctionName) = $MethodName =~ /.*::([^:]+$)/x;
-        # mock for imported method(it will complain if you did't imported it)
-        $self->{'override'}->replace($self->_mockedModulePath().'::'.$FunctionName, $MockedMethodBody);
-    }
-    return $self->{'MethodStore'}{$MethodName};
-}
 #----------------------------------------------------------------------------------------
 sub _addMockWithMethod {
     my $self = shift;
@@ -411,6 +405,8 @@ sub _addMockWithMethod {
     $self->_testMockTypeUsage($MethodName);
     if($self->{'IsStaticMockStore'}{$MethodName}){
         return $self->_addStaticMock($MethodName, Test::Mockify::Method->new());
+    }elsif($self->{'IsImportedMockStore'}{$MethodName}){
+        return $self->_addImportedMock($MethodName, Test::Mockify::Method->new());
     }else{
         return $self->_addMock($MethodName, Test::Mockify::Method->new());
     }
@@ -440,11 +436,87 @@ sub _addMock {
             $MockedSelf->{'__MethodCallCounter'}->increment( $MethodName );
             my @MockedParameters = @_;
             push @{$MockedSelf->{$MethodName.'_MockifyParams'}}, \@MockedParameters;
-            return $Method->call(@MockedParameters);
+            my $WantAList = wantarray ? 1 : 0;
+            return _callInjectedMethod($Method, \@MockedParameters, $WantAList, $MethodName);
+
         });
     }
     return $self->{'MethodStore'}{$MethodName};
 }
+#----------------------------------------------------------------------------------------
+sub _callInjectedMethod { 
+#    my $self = shift; #In Order to keep the mockify object out of the mocked method, I can't use the self.
+    my ($Method, $aMockedParameters, $WantAList, $MethodName) = @_;
+    my $ReturnValue;
+            my @ReturnValue;
+    eval {
+        if($WantAList){
+            @ReturnValue = $Method->call(@{$aMockedParameters});
+        }else{
+            $ReturnValue = $Method->call(@{$aMockedParameters});
+        }
+    };
+    if ($@) {
+        die("\nError when calling method '$MethodName'\n".$@)
+    }
+    if($WantAList){
+        return @ReturnValue;
+    }else{
+        return $ReturnValue;
+    }
+    return;
+}
+#----------------------------------------------------------------------------------------
+sub _buildMockSub{
+    my $self = shift;
+    my ($MockedSelf, $MethodName, $Method) = @_;
+    return sub {
+            $MockedSelf->{'__MethodCallCounter'}->increment( $MethodName );
+            my @MockedParameters = @_;
+            push( @{$MockedSelf->{$MethodName.'_MockifyParams'}}, \@MockedParameters );
+            my $WantAList = wantarray ? 1 : 0;
+            return _callInjectedMethod($Method, \@MockedParameters, $WantAList, $MethodName);
+        };
+}
+#----------------------------------------------------------------------------------------
+sub _addStaticMock {
+    my $self = shift;
+    my ( $MethodName, $Method) = @_;
+
+    ExistsMethod( $self->_mockedModulePath(), $MethodName );
+    $self->_mockedSelf()->{'__MethodCallCounter'}->addMethod( $MethodName );
+    if(not $self->{'MethodStore'}{$MethodName}){
+        $self->{'MethodStore'}{$MethodName} //= $Method;
+        my $MockedSelf = $self->_mockedSelf();
+         my $MockedMethodBody = $self->_buildMockSub($MockedSelf, $MethodName, $Method);
+        $self->{'override'}->replace($MethodName, $MockedMethodBody);
+        my ($FunctionName) = $MethodName =~ /.*::([^:]+$)/x;
+    }
+    return $self->{'MethodStore'}{$MethodName};
+}
+#----------------------------------------------------------------------------------------
+sub _addImportedMock {
+    my $self = shift;
+    my ( $MethodName, $Method) = @_;
+
+    ExistsMethod(
+        $self->{'IsImportedMockStore'}{$MethodName}->{'Path'},
+        $self->{'IsImportedMockStore'}{$MethodName}->{'MethodName'},
+        {'Mock Imported In' => $self->_mockedModulePath()}
+    );
+    $self->_mockedSelf()->{'__MethodCallCounter'}->addMethod( $MethodName );
+    if(not $self->{'MethodStore'}{$MethodName}){
+        $self->{'MethodStore'}{$MethodName} //= $Method;
+        my $MockedSelf = $self->_mockedSelf();
+        my $MockedMethodBody = $self->_buildMockSub($MockedSelf, $MethodName, $Method);
+        $self->{'override'}->replace(
+            $self->_mockedModulePath().'::'. $self->{'IsImportedMockStore'}{$MethodName}->{'MethodName'},
+            $MockedMethodBody
+        );
+    }
+    return $self->{'MethodStore'}{$MethodName};
+}
+
 #----------------------------------------------------------------------------------------
 =pod
 
