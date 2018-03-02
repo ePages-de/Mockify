@@ -87,6 +87,10 @@ sub whenAny {
     }
     return $self->_addToTypeStore(['UsedWithWhenAny']);
 }
+sub thenReturn {
+#TODO add unit test
+    die('Wrong chaning: Please use it like this: mock("name")->when()->thenReturn("value")');
+}
 #---------------------------------------------------------------------
 sub _checkExpectedParameters{
     my $self = shift;

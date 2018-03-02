@@ -148,18 +148,8 @@ sub mock {
     my $ParameterAmount = scalar @Parameters;
     if($ParameterAmount == 1 && IsString($Parameters[0]) ){
         return $self->_addMockWithMethod($Parameters[0]);
-    }
-    if($ParameterAmount == 2){
-        my ( $MethodName, $ReturnValueOrFunctionPointer ) = @Parameters;
-        if( ref($ReturnValueOrFunctionPointer) eq 'CODE' ){
-            $self->addMock($MethodName, $ReturnValueOrFunctionPointer);
-        }else{
-            $self->addMockWithReturnValue($MethodName, $ReturnValueOrFunctionPointer);
-        }
-    }
-    if($ParameterAmount == 3){
-        my ( $MethodName, $ReturnValue, $aParameterTypes ) = @_;
-        $self->addMockWithReturnValueAndParameterCheck($MethodName, $ReturnValue, $aParameterTypes);
+    }else{
+        die('Wrong chaning: Please use it like this: mock("name")->when(String())->thenReturn("value")');
     }
     return;
 }
@@ -219,6 +209,7 @@ sub mockStatic {
     }
 
 }
+#todo pod
 sub mockImported {
     my $self = shift;
     my @Parameters = @_;
@@ -327,76 +318,8 @@ sub spyStatic {
         Error("The function name needs to be with full path. e.g. 'Path::To::Your::$MethodName' instead of only '$MethodName'");
     }
 }
-#----------------------------------------------------------------------------------------
-=pod
 
-=head2 addMethodSpy I<(deprecated)>
 
-With this method it is possible to observe a method. That means, you keep the original functionality but you can get meta data from the mockify-framework.
-
-  $MockObjectBuilder->addMethodSpy('myMethodName');
-
-=cut
-sub addMethodSpy {
-    my $self = shift;
-    my ( $MethodName ) = @_;
-    if (warnings::enabled("deprecated")) {
-        warnings::warn('deprecated', "addMethodSpy is deprecated, use spy('name')->whenAny()");
-    }
-    $self->spy($MethodName)->whenAny();
-    return;
-}
-#----------------------------------------------------------------------------------------
-=pod
-
-=head2 addMethodSpyWithParameterCheck I<(deprecated)>
-
-With this method it is possible to observe a method and check the parameters. That means, you keep the original functionality, but you can get meta data from the mockify- framework and use the parameter check, like B<addMockWithReturnValueAndParameterCheck>.
-
-  my $aParameterTypes = [String(),String(abcd)];
-  $MockObjectBuilder->addMethodSpyWithParameterCheck('myMethodName', $aParameterTypes);
-
-To define it in a nice way the signature you must use the L<< Test::Mockify::Matcher; >>.
-
-=cut
-sub addMethodSpyWithParameterCheck {
-    my $self = shift;
-    my ( $MethodName, $aParameterTypes ) = @_;
-    if (warnings::enabled("deprecated")) {
-        warnings::warn('deprecated', "addMethodSpyWithParameterCheck is deprecated, use spy('name')->when(String('abc'))");
-    }
-    my $aMigratedMatchers = MigrateOldMatchers($aParameterTypes);
-    $self->spy($MethodName)->when(@{$aMigratedMatchers});
-    return;
-}
-
-#----------------------------------------------------------------------------------------
-=pod
-
-=head2 addMock I<(deprecated)>
-
-This is the simplest case. It works like the mock-method from L<Test::MockObject>.
-
-Only handover the B<name> and a B<method pointer>. Mockify will automatically check if the method exists in the original object.
-
-  $MockObjectBuilder->addMock('myMethodName', sub {
-                                    # Your implementation
-                                 }
-  );
-
-=cut
-sub addMock {
-    my $self = shift;
-    my ( $MethodName, $rSub ) = @_;
-    if (warnings::enabled("deprecated")) {
-        warnings::warn('deprecated', "addMock is deprecated, use mock('name')->whenAny()->thenCall(sub{})");
-    }
-    $self->_addMockWithMethod($MethodName)->whenAny()->thenCall(sub {
-        return $rSub->($self->_mockedSelf(), @_);
-    });
-
-    return;
-}
 
 #----------------------------------------------------------------------------------------
 sub _addMockWithMethod {
@@ -517,69 +440,8 @@ sub _addImportedMock {
     return $self->{'MethodStore'}{$MethodName};
 }
 
-#----------------------------------------------------------------------------------------
-=pod
 
-=head2 addMockWithReturnValue I<(deprecated)>
 
-Does the same as C<addMock>, but here you can handover a B<value> which will be returned if you call the mocked method.
-
-  $MockObjectBuilder->addMockWithReturnValue('myMethodName','the return value');
-
-=cut
-sub addMockWithReturnValue {
-    my $self = shift;
-    my ( $MethodName, $ReturnValue ) = @_;
-    if (warnings::enabled("deprecated")) {
-        warnings::warn('deprecated', "addMockWithReturnValue is deprecated, use mock('name')->when()->thenReturn('Value')");
-    }
-    if($ReturnValue){
-        $self->_addMockWithMethod($MethodName)->when()->thenReturn($ReturnValue);
-    }else {
-        $self->_addMockWithMethod($MethodName)->when()->thenReturnUndef();
-    }
-
-    return;
-}
-#----------------------------------------------------------------------------------------
-=pod
-
-=head2 addMockWithReturnValueAndParameterCheck I<(deprecated)>
-
-This method is an extension of B<addMockWithReturnValue>. Here you can also check the parameters which will be passed.
-
-You can check if they have a specific B<data type> or even check if they have a given B<value>.
-
-In the following example two strings will be expected, and the second one has to have the value "abcd".
-
-  my $aParameterTypes = [String(),String('abcd')];
-  $MockObjectBuilder->addMockWithReturnValueAndParameterCheck('myMethodName','the return value',$aParameterTypes);
-
-To define it in a nice way the signature you must use the L<< Test::Mockify::Matcher; >>.
-
-=cut
-sub addMockWithReturnValueAndParameterCheck {
-    my $self = shift;
-    my ( $MethodName, $ReturnValue, $aParameterTypes ) = @_;
-    if (warnings::enabled("deprecated")) {
-        warnings::warn('deprecated', "addMockWithReturnValue is deprecated, use mock('name')->when(String('abc'))->thenReturn('Value')");
-    }
-    if ( not IsArrayReference( $aParameterTypes ) ){
-        Error( 'ParameterTypesNotProvided', {
-            'Method' => $self->_mockedModulePath()."->$MethodName",
-            'ParameterList' => $aParameterTypes,
-        } );
-    }
-    $aParameterTypes = MigrateOldMatchers($aParameterTypes);
-
-    if($ReturnValue){
-        $self->_addMockWithMethod($MethodName)->when(@{$aParameterTypes})->thenReturn($ReturnValue);
-    }else {
-        $self->_addMockWithMethod($MethodName)->when(@{$aParameterTypes})->thenReturnUndef();
-    }
-
-    return;
-}
 #----------------------------------------------------------------------------------------
 sub _storeParameters {
     my $self = shift;
