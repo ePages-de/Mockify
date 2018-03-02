@@ -1,6 +1,15 @@
-package FakeModuleWithoutNew;
+package TestDummies::FakeModuleForMockifyTest;
 
 use strict;
+
+sub new {
+    my $class = shift;
+    my @ParameterList = @_;
+    my $self  = bless {
+        'ParameterListNew' => \@ParameterList
+    }, $class;
+    return $self;
+}
 
 sub DummyMethodForTestOverriding {
     my $self = shift;

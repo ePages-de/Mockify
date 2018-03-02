@@ -9,7 +9,7 @@ use strict;
 use Test::Mockify::Tools qw (ExistsMethod);
 use Test::More;
 use Test::Exception;
-use FakeModuleForMockifyTest;
+use TestDummies::FakeModuleForMockifyTest;
 
 #------------------------------------------------------------------------
 sub testPlan{
@@ -24,7 +24,7 @@ sub ExistsMethod_WithObject_positiv {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $FakeModuleForMockifyTest = FakeModuleForMockifyTest->new();
+    my $FakeModuleForMockifyTest = TestDummies::FakeModuleForMockifyTest->new();
     ok( ExistsMethod($FakeModuleForMockifyTest, 'DummyMethodForTestOverriding'),
         "$SubTestName - tests if ExistsMethod works with an object"
     );
@@ -40,10 +40,10 @@ sub ExistsMethod_WithPath_positiv {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    ok( ExistsMethod('FakeModuleForMockifyTest', 'DummyMethodForTestOverriding'),
+    ok( ExistsMethod('TestDummies::FakeModuleForMockifyTest', 'DummyMethodForTestOverriding'),
         "$SubTestName - tests if ExistsMethod works with the object path"
     );
-    throws_ok( sub{ExistsMethod('FakeModuleForMockifyTest','NotExistingMethod')},
+    throws_ok( sub{ExistsMethod('TestDummies::FakeModuleForMockifyTest','NotExistingMethod')},
         qr/FakeModuleForMockifyTest donsn't have a method like: NotExistingMethod/,
         "$SubTestName - tests if ExistsMethod throws error if method not exists with the object path"
     );
@@ -60,7 +60,7 @@ sub ExistsMethod_negativ {
         qr/Path or Object is needed/,
         "$SubTestName - tests if ExistsMethod throws error if there no parameters"
     );
-    throws_ok( sub{ExistsMethod('FakeModuleForMockifyTest')},
+    throws_ok( sub{ExistsMethod('TestDummies::FakeModuleForMockifyTest')},
         qr/Method name is needed/,
         "$SubTestName - tests if ExistsMethod throws error if there is only a path"
     );
