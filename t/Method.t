@@ -163,9 +163,9 @@ sub _NullProblems {
 sub _MockifiedObjectCheck {
     my $self = shift;
     my $Method = Test::Mockify::Method->new();
-    $Method->when(Object('FakeModuleForMockifyTest'))->thenReturn('Result for mockified Object.');
+    $Method->when(Object('TestDummies::FakeModuleForMockifyTest'))->thenReturn('Result for mockified Object.');
 
-    my $Mockify = Test::Mockify->new('FakeModuleForMockifyTest');
+    my $Mockify = Test::Mockify->new('TestDummies::FakeModuleForMockifyTest');
     my $MockedFakeModuleForMockifyTest = $Mockify->getMockObject();
 
     is($Method->call($MockedFakeModuleForMockifyTest), 'Result for mockified Object.', 'Match mocked Objects');

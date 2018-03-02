@@ -975,7 +975,7 @@ sub test_MockModule_GetParametersFromMockifyCall_ForNotMockifyObject {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $NotMockifyObject = FakeModuleForMockifyTest->new();
+    my $NotMockifyObject = TestDummies::FakeModuleForMockifyTest->new();
     throws_ok(
         sub { GetParametersFromMockifyCall($NotMockifyObject,'DummyMethodForTestOverriding') },
         qr/FakeModuleForMockifyTest was not mockified:/,
@@ -989,7 +989,7 @@ sub test_MockModule_GetParametersFromMockifyCall_NoMethodName {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $NotMockifyObject = FakeModuleForMockifyTest->new();
+    my $NotMockifyObject = TestDummies::FakeModuleForMockifyTest->new();
     throws_ok(
         sub { GetParametersFromMockifyCall( $NotMockifyObject ) },
         qr/Method name must be specified:/sm,
@@ -1003,7 +1003,7 @@ sub _createMockObject {
     my $self = shift;
     my ($aParameterList) = @_;
 
-    my $MockObject = Test::Mockify->new( 'FakeModuleForMockifyTest', $aParameterList );
+    my $MockObject = Test::Mockify->new( 'TestDummies::FakeModuleForMockifyTest', $aParameterList );
 
     return $MockObject;
 }

@@ -1,4 +1,4 @@
-package FakeModulStaticInjection;
+package TestDummies::FakeModulStaticInjection;
 
 use strict;
 use FakeStaticTools qw ( ReturnHelloWorld HelloSpy HappyOverride);

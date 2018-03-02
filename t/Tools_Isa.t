@@ -7,7 +7,7 @@ use lib ($FindBin::Bin);
 use parent 'TestBase';
 use Test::Mockify::Tools qw ( Isa );
 use Test::More;
-use FakeModuleForMockifyTest;
+use TestDummies::FakeModuleForMockifyTest;
 #------------------------------------------------------------------------
 sub testPlan{
     my $self = shift;
@@ -20,8 +20,8 @@ sub test_Isa_positiv {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $FakeModuleForMockifyTest = FakeModuleForMockifyTest->new();
-    is(Isa($FakeModuleForMockifyTest, 'FakeModuleForMockifyTest'),
+    my $FakeModuleForMockifyTest = TestDummies::FakeModuleForMockifyTest->new();
+    is(Isa($FakeModuleForMockifyTest, 'TestDummies::FakeModuleForMockifyTest'),
         1,
         "$SubTestName - tests if the Isa works fine with existing name"
     );
@@ -45,7 +45,7 @@ sub test_Isa_negativ {
         0,
         "$SubTestName - tests if the Isa returns 0 if object is not blessed"
     );
-    my $FakeModuleForMockifyTest = FakeModuleForMockifyTest->new();
+    my $FakeModuleForMockifyTest = TestDummies::FakeModuleForMockifyTest->new();
     is(Isa($FakeModuleForMockifyTest),
         0,
         "$SubTestName - tests if the Isa returns 0 if object is blessed but the method name is not defind"

@@ -1,4 +1,4 @@
-package FakeStaticTools;
+package TestDummies::FakeStaticTools;
 use strict;
 use warnings;
 use base qw( Exporter );

@@ -23,9 +23,10 @@ sub LoadFakeModuleForMockifyTest {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $ModulePath = 'FakeModuleForMockifyTest.pm';
+
+    my $ModulePath = 'TestDummies/FakeModuleForMockifyTest.pm';
     is($INC{$ModulePath}, undef ,"$SubTestName - check if the module is not loaded now - undef");
-    LoadPackage('FakeModuleForMockifyTest');
+    LoadPackage('TestDummies::FakeModuleForMockifyTest');
     ok( $INC{$ModulePath}, "$SubTestName - the module: $ModulePath is loaded");
     delete $INC{$ModulePath};# rollback
     is($INC{$ModulePath}, undef ,"$SubTestName - check if the module is not loaded now (rollback was fine)- undef");

@@ -31,7 +31,7 @@ sub testPlan{
 sub integrationTest_AnyTypes {
     my $self = shift;
 
-    my $Mockify = Test::Mockify->new('FakeModuleForMockifyTest', ['one','two']);
+    my $Mockify = Test::Mockify->new('TestDummies::FakeModuleForMockifyTest', ['one','two']);
     $Mockify->spy('returnParameterListNew')->when(String(), Number(), HashRef(), ArrayRef(), Object(), Function(), Undef(), Any());
     my $FakeModule = $Mockify->getMockObject();
     is_deeply($FakeModule->returnParameterListNew('a', 1, {}, [], bless({},'a'), sub{}, undef, 'a'),['one','two'] , 'proves that all parameter types are working for spy.');
@@ -40,7 +40,7 @@ sub integrationTest_AnyTypes {
 sub integrationTest_ExpectedTypes {
     my $self = shift;
 
-    my $Mockify = Test::Mockify->new('FakeModuleForMockifyTest', ['one','two']);
+    my $Mockify = Test::Mockify->new('TestDummies::FakeModuleForMockifyTest', ['one','two']);
     $Mockify->spy('returnParameterListNew')->when(String('a'));
     $Mockify->spy('returnParameterListNew')->when(Number(123));
     $Mockify->spy('returnParameterListNew')->when(HashRef({1=>23}));
@@ -58,7 +58,7 @@ sub integrationTest_ExpectedTypes {
 sub integrationTest_whenAny {
     my $self = shift;
 
-    my $Mockify = Test::Mockify->new('FakeModuleForMockifyTest', ['one','two']);
+    my $Mockify = Test::Mockify->new('TestDummies::FakeModuleForMockifyTest', ['one','two']);
     $Mockify->spy('returnParameterListNew')->whenAny();
     my $FakeModule = $Mockify->getMockObject();
     is_deeply($FakeModule->returnParameterListNew('a', 1, {}),['one','two'] , 'proves that any is working with multiple random parameters');
@@ -69,7 +69,7 @@ sub integrationTest_whenAny {
 sub integrationTest_Verify {
     my $self = shift;
 
-    my $Mockify = Test::Mockify->new('FakeModuleForMockifyTest', ['one','two']);
+    my $Mockify = Test::Mockify->new('TestDummies::FakeModuleForMockifyTest', ['one','two']);
     $Mockify->spy('returnParameterListNew')->when(String('Parameter'));
     $Mockify->spy('returnParameterListNew')->when(String('SomeParameter'));
     $Mockify->spy('DummyMethodForTestOverriding')->when(String('SomeParameter'));
@@ -92,7 +92,7 @@ sub integrationTest_Verify {
 sub integrationTest_MixSpyAndMock {
     my $self = shift;
 
-    my $Mockify = Test::Mockify->new('FakeModuleForMockifyTest', ['one','two']);
+    my $Mockify = Test::Mockify->new('TestDummies::FakeModuleForMockifyTest', ['one','two']);
     $Mockify->spy('returnParameterListNew')->when(String('Parameter'));
     throws_ok( sub { $Mockify->mock('returnParameterListNew') },
         qr/It is not possible to mix spy and mock/,

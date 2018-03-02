@@ -18,7 +18,7 @@ sub test_MockModule {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $MockObject = Test::Mockify->new('FakeModuleWithoutNew');
+    my $MockObject = Test::Mockify->new('TestDummies::FakeModuleWithoutNew');
     my $MockedFakeModule = $MockObject->getMockObject();
     is($MockedFakeModule->secondDummyMethodForTestOverriding(),'A second dummy method',"$SubTestName - test if the loaded module still have the unmocked methods");
 
