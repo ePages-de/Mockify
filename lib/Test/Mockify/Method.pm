@@ -176,7 +176,7 @@ sub call {
             }
         }
     }
-    die ("No matching found for $SignatureKey -> ".Dumper(\@Parameters));
+    die ("No matching found for signatur type '$SignatureKey' \nvalues:".Dumper(\@Parameters));
 }
 #---------------------------------------------------------------------
 sub _getType{

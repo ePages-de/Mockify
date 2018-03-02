@@ -79,7 +79,7 @@ sub integrationTest_Verify {
     is_deeply($FakeModule->returnParameterListNew('SomeParameter'),['one','two'] , 'proves that defining multiple return types are supported');
     is($FakeModule->DummyMethodForTestOverriding('SomeParameter'),'A dummy method' , 'proves that defining an other method with the same parameter works fine');
     throws_ok( sub { $FakeModule->DummyMethodForTestOverriding('WrongValue') },
-        qr/No matching found for string/,
+        qr/Error when calling method 'DummyMethodForTestOverriding'.*No matching found for signatur type 'string'.*WrongValue/s,
         'proves that an unexpected value will throw an Error.'
     );
 
