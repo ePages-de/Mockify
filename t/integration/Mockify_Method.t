@@ -1,7 +1,7 @@
 package Mockify_Method;
 use strict;
 use FindBin;
-use lib ($FindBin::Bin);
+use lib ($FindBin::Bin.'/..');
 use parent 'TestBase';
 use Test::More;
 use Test::Exception;
