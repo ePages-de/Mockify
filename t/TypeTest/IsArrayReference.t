@@ -1,8 +1,8 @@
-package TypeTests_isArrayReference;
+package IsArrayReference;
 use strict;
 
 use FindBin;
-use lib ($FindBin::Bin);
+use lib ($FindBin::Bin.'/..');
 
 use parent 'TestBase';
 use Test::Mockify::TypeTests qw ( IsArrayReference );
