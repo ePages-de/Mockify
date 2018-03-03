@@ -39,7 +39,6 @@ use Test::Mockify::MethodCallCounter;
 use Test::Mockify::Method;
 use Test::Mockify::MethodSpy;
 use Test::MockObject::Extends;
-use Test::Mockify::CompatibilityTools qw (MigrateOldMatchers);
 use Scalar::Util qw( blessed );
 use Sub::Override;
 
