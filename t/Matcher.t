@@ -51,22 +51,6 @@ sub test_Number {
         qr/NotANumber/,
         'proves that the number matcher don´t accept anything else as numbers'
     );
-    throws_ok( sub { Number(0) },
-        qr/Perl can not differentiate between 0 \(Number\) and "0"\(String\). Please use String\(0\) as a matcher./,
-        'proves Error handling for - 0'
-    );
-    throws_ok( sub { Number(0.0) },
-        qr/Perl can not differentiate between 0 \(Number\) and "0"\(String\). Please use String\(0\) as a matcher./,
-        'proves Error handling for - 0.0'
-    );
-    throws_ok( sub { Number(.0) },
-        qr/Perl can not differentiate between 0 \(Number\) and "0"\(String\). Please use String\(0\) as a matcher./,
-        'proves Error handling for - .0'
-    );
-    throws_ok( sub { Number("0") },
-        qr/Perl can not differentiate between 0 \(Number\) and "0"\(String\). Please use String\(0\) as a matcher./,
-        'proves Error handling for - "0"'
-    );
 }
 #------------------------------------------------------------------------
 sub test_HashRef {

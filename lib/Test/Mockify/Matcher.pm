@@ -87,9 +87,6 @@ If called with parameter, it will be proved that this value is actually a number
 sub Number(;$) {
     my ($Value) = @_;
     die('NotANumber') if $Value && !IsFloat($Value);
-    if(defined $Value && $Value eq '0'){
-        die('Perl can not differentiate between 0 (Number) and "0"(String). Please use String(0) as a matcher.');
-    }
     return _Type('number',$Value);
 }
 =pod
