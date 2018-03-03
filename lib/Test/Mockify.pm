@@ -327,13 +327,13 @@ sub spyStatic {
     my ($MethodName) = @_;
     if( $MethodName =~ /.*::.*/x ){
         $self->{'IsStaticMockStore'}{$MethodName} = 1;
-            my $PointerOriginalMethod = \&{$MethodName};
-            #In order to have the current object available in the parameter list, it has to be injected here.
-            return $self->_addMockWithMethodSpy($MethodName, sub {
-                return $PointerOriginalMethod->($self->_mockedSelf(), @_);
-            });
+        my $PointerOriginalMethod = \&{$MethodName};
+        #In order to have the current object available in the parameter list, it has to be injected here.
+        return $self->_addMockWithMethodSpy($MethodName, sub {
+            return $PointerOriginalMethod->(@_);
+        });
     }else{
-        Error("The function name needs to be with full path. e.g. 'Path::To::Your::$MethodName' instead of only '$MethodName'");
+        Error("The function name needs to be with fully qualified path. e.g. 'Path::To::Your::$MethodName' instead of only '$MethodName'");
     }
 }
 
@@ -433,7 +433,6 @@ sub _addStaticMock {
         my $MockedSelf = $self->_mockedSelf();
          my $MockedMethodBody = $self->_buildMockSub($MockedSelf, $MethodName, $Method);
         $self->{'override'}->replace($MethodName, $MockedMethodBody);
-        my ($FunctionName) = $MethodName =~ /.*::([^:]+$)/x;
     }
     return $self->{'MethodStore'}{$MethodName};
 }
