@@ -226,6 +226,24 @@ sub mockImported {
     }
 
 }
+#todo pod
+sub spyImported {
+    my $self = shift;
+    my @Parameters = @_;
+
+    my $ParameterAmount = scalar @Parameters;
+    if($ParameterAmount == 2 && IsString($Parameters[0]) && IsString($Parameters[1])){
+            $self->{'IsImportedMockStore'}{$Parameters[1]} = {
+                'Path' => $Parameters[0],
+                'MethodName' => $Parameters[1],
+            };
+            my $PointerOriginalMethod = \&{$self->_mockedModulePath().'::'.$Parameters[1]};
+            return $self->_addMockWithMethodSpy($Parameters[1], $PointerOriginalMethod);
+    }else{
+        Error('The Parameters needs to be defined and Strings. e.g. "Path::To::Your", "Function"');
+    }
+
+}
 
 =pod
 
@@ -341,6 +359,8 @@ sub _addMockWithMethodSpy {
     $self->_testMockTypeUsage($MethodName);
     if($self->{'IsStaticMockStore'}{$MethodName}){
         return $self->_addStaticMock($MethodName, Test::Mockify::MethodSpy->new($PointerOriginalMethod));
+    }elsif($self->{'IsImportedMockStore'}{$MethodName}){
+        return $self->_addImportedMock($MethodName, Test::Mockify::MethodSpy->new($PointerOriginalMethod));
     }else{
         return $self->_addMock($MethodName, Test::Mockify::MethodSpy->new($PointerOriginalMethod));
     }

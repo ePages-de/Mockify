@@ -20,3 +20,4 @@ sub HelloSpy {
 sub HappyOverride {
     return 'original in FakeStaticTools';
 }
+1;

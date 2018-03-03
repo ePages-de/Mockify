@@ -37,7 +37,7 @@ sub testPlan {
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Object();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Undef();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_withoutParameterTypes();
-    #test for static and imported
+    #test for static
 
 }
 #----------------------------------------------------------------------------------------

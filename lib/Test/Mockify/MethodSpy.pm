@@ -22,5 +22,8 @@ sub _addToTypeStore {
     push(@{$self->{'TypeStore'}{$SignatureKey}}, $Parameter );
     return;
 }
-
+sub thenReturn {
+#TODO add unit test
+    die('Wrong chaning: Please use it like this: spy("name")->when()');
+}
 1;
