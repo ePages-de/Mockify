@@ -6,6 +6,7 @@ use lib ($FindBin::Bin.'/../..'); # point to project base
 use parent 'TestBase';
 use Test::More;
 use Test::Mockify;
+use Test::Exception;
 use Test::Mockify::Matcher qw (
         Number
     );
@@ -19,6 +20,8 @@ sub testPlan{
     $self->test_InjectionOfImportedMethod_SetMockifyToUndef();
     $self->test_InjectionOfImportedMethod_Verify();
     $self->test_InjectionOfImportedMethod_Verify_spy();
+    $self->test_functionNameFormatingErrorHandling_mock();
+    $self->test_functionNameFormatingErrorHandling_spy();
 }
 
 #----------------------------------------------------------------------------------------
@@ -136,6 +139,34 @@ sub test_InjectionOfImportedMethod_Verify_spy {
     is($aParams->[0] ,2 , "$SubTestName - get parameter of first call");
     is(  GetCallCount($DummyImportToolsUser, 'Doubler'), 1, "$SubTestName - prove that the the Doubler only get called once.");
 
+}
+#----------------------------------------------------------------------------------------
+sub test_functionNameFormatingErrorHandling_mock {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+    my $Mockify = Test::Mockify->new('t::TestDummies::DummyImportToolsUser',[]);
+    throws_ok( sub { $Mockify->mockImported() },
+                   qr/"mockImported" Needs to be called with two Parameters which need to be a fully qualified path as String and the Function name. e.g. "Path::To::Your", "Function"/,
+                   "$SubTestName - prove no parameters in mockImported error handling"
+    );
+    throws_ok( sub { $Mockify->mockImported('OnlyFunctionName') },
+                   qr/"mockImported" Needs to be called with two Parameters which need to be a fully qualified path as String and the Function name. e.g. "Path::To::Your", "Function"/,
+                   "$SubTestName - prove not enought parameters in spyImported error handling"
+    );
+}
+#----------------------------------------------------------------------------------------
+sub test_functionNameFormatingErrorHandling_spy {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+    my $Mockify = Test::Mockify->new('t::TestDummies::DummyImportToolsUser',[]);
+    throws_ok( sub { $Mockify->spyImported() },
+                   qr/"spyImported" Needs to be called with two Parameters which need to be a fully qualified path as String and the Function name. e.g. "Path::To::Your", "Function"/,
+                   "$SubTestName - prove no parameters in spyImported error handling"
+    );
+    throws_ok( sub { $Mockify->spyImported('OnlyFunctionName') },
+                   qr/"spyImported" Needs to be called with two Parameters which need to be a fully qualified path as String and the Function name. e.g. "Path::To::Your", "Function"/,
+                   "$SubTestName - prove not enought parameters in spyImported error handling"
+    );
 }
 __PACKAGE__->RunTest();
 1;

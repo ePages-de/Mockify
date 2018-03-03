@@ -6,6 +6,7 @@ use lib ($FindBin::Bin.'/../..'); # point to project base
 use parent 'TestBase';
 use Test::More;
 use Test::Mockify;
+use Test::Exception;
 use Test::Mockify::Matcher qw (
         Number
     );
@@ -18,7 +19,9 @@ sub testPlan{
     $self->test_InjectionOfStaticedMethod_scopes_spy();
     $self->test_InjectionOfStaticedMethod_SetMockifyToUndef();
     $self->test_InjectionOfStaticedMethod_Verify();
-#    $self->test_InjectionOfStaticedMethod_Verify_spy();
+    $self->test_InjectionOfStaticedMethod_Verify_spy();
+    $self->test_functionNameFormatingErrorHandling_mock ();
+    $self->test_functionNameFormatingErrorHandling_spy ();
 }
 
 #----------------------------------------------------------------------------------------
@@ -124,18 +127,47 @@ sub test_InjectionOfStaticedMethod_Verify_spy {
     my $SubTestName = (caller(0))[3];
 
     my $Mockify = Test::Mockify->new('t::TestDummies::DummyStaticToolsUser',[]);
-    $Mockify->spyStaticed('t::TestDummies::DummyStaticTools', 'Tripler')->when(Number(2));
+    $Mockify->spyStatic('t::TestDummies::DummyStaticTools::Tripler')->when(Number(2));
     my $DummyStaticToolsUser = $Mockify->getMockObject();
     is(
         $DummyStaticToolsUser->useDummyStaticTools(2),
-        'In useDummyStaticTools, result Tripler call: "4"',
-        "$SubTestName - Prove that the injection works out"
+        'In useDummyStaticTools, result Tripler call: "6"',
+        "$SubTestName - Prove that the spy works out"
     );
-    my $aParams =  GetParametersFromMockifyCall($DummyStaticToolsUser, 'Tripler');
+    my $aParams =  GetParametersFromMockifyCall($DummyStaticToolsUser, 't::TestDummies::DummyStaticTools::Tripler');
     is(scalar @$aParams ,1 , "$SubTestName - prove amount of parameters");
     is($aParams->[0] ,2 , "$SubTestName - get parameter of first call");
-    is(  GetCallCount($DummyStaticToolsUser, 'Tripler'), 1, "$SubTestName - prove that the the Tripler only get called once.");
+    is(  GetCallCount($DummyStaticToolsUser, 't::TestDummies::DummyStaticTools::Tripler'), 1, "$SubTestName - prove that the the Tripler only get called once.");
 
+}
+
+#----------------------------------------------------------------------------------------
+sub test_functionNameFormatingErrorHandling_mock {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+    my $Mockify = Test::Mockify->new('t::TestDummies::DummyStaticToolsUser',[]);
+    throws_ok( sub { $Mockify->mockStatic() },
+                   qr/"mockStatic" Needs to be called with one Parameter which need to be a fully qualified path as String. e.g. "Path::To::Your::Function"/,
+                   "$SubTestName - prove the an undefined will fail"
+    );
+    throws_ok( sub { $Mockify->mockStatic('OnlyFunctionName') },
+                   qr/The function you like to mock needs to be defined with a fully qualified path. e.g. 'Path::To::Your::OnlyFunctionName' instead of only 'OnlyFunctionName'/,
+                   "$SubTestName - prove the an incomplete name will fail"
+    );
+}
+#----------------------------------------------------------------------------------------
+sub test_functionNameFormatingErrorHandling_spy {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+    my $Mockify = Test::Mockify->new('t::TestDummies::DummyStaticToolsUser',[]);
+    throws_ok( sub { $Mockify->spyStatic() },
+                   qr/"spyStatic" Needs to be called with one Parameter which need to be a fully qualified path as String. e.g. "Path::To::Your::Function"/,
+                   "$SubTestName - prove the an undefined will fail"
+    );
+    throws_ok( sub { $Mockify->spyStatic('OnlyFunctionName') },
+                   qr/The function you like to spy needs to be defined with a fully qualified path. e.g. 'Path::To::Your::OnlyFunctionName' instead of only 'OnlyFunctionName'/,
+                   "$SubTestName - prove the an incomplete name will fail"
+    );
 }
 __PACKAGE__->RunTest();
 1;
