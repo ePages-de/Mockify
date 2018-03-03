@@ -197,7 +197,7 @@ sub mockStatic {
 
     my $ParameterAmount = scalar @Parameters;
     if($ParameterAmount == 1 && IsString($Parameters[0])){
-        if( $Parameters[0] =~ /.*::.*/x ){
+        if( $Parameters[0] =~ /.*::.*/xsm ){
             $self->{'IsStaticMockStore'}{$Parameters[0]} = 1;
             return $self->_addMockWithMethod($Parameters[0]);
         }else{
@@ -236,7 +236,7 @@ sub spyImported {
                 'Path' => $Parameters[0],
                 'MethodName' => $Parameters[1],
             };
-            my $PointerOriginalMethod = \&{$self->_mockedModulePath().'::'.$Parameters[1]};
+            my $PointerOriginalMethod = \&{sprintf ('%s::%s', $self->_mockedModulePath(), $Parameters[1])};
             return $self->_addMockWithMethodSpy($Parameters[1], $PointerOriginalMethod);
     }else{
         Error('"spyImported" Needs to be called with two Parameters which need to be a fully qualified path as String and the Function name. e.g. "Path::To::Your", "Function"');
@@ -281,7 +281,7 @@ It is not possible to mix C<whenAny> and C<when> for the same method.
 sub spy {
     my $self = shift;
     my ($MethodName) = @_;
-    my $PointerOriginalMethod = \&{$self->_mockedModulePath().'::'.$MethodName};
+    my $PointerOriginalMethod = \&{sprintf ('%s::%s', $self->_mockedModulePath(), $MethodName)};
     #In order to have the current object available in the parameter list, it has to be injected here.
     return $self->_addMockWithMethodSpy($MethodName, sub {
         return $PointerOriginalMethod->($self->_mockedSelf(), @_);
@@ -327,7 +327,7 @@ sub spyStatic {
     if(! $MethodName){
         Error('"spyStatic" Needs to be called with one Parameter which need to be a fully qualified path as String. e.g. "Path::To::Your::Function"');
     }
-    if( $MethodName =~ /.*::.*/x ){
+    if( $MethodName =~ /.*::.*/xsm   ){
         $self->{'IsStaticMockStore'}{$MethodName} = 1;
         my $PointerOriginalMethod = \&{$MethodName};
         #In order to have the current object available in the parameter list, it has to be injected here.
@@ -389,7 +389,7 @@ sub _addMock {
     return $self->{'MethodStore'}{$MethodName};
 }
 #----------------------------------------------------------------------------------------
-sub _callInjectedMethod { 
+sub _callInjectedMethod {
 #    my $self = shift; #In Order to keep the mockify object out of the mocked method, I can't use the self.
     my ($Method, $aMockedParameters, $WantAList, $MethodName) = @_;
     my $ReturnValue;
@@ -401,8 +401,9 @@ sub _callInjectedMethod {
             $ReturnValue = $Method->call(@{$aMockedParameters});
         }
     };
-    if ($@) {
-        die("\nError when calling method '$MethodName'\n".$@)
+    # $@ -> current error
+    if ($@) { ## no critic (Magic punctuation variable)
+        die("\nError when calling method '$MethodName'\n".$@) ## no critic (Magic punctuation variable)
     }
     if($WantAList){
         return @ReturnValue;
@@ -454,23 +455,11 @@ sub _addImportedMock {
         my $MockedSelf = $self->_mockedSelf();
         my $MockedMethodBody = $self->_buildMockSub($MockedSelf, $MethodName, $Method);
         $self->{'override'}->replace(
-            $self->_mockedModulePath().'::'. $self->{'IsImportedMockStore'}{$MethodName}->{'MethodName'},
+            sprintf ('%s::%s', $self->_mockedModulePath(), $self->{'IsImportedMockStore'}{$MethodName}->{'MethodName'}),
             $MockedMethodBody
         );
     }
     return $self->{'MethodStore'}{$MethodName};
-}
-
-
-
-#----------------------------------------------------------------------------------------
-sub _storeParameters {
-    my $self = shift;
-    my ( $MethodName, $MockedSelf, $aMockedParameters ) = @_;
-
-    push( @{$MockedSelf->{$MethodName.'_MockifyParams'}}, $aMockedParameters );
-
-    return;
 }
 
 #----------------------------------------------------------------------------------------
