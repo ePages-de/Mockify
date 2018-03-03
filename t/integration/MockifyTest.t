@@ -36,8 +36,6 @@ sub testPlan {
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_ArrayRef();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Object();
     $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Undef();
-    $self->test_MockModule_AddMockWithReturnValueAndParameterCheck_withoutParameterTypes();
-    #test for static
 
 }
 #----------------------------------------------------------------------------------------
@@ -459,21 +457,7 @@ sub test_MockModule_AddMockWithReturnValueAndParameterCheck_WrongDataTypeFor_Und
 
     return;
 }
-#----------------------------------------------------------------------------------------
-sub test_MockModule_AddMockWithReturnValueAndParameterCheck_withoutParameterTypes {
-    my $self = shift;
-    my $SubTestName = (caller(0))[3];
 
-    my $aParameterList = [];
-    my $MockObject = $self->_createMockObject($aParameterList);
-    throws_ok( sub {
-        $MockObject->mock('DummyMethodForTestOverriding')->thenReturn('This is a return value'); },
-        qr/Please use it like this: mock\("name"\)->when\(\)->thenReturn\("value"\)/,
-        "$SubTestName - test if the mocked method was called with the wrong amount of parameters"
-    );
-
-    return;
-}
 #----------------------------------------------------------------------------------------
 sub test_MockModule_GetParametersFromMockifyCall_NoMethodName {
     my $self = shift;

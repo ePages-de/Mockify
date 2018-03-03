@@ -149,7 +149,7 @@ sub mock {
     if($ParameterAmount == 1 && IsString($Parameters[0]) ){
         return $self->_addMockWithMethod($Parameters[0]);
     }else{
-        Error('"mock" Needs to be called with one Parameter which need to be a String. ');
+        Error('"mock" Needs to be called with one Parameter which needs to be a String. ');
     }
     return;
 }
