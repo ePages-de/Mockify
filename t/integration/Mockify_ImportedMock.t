@@ -1,4 +1,4 @@
-package Mockify_Method;
+package Mockify_ImportedMock;
 use strict;
 use FindBin;
 use lib ($FindBin::Bin.'/..'); # point to test base
