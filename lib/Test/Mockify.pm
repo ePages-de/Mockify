@@ -149,7 +149,7 @@ sub mock {
     if($ParameterAmount == 1 && IsString($Parameters[0]) ){
         return $self->_addMockWithMethod($Parameters[0]);
     }else{
-        die('Wrong chaning: Please use it like this: mock("name")->when(String())->thenReturn("value")');
+        Error('"mock" Needs to be called with one Parameter which need to be a String. ');
     }
     return;
 }
@@ -202,10 +202,10 @@ sub mockStatic {
             $self->{'IsStaticMockStore'}{$Parameters[0]} = 1;
             return $self->_addMockWithMethod($Parameters[0]);
         }else{
-            Error("The function name needs to be with full path. e.g. 'Path::To::Your::$Parameters[0]' instead of only '$Parameters[0]'");
+            Error("The function you like to mock needs to be defined with a fully qualified path. e.g. 'Path::To::Your::$Parameters[0]' instead of only '$Parameters[0]'");
         }
     }else{
-        Error('The Parameter needs to be defined and a String. e.g. Path::To::Your::Function');
+        Error('"mockStatic" Needs to be called with one Parameter which need to be a fully qualified path as String. e.g. "Path::To::Your::Function"');
     }
 
 }
@@ -222,7 +222,7 @@ sub mockImported {
             };
             return $self->_addMockWithMethod($Parameters[1]);
     }else{
-        Error('The Parameters needs to be defined and Strings. e.g. "Path::To::Your", "Function"');
+        Error('"mockImported" Needs to be called with two Parameters which need to be a fully qualified path as String and the Function name. e.g. "Path::To::Your", "Function"');
     }
 
 }
@@ -240,7 +240,7 @@ sub spyImported {
             my $PointerOriginalMethod = \&{$self->_mockedModulePath().'::'.$Parameters[1]};
             return $self->_addMockWithMethodSpy($Parameters[1], $PointerOriginalMethod);
     }else{
-        Error('The Parameters needs to be defined and Strings. e.g. "Path::To::Your", "Function"');
+        Error('"spyImported" Needs to be called with two Parameters which need to be a fully qualified path as String and the Function name. e.g. "Path::To::Your", "Function"');
     }
 
 }
@@ -325,6 +325,9 @@ It can be mixed with normal C<spy> and C<mock>. For more options see, C<mockStat
 sub spyStatic {
     my $self = shift;
     my ($MethodName) = @_;
+    if(! $MethodName){
+        Error('"spyStatic" Needs to be called with one Parameter which need to be a fully qualified path as String. e.g. "Path::To::Your::Function"');
+    }
     if( $MethodName =~ /.*::.*/x ){
         $self->{'IsStaticMockStore'}{$MethodName} = 1;
         my $PointerOriginalMethod = \&{$MethodName};
@@ -333,7 +336,7 @@ sub spyStatic {
             return $PointerOriginalMethod->(@_);
         });
     }else{
-        Error("The function name needs to be with fully qualified path. e.g. 'Path::To::Your::$MethodName' instead of only '$MethodName'");
+        Error("The function you like to spy needs to be defined with a fully qualified path. e.g. 'Path::To::Your::$MethodName' instead of only '$MethodName'");
     }
 }
 
