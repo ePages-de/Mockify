@@ -31,8 +31,8 @@ sub test_OverrideMockifyToRemoveStaticMocks {
     is(t::ExampleProject::KidsShow::TimberBeam::UpAndDown(10, 20),'Old clown wins', " $SubTestName -prove if the seesaw can toss to the right");
     is(t::ExampleProject::KidsShow::TimberBeam::UpAndDown(20, 10),'New clown wins', " $SubTestName -prove if the seesaw can toss to the left");
 
-    $Mockify = undef; #The mock is active aslong the Mockify is defined / in scope
-    is(t::ExampleProject::KidsShow::TimberBeam::UpAndDown(1, 1000000), 'balanced', " $SubTestName -prove that the mock is active aslong the Mockify is defined / in scope");
+    $Mockify = undef; #The mock is active as long as the Mockify is defined / in scope
+    is(t::ExampleProject::KidsShow::TimberBeam::UpAndDown(1, 1000000), 'balanced', " $SubTestName -prove that the mock is active as long as the Mockify is defined / in scope");
 }
 #----------------------------------------------------------------------------------------
 sub test_LeaveScopeToRemoveStaticMocks {
@@ -52,7 +52,7 @@ sub test_LeaveScopeToRemoveStaticMocks {
     } # leave scope
 
 
-    is(t::ExampleProject::KidsShow::TimberBeam::UpAndDown(1, 1000000), 'balanced', " $SubTestName -prove that the mock is active aslong the Mockify is defined / in scope");
+    is(t::ExampleProject::KidsShow::TimberBeam::UpAndDown(1, 1000000), 'balanced', " $SubTestName -prove that the mock is active as long as the Mockify is defined / in scope");
 }
 __PACKAGE__->RunTest();
 1;
