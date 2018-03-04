@@ -2,6 +2,7 @@ package Mockify_Method;
 use strict;
 use FindBin;
 use lib ($FindBin::Bin.'/..');
+## no critic (ProhibitComplexRegexes)
 use parent 'TestBase';
 use Test::More;
 use Test::Exception;
