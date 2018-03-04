@@ -117,7 +117,7 @@ sub test_InjectionOfStaticedMethod_Verify {
         "$SubTestName - Prove that the injection works out"
     );
     my $aParams =  GetParametersFromMockifyCall($DummyStaticToolsUser, 't::TestDummies::DummyStaticTools::Tripler');
-    is(scalar @$aParams ,1 , "$SubTestName - prove amount of parameters");
+    is(scalar @{$aParams} ,1 , "$SubTestName - prove amount of parameters");
     is($aParams->[0] ,2 , "$SubTestName - get parameter of first call");
     is(  GetCallCount($DummyStaticToolsUser, 't::TestDummies::DummyStaticTools::Tripler'), 1, "$SubTestName - prove that the the Tripler only get called once.");
 
@@ -136,7 +136,7 @@ sub test_InjectionOfStaticedMethod_Verify_spy {
         "$SubTestName - Prove that the spy works out"
     );
     my $aParams =  GetParametersFromMockifyCall($DummyStaticToolsUser, 't::TestDummies::DummyStaticTools::Tripler');
-    is(scalar @$aParams ,1 , "$SubTestName - prove amount of parameters");
+    is(scalar @{$aParams} ,1 , "$SubTestName - prove amount of parameters");
     is($aParams->[0] ,2 , "$SubTestName - get parameter of first call");
     is(  GetCallCount($DummyStaticToolsUser, 't::TestDummies::DummyStaticTools::Tripler'), 1, "$SubTestName - prove that the the Tripler only get called once.");
 
@@ -148,11 +148,11 @@ sub test_functionNameFormatingErrorHandling_mock {
     my $SubTestName = (caller(0))[3];
     my $Mockify = Test::Mockify->new('t::TestDummies::DummyStaticToolsUser',[]);
     throws_ok( sub { $Mockify->mockStatic() },
-                   qr/"mockStatic" Needs to be called with one Parameter which need to be a fully qualified path as String. e.g. "Path::To::Your::Function"/,
+                   qr/"mockStatic" Needs to be called with one Parameter which need to be a fully qualified path as String. e.g. "Path::To::Your::Function"/sm,
                    "$SubTestName - prove the an undefined will fail"
     );
     throws_ok( sub { $Mockify->mockStatic('OnlyFunctionName') },
-                   qr/The function you like to mock needs to be defined with a fully qualified path. e.g. 'Path::To::Your::OnlyFunctionName' instead of only 'OnlyFunctionName'/,
+                   qr/The function you like to mock needs to be defined with a fully qualified path. e.g. 'Path::To::Your::OnlyFunctionName' instead of only 'OnlyFunctionName'/sm,
                    "$SubTestName - prove the an incomplete name will fail"
     );
 }
@@ -162,11 +162,11 @@ sub test_functionNameFormatingErrorHandling_spy {
     my $SubTestName = (caller(0))[3];
     my $Mockify = Test::Mockify->new('t::TestDummies::DummyStaticToolsUser',[]);
     throws_ok( sub { $Mockify->spyStatic() },
-                   qr/"spyStatic" Needs to be called with one Parameter which need to be a fully qualified path as String. e.g. "Path::To::Your::Function"/,
+                   qr/"spyStatic" Needs to be called with one Parameter which need to be a fully qualified path as String. e.g. "Path::To::Your::Function"/sm,
                    "$SubTestName - prove the an undefined will fail"
     );
     throws_ok( sub { $Mockify->spyStatic('OnlyFunctionName') },
-                   qr/The function you like to spy needs to be defined with a fully qualified path. e.g. 'Path::To::Your::OnlyFunctionName' instead of only 'OnlyFunctionName'/,
+                   qr/The function you like to spy needs to be defined with a fully qualified path. e.g. 'Path::To::Your::OnlyFunctionName' instead of only 'OnlyFunctionName'/sm,
                    "$SubTestName - prove the an incomplete name will fail"
     );
 }

@@ -11,6 +11,7 @@ sub new {
 sub useDummyImportTools {
     my $self = shift;
     my ($Value) = @_;
-    return 'In useDummyImportTools, result Doubler call: "'.Doubler($Value).'"';
+    my $Doubled = Doubler($Value);
+    return "In useDummyImportTools, result Doubler call: \"$Doubled\"";
 }
 1;

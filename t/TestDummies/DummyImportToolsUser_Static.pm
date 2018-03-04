@@ -7,6 +7,7 @@ use t::TestDummies::DummyImportTools qw (Doubler);
 
 sub useDummyImportTools {
     my ($Value) = @_;
-    return 'In useDummyImportTools, result Doubler call: "'.Doubler($Value).'"';
+    my $Doubled = Doubler($Value);
+    return "In useDummyImportTools, result Doubler call: \"$Doubled\"";
 }
 1;

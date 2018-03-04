@@ -1,4 +1,5 @@
 package IsArrayReference;
+## no critic (ProhibitMagicNumbers)
 use strict;
 
 use FindBin;

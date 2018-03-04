@@ -1,4 +1,5 @@
 package IsObjectReference;
+## no critic (ProhibitMagicNumbers ProhibitEmptyQuotes)
 use strict;
 
 use FindBin;

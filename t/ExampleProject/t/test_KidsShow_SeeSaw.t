@@ -1,4 +1,5 @@
 package test_KidsShow_SeeSaw;
+## no critic (ProhibitMagicNumbers)
 use strict;
 use FindBin;
 use lib ("$FindBin::Bin/../.."); #Path to test base

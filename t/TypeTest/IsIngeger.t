@@ -1,4 +1,5 @@
 package IsInteger;
+## no critic (ProhibitMagicNumbers ProhibitEmptyQuotes)
 use strict;
 
 use FindBin;

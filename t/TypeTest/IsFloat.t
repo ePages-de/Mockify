@@ -1,4 +1,5 @@
 package IsFloat;
+## no critic (ProhibitMagicNumbers)
 use strict;
 
 use FindBin;
@@ -96,7 +97,7 @@ sub _isFloat_negativPath {
     is(IsFloat('123,123e-123'), $False, "$SubTestName - tests 123,123e-123 is not a float");
     is(IsFloat('12.234ae-12'), $False, "$SubTestName - tests 12.234ae-12 is not a float");
     is(IsFloat('12.234e-'), $False, "$SubTestName - tests 12.234ae-12 is not a float");
-    is(IsFloat('.'), $False, "$SubTestName - tests '.' is not a float");
+    is(IsFloat('.'), $False, "$SubTestName - tests '.' is not a float");## no critic (ProhibitNoisyQuotes) # wrong critic match
     is(IsFloat({'some' => 'thing'}), $False,"$SubTestName - tests hash pointer - false");
     is(IsFloat(['some' , 'thing']), $False,"$SubTestName - tests array pointer - false");
     is(IsFloat(bless({},'object')), $False, "$SubTestName - tests object pointer - false");

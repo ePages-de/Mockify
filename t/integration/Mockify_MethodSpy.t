@@ -1,7 +1,7 @@
 package Mockify_MethodSpy;
 use strict;
 use FindBin;
-## no critic (ProhibitComplexRegexes)
+## no critic (ProhibitComplexRegexes ProhibitMagicNumbers)
 use lib ($FindBin::Bin.'/..');
 use parent 'TestBase';
 use Test::More;
@@ -80,7 +80,7 @@ sub integrationTest_Verify {
     is_deeply($FakeModule->returnParameterListNew('SomeParameter'),['one','two'] , 'proves that defining multiple return types are supported');
     is($FakeModule->DummyMethodForTestOverriding('SomeParameter'),'A dummy method' , 'proves that defining an other method with the same parameter works fine');
     throws_ok( sub { $FakeModule->DummyMethodForTestOverriding('WrongValue') },
-        qr/Error when calling method 'DummyMethodForTestOverriding'.*No matching found for signatur type 'string'.*WrongValue/s,
+        qr/Error when calling method 'DummyMethodForTestOverriding'.*No matching found for signatur type 'string'.*WrongValue/sm,
         'proves that an unexpected value will throw an Error.'
     );
 
@@ -96,13 +96,13 @@ sub integrationTest_MixSpyAndMock {
     my $Mockify = Test::Mockify->new('TestDummies::FakeModuleForMockifyTest', ['one','two']);
     $Mockify->spy('returnParameterListNew')->when(String('Parameter'));
     throws_ok( sub { $Mockify->mock('returnParameterListNew') },
-        qr/It is not possible to mix spy and mock/,
+        qr/It is not possible to mix spy and mock/sm,
         'proves that it is not possible to use first spy and than mock for the same method'
     );
 
     $Mockify->mock('DummyMethodForTestOverriding')->whenAny()->thenReturn('hello');
     throws_ok( sub { $Mockify->spy('DummyMethodForTestOverriding') },
-        qr/It is not possible to mix spy and mock/,
+        qr/It is not possible to mix spy and mock/sm,
         'proves that it is not possible to use first mock and than spy for the same method'
     );
 

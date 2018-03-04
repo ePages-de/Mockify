@@ -1,6 +1,6 @@
 package IsValid;
 use strict;
-
+## no critic (ProhibitMagicNumbers ProhibitEmptyQuotes)
 use FindBin;
 use lib ($FindBin::Bin.'/..');
 

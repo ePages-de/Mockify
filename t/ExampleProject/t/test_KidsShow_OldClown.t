@@ -1,4 +1,5 @@
 package test_KidsShow_OldClown;
+## no critic (ProhibitMagicNumbers)
 use strict;
 use FindBin;
 use lib ("$FindBin::Bin/../.."); #Path to test base
@@ -11,7 +12,7 @@ use t::ExampleProject::KidsShow::OldClown;
 sub testPlan{
     my $self = shift;
 
-    my $KilocaloriesForBreakfast = 30000;
+    my $KilocaloriesForBreakfast = 30_000;
     is(t::ExampleProject::KidsShow::OldClown::BeHavy($KilocaloriesForBreakfast), 30, 'Prove old clown weight calculation');
 }
 

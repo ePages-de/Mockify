@@ -73,7 +73,7 @@ sub test_ModulWithoutConstructor_ParameterListError {
     my $SubTestName = (caller(0))[3];
 
     throws_ok( sub { Test::Mockify->new('TestDummies::FakeModuleWithoutNew', []) },
-               qr/TestDummies::FakeModuleWithoutNew' have no constructor. If you like to create a mock of a package without constructor please use it without parameter list/,
+               qr/TestDummies::FakeModuleWithoutNew' have no constructor. If you like to create a mock of a package without constructor please use it without parameter list/sm,
                "$SubTestName - Prove error message when using modulesrüg without constructor"
      );
 

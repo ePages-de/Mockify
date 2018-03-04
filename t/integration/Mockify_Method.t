@@ -2,7 +2,7 @@ package Mockify_Method;
 use strict;
 use FindBin;
 use lib ($FindBin::Bin.'/..');
-## no critic (ProhibitComplexRegexes)
+## no critic (ProhibitComplexRegexes ProhibitMagicNumbers)
 use parent 'TestBase';
 use Test::More;
 use Test::Exception;
@@ -112,7 +112,7 @@ sub integrationTest_thenThrowError {
     my $FakeModule = $Mockify->getMockObject();
 
     throws_ok( sub { $FakeModule->DummyMethodForTestOverriding('Parameter') },
-        qr/HelloError/,
+        qr/HelloError/sm,
         'proves that the "HelloError" Error was thrown.'
     );
 }
@@ -142,7 +142,7 @@ sub test_overrideNotExistingMethod {
     my $Mockify = Test::Mockify->new('TestDummies::FakeModuleForMockifyTest', []);
     throws_ok(
         sub { $Mockify->mock('aNotExistingMethod'); },
-        qr/FakeModuleForMockifyTest donsn't have a method like: aNotExistingMethod/,
+        qr/FakeModuleForMockifyTest donsn't have a method like: aNotExistingMethod/sm,
         "$SubTestName - test if the mocked method throw an Error if the method don't exists in the module"
     );
 
@@ -162,7 +162,7 @@ sub test_UnexpectedParameterInCall {
             $MockedFakeModule->DummyMethodForTestOverriding(
                 'anUnexpectedParameter');
         },
-        qr/Error when calling method 'DummyMethodForTestOverriding'.*No matching found for signatur type 'string'.*anUnexpectedParameter/s,
+        qr/Error when calling method 'DummyMethodForTestOverriding'.*No matching found for signatur type 'string'.*anUnexpectedParameter/sm,
 "$SubTestName - test if the mocked method was called with the wrong amount of parameters"
     );
 
