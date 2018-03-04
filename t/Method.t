@@ -1,4 +1,5 @@
 package Method;
+## no critic (ProhibitComplexRegexes)
 use Test::Mockify::Matcher qw (
         String
         Number
@@ -26,6 +27,7 @@ sub testPlan{
     $self->_SignaturWithAnyMatcherAndExpectedMatcher();
     $self->_MultipleAnyMatcher();
     $self->_SingleExepctedMatcher();
+    $self->_SingleAnyParameter();
     $self->_NullProblems();
     $self->_MockifiedObjectCheck();
     $self->_AnyMatcher();
@@ -186,8 +188,8 @@ sub _SingleAnyParameter {
     $Method->when(String())->thenReturn('Result for one string.');
     $Method->when(Number())->thenReturn('Result for one number.');
 
-    is($Method->call('OneString'), 'Result for one string.', 'single any parameter type string');	
-    is($Method->call(123), 'Result for one number.', 'single any parameter type number');	
+    is($Method->call('OneString'), 'Result for one string.', 'single any parameter type string');
+    is($Method->call(123), 'Result for one number.', 'single any parameter type number');
 }
 #---------------------------------------------------------------------------------
 sub _MixedExepctedMatcherAndAnyMatcher_Error {

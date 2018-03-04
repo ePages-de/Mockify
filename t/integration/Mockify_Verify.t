@@ -1,6 +1,7 @@
 package Mockify_Verify;
 use strict;
 
+## no critic (ProhibitComplexRegexes ProhibitNoWarnings)
 use FindBin;
 use lib ($FindBin::Bin.'/..');
 

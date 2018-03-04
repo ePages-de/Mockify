@@ -8,6 +8,7 @@ use parent 'TestBase';
 use Test::Mockify;
 use Test::More;
 use warnings;
+## no critic (ProhibitNoWarnings)
 no warnings 'deprecated';
 sub testPlan {
     my $self = shift;

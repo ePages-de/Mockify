@@ -1,6 +1,7 @@
 package Mockify_ImportedMock;
 use strict;
 use FindBin;
+## no critic (ProhibitComplexRegexes)
 use lib ($FindBin::Bin.'/..'); # point to test base
 use lib ($FindBin::Bin.'/../..'); # point to project base
 use parent 'TestBase';

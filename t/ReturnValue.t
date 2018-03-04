@@ -1,6 +1,7 @@
 package ReturnValue;
 use strict;
 use FindBin;
+## no critic (ProhibitComplexRegexes)
 use lib ($FindBin::Bin);
 use parent 'TestBase';
 use Test::Mockify::ReturnValue;
