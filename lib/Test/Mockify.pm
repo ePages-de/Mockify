@@ -53,6 +53,9 @@ sub new {
     my $self = bless {}, $class;
 
     LoadPackage( $FakeModulePath );
+    if(defined $aFakeParams && !$FakeModulePath->can('new')){
+        Error("'$FakeModulePath' have no constructor. If you like to create a mock of a package without constructor please use it without parameter list");
+    }
     my $FakeClass = $aFakeParams ? $FakeModulePath->new( @{$aFakeParams} ) : $FakeModulePath;
     $self->_mockedModulePath($FakeModulePath);
     $self->_mockedSelf(Test::MockObject::Extends->new( $FakeClass ));
