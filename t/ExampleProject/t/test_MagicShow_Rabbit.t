@@ -13,7 +13,7 @@ sub testPlan{
     my $Rabbit = t::ExampleProject::MagicShow::Rabbit->new();
     my $IsSnappy = $Rabbit->isSnappyToday();
     if($IsSnappy >= 0 && $IsSnappy <= 1){
-        ok(1,"Snappy returns a number between 0 and 1");
+        ok(1, 'Snappy returns a number between 0 and 1');
     }
     return;
 }

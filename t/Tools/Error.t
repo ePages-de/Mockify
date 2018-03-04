@@ -24,7 +24,7 @@ sub test_ErrorWithoutMessage {
 
     my $RegEx = $self->_getErrorRegEx_ErrorWithoutMockedMethod();
     throws_ok( sub{Error()},
-        qr/^Message is needed at .*Tools.pm line \d+.$/,
+        qr/^Message is needed at .*Tools.pm line \d+.$/sm,
         "$SubTestName - tests if Error works well"
     );
     return;
@@ -48,7 +48,7 @@ sub test_ErrorWithMockedMethod {
 
     my $RegEx = $self->_getErrorRegEx_ErrorWithMockedMethod();
     throws_ok( sub{Error('AnErrorMessage',{'Method'=>'aMockedMethod'})},
-        qr/^$RegEx$/,
+        qr/^$RegEx$/sm,
         "$SubTestName - tests if Error works well"
     );
     return;
@@ -60,7 +60,7 @@ sub test_ErrorWithoutMockedMethodAndDataBlock {
 
     my $RegEx = $self->_getErrorRegEx_ErrorWithoutMockedMethodAndDataBlock();
     throws_ok( sub{Error('AnErrorMessage',{'key'=>'value'})},
-        qr/^$RegEx$/,
+        qr/^$RegEx$/sm,
         "$SubTestName - tests if Error works well"
     );
     return;

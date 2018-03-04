@@ -1,3 +1,4 @@
+## no critic (RequirePodSections )
 # Copy&Paste template for yourTest.t
 =head1
 package yourTest;
@@ -43,7 +44,6 @@ __PACKAGE__->RunTest();
 package TestBase;
 use strict;
 use Test::More;
-
 #------------------------------------------------------------------------
 sub new {
     my $class = shift;
@@ -56,7 +56,7 @@ sub RunTest {
     my $Package = shift;
     note("Unit test for: $Package ######");
     my $UnitTest = $Package->new();
-    
+
     $UnitTest->testPlan();
     done_testing();
 }

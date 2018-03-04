@@ -1,4 +1,5 @@
 package IsHashReference;
+## no critic (ProhibitMagicNumbers)
 use strict;
 
 use FindBin;

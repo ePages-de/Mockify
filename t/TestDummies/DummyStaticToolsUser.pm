@@ -11,6 +11,7 @@ sub new {
 sub useDummyStaticTools {
     my $self = shift;
     my ($Value) = @_;
-    return 'In useDummyStaticTools, result Tripler call: "'.t::TestDummies::DummyStaticTools::Tripler($Value).'"';
+    my $Triplet = t::TestDummies::DummyStaticTools::Tripler($Value);
+    return "In useDummyStaticTools, result Tripler call: \"$Triplet\"";
 }
 1;

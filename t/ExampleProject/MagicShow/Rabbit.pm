@@ -5,7 +5,7 @@ sub new {
 }
 sub isSnappyToday {
     my $self = shift;
-    if(int(rand(10)) > 5){
+    if(int(rand(10)) > 5){ ## no critic (ProhibitMagicNumbers)
         return 1;
     }else{
         return 0;

@@ -91,7 +91,7 @@ sub test_MockModule_CallCounter_GetCallCount_addMock_negative_unMockedMethods {
     my $MockedFakeModule = $MockObject->getMockObject();
 
     throws_ok( sub { GetCallCount( $MockedFakeModule, 'DummyMethodForTestOverriding' ) },
-       qr/The Method: 'DummyMethodForTestOverriding' was not added to Mockify/,
+       qr/The Method: 'DummyMethodForTestOverriding' was not added to Mockify/sm,
        "$SubTestName - test the Error if a not mockified method name was used"
     );
 
@@ -257,7 +257,7 @@ sub test_MockModule_CallCounter_addMethodSpyWithParameterCheck_negativ {
     throws_ok(
         sub { $MockedFakeModule->dummyMethodWithParameterReturn('NotAHashRef') }
         ,
-        qr/Error when calling method 'dummyMethodWithParameterReturn'.*No matching found for signatur type 'string'.*NotAHashRef/s,
+        qr/Error when calling method 'dummyMethodWithParameterReturn'.*No matching found for signatur type 'string'.*NotAHashRef/sm,
         "$SubTestName - test the Error if method is called with wrong type"
     );
 
@@ -295,7 +295,7 @@ sub test_MockModule_GetParametersFromMockifyCall_Multicalls_PositionBiggerThenRe
     $MockedFakeModule->DummyMethodForTestOverriding('InputValueToBeCheckAfterwords');
     throws_ok(
         sub { GetParametersFromMockifyCall($MockedFakeModule,'DummyMethodForTestOverriding', 3) },
-        qr/DummyMethodForTestOverriding was not called 4 times/,
+        qr/DummyMethodForTestOverriding was not called 4 times/sm,
         "$SubTestName - test the Error if function was call and we didn't use the mocked method before"
     );
 
@@ -414,7 +414,7 @@ sub test_MockModule_GetParametersFromMockifyCall_WithoutCallingTheMethod {
     my $MockedFakeModule = $MockObject->getMockObject();
     throws_ok(
         sub { GetParametersFromMockifyCall($MockedFakeModule,'DummyMethodForTestOverriding') },
-        qr/DummyMethodForTestOverriding was not called/,
+        qr/DummyMethodForTestOverriding was not called/sm,
         "$SubTestName - test the Error if function was call and we didn't use the mocked method before"
     );
 
@@ -428,7 +428,7 @@ sub test_MockModule_GetParametersFromMockifyCall_ForNotblessedObject {
     my $NotObject = 'NotBlessed';
     throws_ok(
         sub { GetParametersFromMockifyCall($NotObject,'DummyMethodForTestOverriding') },
-        qr/The first argument must be blessed:/,
+        qr/The first argument must be blessed:/sm,
         "$SubTestName - test the Error if function was call and the first argument is not blessed"
     );
 
@@ -442,7 +442,7 @@ sub test_MockModule_GetParametersFromMockifyCall_ForNotMockifyObject {
     my $NotMockifyObject = TestDummies::FakeModuleForMockifyTest->new();
     throws_ok(
         sub { GetParametersFromMockifyCall($NotMockifyObject,'DummyMethodForTestOverriding') },
-        qr/FakeModuleForMockifyTest was not mockified:/,
+        qr/FakeModuleForMockifyTest was not mockified:/sm,
         "$SubTestName - test the Error if function was call and we didn't use the mocked method before"
     );
 
