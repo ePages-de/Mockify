@@ -25,7 +25,7 @@ Test::Mockify - minimal mocking framework for perl
 
 =head1 DESCRIPTION
 
-Use L<Test::Mockify | Mockify > to create and configure mock objects. Use L<Test::Mockify::Verify | Test::Mockify::Verify> to
+Use L<Test::Mockify | Test::Mockify > to create and configure mock objects. Use L<Test::Mockify::Verify | Test::Mockify::Verify> to
 verify the interactions with your mocks.
 
 =head1 METHODS
@@ -518,6 +518,10 @@ it under the same terms as Perl itself.
 =head1 AUTHOR
 
 Christian Breitkreutz E<lt>christianbreitkreutz@gmx.deE<gt>
+
+=head1 ACKNOWLEDGEMENTS
+
+Thanks to Dustin Buckenmeyer E<lt>dustin.buckenmeyer@gmail.comE<gt> and L<ECS Tuning|https://www.ecstuning.com/> for giving Dustin the opportunity to pursue this idea and ultimately give it back to the community!
 
 =cut
 
