@@ -20,7 +20,6 @@ use Test::Mockify::Verify qw (GetParametersFromMockifyCall WasCalled GetCallCoun
 #------------------------------------------------------------------------
 sub testPlan{
     my $self = shift;
-    $self->integrationTest_AnyTypes();
     $self->integrationTest_ExpectedTypes();
     $self->integrationTest_WhenAny();
     $self->integrationTest_thenCall();
@@ -29,17 +28,11 @@ sub testPlan{
     $self->integrationTest_thenReturnUndef();
     $self->integrationTest_Verify();
     $self->integrationTest_thenThrowError();
+    $self->test_overrideNotExistingMethod();
+    $self->test_UnexpectedParameterInCall();
     return;
 }
-#------------------------------------------------------------------------
-sub integrationTest_AnyTypes {
-    my $self = shift;
 
-    my $Mockify = Test::Mockify->new('TestDummies::FakeModuleForMockifyTest', []);
-    $Mockify->mock('DummyMethodForTestOverriding')->when(String(), Number(), HashRef(), ArrayRef(), Object(), Function(), Undef(), Any())->thenReturn('Its matched');
-    my $FakeModule = $Mockify->getMockObject();
-    is($FakeModule->DummyMethodForTestOverriding('a', 1, {}, [], bless({},'a'), sub{}, undef, 'a'),'Its matched' , 'proves that all parameter types are working');
-}
 #------------------------------------------------------------------------
 sub integrationTest_ExpectedTypes {
     my $self = shift;
@@ -139,6 +132,40 @@ sub integrationTest_Verify {
     is(GetCallCount($FakeModule,'DummyMethodForTestOverriding'),2 , 'proves that the get call count works fine');
     is(WasCalled($FakeModule,'secondDummyMethodForTestOverriding'),1 , 'proves that the verifyer for wasCalled works fine');
     is(GetParametersFromMockifyCall($FakeModule,'secondDummyMethodForTestOverriding')->[0],'SomeParameter' , 'proves that the verifyer for getparams. works fine');
+}
+#----------------------------------------------------------------------------------------
+sub test_overrideNotExistingMethod {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $Mockify = Test::Mockify->new('TestDummies::FakeModuleForMockifyTest', []);
+    throws_ok(
+        sub { $Mockify->mock('aNotExistingMethod'); },
+        qr/FakeModuleForMockifyTest donsn't have a method like: aNotExistingMethod/,
+        "$SubTestName - test if the mocked method throw an Error if the method don't exists in the module"
+    );
+
+    return;
+}
+
+#----------------------------------------------------------------------------------------
+sub test_UnexpectedParameterInCall {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+    my $Mockify = Test::Mockify->new('TestDummies::FakeModuleForMockifyTest', []);
+    $Mockify->mock('DummyMethodForTestOverriding')->when()->thenReturn('SomeReturnValue');
+    my $MockedFakeModule = $Mockify->getMockObject();
+    throws_ok(
+        sub {
+            $MockedFakeModule->DummyMethodForTestOverriding(
+                'anUnexpectedParameter');
+        },
+        qr/Error when calling method 'DummyMethodForTestOverriding'.*No matching found for signatur type 'string'.*anUnexpectedParameter/s,
+"$SubTestName - test if the mocked method was called with the wrong amount of parameters"
+    );
+
+    return;
 }
 __PACKAGE__->RunTest();
 1;
