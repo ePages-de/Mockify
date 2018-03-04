@@ -1,6 +1,6 @@
 package ExistsMethod;
 use strict;
-
+## no critic (ProhibitComplexRegexes)
 use FindBin;
 use lib ($FindBin::Bin.'/..');
 

@@ -25,7 +25,7 @@ Test::Mockify - minimal mocking framework for perl
 
 =head1 DESCRIPTION
 
-Use L<Test::Mockify> to create and configure mock objects. Use L<Test::Mockify::Verify> to
+Use L<Test::Mockify | Mockify > to create and configure mock objects. Use L<Test::Mockify::Verify | Test::Mockify::Verify> to
 verify the interactions with your mocks.
 
 =head1 METHODS
@@ -128,7 +128,7 @@ For example, the next line will create a mocked version of the method log, but o
 
 =head4 when
 
-To define the signature in the needed structure you must use the L<< Test::Mockify::Matcher >>.
+To define the signature in the needed structure you must use the L< Test::Mockify::Matcher | Test::Mockify::Matcher>.
 
 =head4 whenAny
 
@@ -137,7 +137,7 @@ It is not possible to mix C<whenAny> and C<when> for the same method.
 
 =head4 then ...
 
-For possible return types please look in L<Test::Mockify::ReturnValue>
+For possible return types please look in L<Test::Mockify::ReturnValue | Test::Mockify::ReturnValue>
 
 =cut
 sub mock {
@@ -249,7 +249,7 @@ sub spyImported {
 
 =head2 spy
 
-Use spy if you want to observe a method. You can use the L<Test::Mockify::Verify> to ensure that the method was called with the expected parameters.
+Use spy if you want to observe a method. You can use the L<Test::Mockify::Verify | Test::Mockify::Verify> to ensure that the method was called with the expected parameters.
 
 =head3 synopsis
 
@@ -270,7 +270,7 @@ For example, the next line will create a method spy of the method log, but only 
 
 =head4 when
 
-To define the signature in the needed structure you must use the L<< Test::Mockify::Matcher >>.
+To define the signature in the needed structure you must use the L< Test::Mockify::Matcher | Test::Mockify::Matcher >.
 
 =head4 whenAny
 

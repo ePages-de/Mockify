@@ -13,7 +13,7 @@ sub new {
     return $self;
 }
 #---------------------------------------------------------------------
-sub _addToTypeStore {
+sub _addToTypeStore { ## no critic (Private subroutine/method) used in chaining
     my $self = shift;
     my ($Signature, $NewExpectedParameters) = @_;
     my $SignatureKey = join('',@$Signature);
