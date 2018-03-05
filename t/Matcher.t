@@ -1,5 +1,5 @@
 package ReturnValue;
-## no critic (ProhibitMagicNumbers )
+## no critic (ProhibitMagicNumbers ProhibitComplexRegexes)
 use strict;
 use FindBin;
 use lib ($FindBin::Bin);
@@ -35,7 +35,10 @@ sub test_String {
     my $self = shift;
     is_deeply(String(), $self->_buildExpectedHash('string',undef) , 'proves that the any matcher for string, returns a hash with type and NoExpectedParameter-flag');
     is_deeply(String('abc'), $self->_buildExpectedHash('string','abc'), 'proves that the expected matcher for string, returns a hash with type and value');
-    is_deeply(String(123), $self->_buildExpectedHash('string', 123) , 'proves that the expected matcher for string, returns a hash with type and value (perl can´t differ between numbers and strings))');
+    throws_ok( sub { String(123) },
+       qr/Please use the Matcher Number\(123\) to Check for the string '123' \(perl can not differ numbers and strings\)/sm, ## no critic (ProhibitEscapedMetacharacters)
+       'proves that an Error is thrown if mockify is used wrongly'
+    );
     throws_ok( sub { String(['abc']) },
         qr/NotAString/sm,
         'proves that the string matcher don´t accept anything else as string'

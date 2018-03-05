@@ -43,11 +43,12 @@ sub matchWithExpectedParameters {
     return 0 unless (scalar @Params == scalar @{$self->{'ExpectedParams'}});
 
     for(my $i=0; $i < scalar @Params; $i++){## no critic (ProhibitCStyleForLoops) i need the counter
-        if(not $self->{'ExpectedParams'}->[$i]->{'Value'}){ #No Value no Match
+        my $StoredValue = $self->{'ExpectedParams'}->[$i]->{'Value'};
+        if(not $StoredValue || (defined $StoredValue && "$StoredValue" eq '0')){ ## no critic (ProhibitMixedBooleanOperators )
             next;
-        }elsif(blessed($Params[$i]) && $Params[$i]->isa($self->{'ExpectedParams'}->[$i]->{'Value'})){# map package name
+        }elsif(blessed($Params[$i]) && $Params[$i]->isa($StoredValue)){# map package name
             next;
-        }elsif(Data::Compare->new()->Cmp($Params[$i], $self->{'ExpectedParams'}->[$i]->{'Value'})){
+        }elsif(Data::Compare->new()->Cmp($Params[$i], $StoredValue)){
             next;
         } else{
             return 0;

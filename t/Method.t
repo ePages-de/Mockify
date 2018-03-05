@@ -149,17 +149,23 @@ sub _NullProblems {
     # there are some special cases
     my $Method = Test::Mockify::Method->new();
     $Method->when(Number(0))->thenReturn('Result for zero number.');
+    $Method->when(String(''))->thenReturn('Result for empty string.');
+    $Method->when(Undef())->thenReturn('Result for undef.');
 
     throws_ok( sub { $Method->when(String('0')) },
-       qr/Use the Matcher Number\(\) to Check for the string '0' \(perl cannot differ that\)/sm, ## no critic (ProhibitEscapedMetacharacters)
+       qr/Please use the Matcher Number\(0\) to Check for the string '0' \(perl can not differ numbers and strings\)/sm, ## no critic (ProhibitEscapedMetacharacters)
        'proves that an Error is thrown if mockify is used wrongly'
     );
 
-    $Method->when(String(''))->thenReturn('Result for empty string.');
 
     is($Method->call(0), 'Result for zero number.', 'single expected parameter type number (0)');
+    throws_ok( sub { $Method->call(30) },
+       qr/No matching found for signatur type 'number'.*30/sm,
+       'proves that to fix the bug that any number could be selected if 0 was defined'
+    );
     is($Method->call('0'), 'Result for zero number.', 'single expected parameter type number, even though it is a String');
     is($Method->call(''), 'Result for empty string.', 'expected return value for empty string signatur');
+    is($Method->call(undef), 'Result for undef.', 'prove that empty string and undef dont interfere');
 }
 #---------------------------------------------------------------------------------
 sub _MockifiedObjectCheck {
