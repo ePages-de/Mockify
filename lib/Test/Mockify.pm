@@ -487,7 +487,7 @@ sub _callInjectedMethod {
     };
     # $@ -> current error
     if ($@) {
-        die("\nError when calling method '$MethodName'\n".$@)
+        Error("\nError when calling method '$MethodName'\n".$@)
     }
     if($WantAList){
         return @ReturnValue;
@@ -582,7 +582,7 @@ sub _testMockTypeUsage {
     my $PositionInCallerStack = 2;
     my $MethodMockType = (caller($PositionInCallerStack))[3]; # autodetect mock type (spy or mock)
     if($self->{'MethodMockType'}{$MethodName} && $self->{'MethodMockType'}{$MethodName} ne $MethodMockType){
-        die('It is not possible to mix spy and mock');
+        Error('It is not possible to mix spy and mock');
     }else{
         $self->{'MethodMockType'}{$MethodName} = $MethodMockType;
     }

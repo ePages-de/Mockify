@@ -3,7 +3,7 @@ use Test::Mockify::ReturnValue;
 use Data::Compare;
 use Test::Mockify::TypeTests qw ( IsString );
 use Scalar::Util qw(blessed );
-
+use Test::Mockify::Tools qw (Error);
 use strict;
 use warnings;
 #---------------------------------------------------------------------
@@ -19,7 +19,7 @@ sub new {
 #---------------------------------------------------------------------
 sub call {
     my $self = shift;
-    die ('NoReturnValueDefined') unless ($self->{'ReturnValue'});
+    Error ('NoReturnValueDefined') unless ($self->{'ReturnValue'});
     return $self->{'ReturnValue'}->call(@_);
 }
 #---------------------------------------------------------------------
