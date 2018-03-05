@@ -7,7 +7,7 @@ sub UpAndDown {
     my ($Number1, $Number2) = @_;
 
     my $WeightNewClown = ShowOfWeight($Number1);
-    my $WeightOldClown = t::ExampleProject::KidsShow::OldClown::BeHavy($Number2);
+    my $WeightOldClown = t::ExampleProject::KidsShow::OldClown::BeHeavy($Number2);
     if($WeightNewClown > $WeightOldClown){
         return 'New clown wins';
     }elsif($WeightNewClown == $WeightOldClown){

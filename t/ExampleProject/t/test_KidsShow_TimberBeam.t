@@ -25,8 +25,8 @@ sub test_OverrideMockifyToRemoveStaticMocks {
     my $Mockify = Test::Mockify->new('t::ExampleProject::KidsShow::TimberBeam');
     $Mockify->mockImported('t::ExampleProject::KidsShow::NewClown','ShowOfWeight')->when(Number(10))->thenReturn(10);
     $Mockify->mockImported('t::ExampleProject::KidsShow::NewClown','ShowOfWeight')->when(Number(20))->thenReturn(20);
-    $Mockify->mockStatic('t::ExampleProject::KidsShow::OldClown::BeHavy')->when(Number(10))->thenReturn(10);
-    $Mockify->mockStatic('t::ExampleProject::KidsShow::OldClown::BeHavy')->when(Number(20))->thenReturn(20);
+    $Mockify->mockStatic('t::ExampleProject::KidsShow::OldClown::BeHeavy')->when(Number(10))->thenReturn(10);
+    $Mockify->mockStatic('t::ExampleProject::KidsShow::OldClown::BeHeavy')->when(Number(20))->thenReturn(20);
     $Mockify->mock('_GetAge')->when()->thenReturn(7);
 
     is(t::ExampleProject::KidsShow::TimberBeam::UpAndDown(10, 10), 'balanced', " $SubTestName - prove if the TimberBeam can be balanced");
@@ -47,8 +47,8 @@ sub test_LeaveScopeToRemoveStaticMocks {
         my $Mockify = Test::Mockify->new('t::ExampleProject::KidsShow::TimberBeam');
         $Mockify->mockImported('t::ExampleProject::KidsShow::NewClown','ShowOfWeight')->when(Number(10))->thenReturn(10);
         $Mockify->mockImported('t::ExampleProject::KidsShow::NewClown','ShowOfWeight')->when(Number(20))->thenReturn(20);
-        $Mockify->mockStatic('t::ExampleProject::KidsShow::OldClown::BeHavy')->when(Number(10))->thenReturn(10);
-        $Mockify->mockStatic('t::ExampleProject::KidsShow::OldClown::BeHavy')->when(Number(20))->thenReturn(20);
+        $Mockify->mockStatic('t::ExampleProject::KidsShow::OldClown::BeHeavy')->when(Number(10))->thenReturn(10);
+        $Mockify->mockStatic('t::ExampleProject::KidsShow::OldClown::BeHeavy')->when(Number(20))->thenReturn(20);
         $Mockify->mock('_GetAge')->when()->thenReturn(7);
 
         is(t::ExampleProject::KidsShow::TimberBeam::UpAndDown(10, 10), 'balanced', " $SubTestName - prove if the TimberBeam can be balanced");
