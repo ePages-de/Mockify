@@ -27,7 +27,7 @@ Test::Mockify - minimal mocking framework for perl
 Use [Test::Mockify](https://metacpan.org/pod/Test::Mockify) to create and configure mock objects. Use [Test::Mockify::Verify](https://metacpan.org/pod/Test::Mockify::Verify) to
 verify the interactions with your mocks.
 
-You can find a Example Project in [ExampleProject](#t-exampleproject)
+You can find a Example Project in [ExampleProject](https://github.com/ChristianBreitkreutz/Mockify/tree/master/t/ExampleProject)
 
 # METHODS
 
