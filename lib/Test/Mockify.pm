@@ -25,8 +25,10 @@ Test::Mockify - minimal mocking framework for perl
 
 =head1 DESCRIPTION
 
-Use L<Test::Mockify | Test::Mockify > to create and configure mock objects. Use L<Test::Mockify::Verify | Test::Mockify::Verify> to
+Use L<Test::Mockify|Test::Mockify> to create and configure mock objects. Use L<Test::Mockify::Verify|Test::Mockify::Verify> to
 verify the interactions with your mocks.
+
+You can find a Example Project in L<ExampleProject|/t/ExampleProject>
 
 =head1 METHODS
 
@@ -131,7 +133,7 @@ For example, the next line will create a mocked version of the method log, but o
 
 =head4 when
 
-To define the signature in the needed structure you must use the L< Test::Mockify::Matcher | Test::Mockify::Matcher>.
+To define the signature in the needed structure you must use the L<Test::Mockify::Matcher|Test::Mockify::Matcher>.
 
 =head4 whenAny
 
@@ -140,7 +142,7 @@ It is not possible to mix C<whenAny> and C<when> for the same method.
 
 =head4 then ...
 
-For possible return types please look in L<Test::Mockify::ReturnValue | Test::Mockify::ReturnValue>
+For possible return types please look in L<Test::Mockify::ReturnValue|Test::Mockify::ReturnValue>
 
 =cut
 sub mock {
@@ -160,14 +162,16 @@ sub mock {
 
 =head2 mockStatic
 
-Sometimes it is not possible to inject the dependencies from the outside. This is especially the case when the package uses imports of static functions.
+Sometimes it is not possible to inject the dependencies from the outside. This is especially the case when the system-under-test uses functions with a fully qualified path.
 C<mockStatic> provides the possibility to mock static functions inside the mock/sut.
 
+Attention: The mocked function is valid as long as the $Mockify is defined. If You leave the scope or set the $Mockify to undef the injeted method will be released.
+
   package SUT;
-  use Magic::Tools qw ( Rabbit ); # Rabbit could use a webservice
+  use Magic::Tools;
   sub pullCylinder {
       shift;
-      if(Rabbit('white') && not Magic::Tools::Rabbit('black')){ # imported && full path
+      if(Magic::Tools::Rabbit('black')){
           return 1;
       }else{
           return 0;
@@ -176,22 +180,25 @@ C<mockStatic> provides the possibility to mock static functions inside the mock/
   1;
 
 
-In the Test it can be mocked
+In the Test it can be mocked like:
 
   package Test_SUT;
-  my $MockObjectBuilder = Test::Mockify->new( 'SUT', [] );
-  $MockObjectBuilder->mockStatic('Magic::Tools::Rabbit')->when(String('white'))->thenReturn(1);
-  $MockObjectBuilder->mockStatic('Magic::Tools::Rabbit')->when(String('black'))->thenReturn(0);
+  { # start scope
+      my $Mockify = Test::Mockify->new( 'SUT', [] );
+      $Mockify->mockStatic('Magic::Tools::Rabbit')->when(String('black'))->thenReturn(1);
+      $Mockify->spy('log')->when(String());
+      my $SUT = $Mockify->getMockObject();
 
-  my $SUT = $MockObjectBuilder->getMockObject();
-  is($SUT->pullCylinder(), 1);
-  1;
+      is($SUT->pullCylinder('black'), 1);
+      is(Magic::Tools::Rabbit('black'), 1); 
+  } # end scope
+  is(Magic::Tools::Rabbit('black'), 'someValue'); # The orignal method in in place again
 
 
 It can be mixed with normal C<spy> and C<mock>
 
-=head4 Thx
-to @dbucky for this amazing idea
+=head4 ACKNOWLEDGEMENTS
+Thanks to @dbucky for this amazing idea
 
 =cut
 sub mockStatic {
@@ -211,7 +218,44 @@ sub mockStatic {
     }
 
 }
-#todo pod
+=pod
+
+=head2 mockImported
+
+Sometimes it is not possible to inject the dependencies from the outside. This is especially the case when the package uses imports of static functions.
+C<mockImported> provides the possibility to mock imported functions inside the mock/sut.
+
+Unlike C<mockStatic> is the injection with C<mockImported> only in the mock valid.
+
+  package SUT;
+  use Magic::Tools qw ( Rabbit );
+  sub pullCylinder {
+      shift;
+      if(Rabbit('white')){
+          return 1;
+      }else{
+          return 0;
+      }
+  }
+  1;
+
+
+In the Test it can be mocked
+
+  package Test_SUT;
+  use Magic::Tools qw ( Rabbit );
+  my $Mockify = Test::Mockify->new( 'SUT', [] );
+  $Mockify->mockImported('Magic::Tools','Rabbit')->when(String('white'))->thenReturn(1);
+
+  my $SUT = $Mockify->getMockObject();
+  is($SUT->pullCylinder(), 1);
+  Rabbit('white');# return original result
+  1;
+
+
+It can be mixed with normal C<spy> and C<mock>
+
+=cut
 sub mockImported {
     my $self = shift;
     my @Parameters = @_;
@@ -228,7 +272,42 @@ sub mockImported {
     }
 
 }
-#todo pod
+=pod
+
+=head2 spyImported
+
+C<spyImported> provides the possibility to spy imported functions inside the mock/sut.
+
+Unlike C<spyStatic> is the injection with C<spyImported> only in the mock valid.
+
+  package SUT;
+  use Magic::Tools qw ( Rabbit );
+  sub pullCylinder {
+      shift;
+      if(Rabbit('white')){
+          return 1;
+      }else{
+          return 0;
+      }
+  }
+  1;
+
+
+In the Test it can be mocked
+
+  package Test_SUT;
+  use Magic::Tools qw ( Rabbit );
+  my $Mockify = Test::Mockify->new( 'SUT', [] );
+  $Mockify->spyImported('Magic::Tools','Rabbit')->when(String());
+
+  my $SUT = $Mockify->getMockObject();
+  is($SUT->pullCylinder(), 'SomeValue');
+  is(GetCallCount($SUT, 'Rabbit'), 1);
+  1;
+
+It can be mixed with normal C<spy> and C<mock>
+
+=cut
 sub spyImported {
     my $self = shift;
     my @Parameters = @_;
@@ -252,7 +331,7 @@ sub spyImported {
 
 =head2 spy
 
-Use spy if you want to observe a method. You can use the L<Test::Mockify::Verify | Test::Mockify::Verify> to ensure that the method was called with the expected parameters.
+Use spy if you want to observe a method. You can use the L<Test::Mockify::Verify|Test::Mockify::Verify> to ensure that the method was called with the expected parameters.
 
 =head3 synopsis
 
@@ -273,7 +352,7 @@ For example, the next line will create a method spy of the method log, but only 
 
 =head4 when
 
-To define the signature in the needed structure you must use the L< Test::Mockify::Matcher | Test::Mockify::Matcher >.
+To define the signature in the needed structure you must use the L<Test::Mockify::Matcher|Test::Mockify::Matcher>.
 
 =head4 whenAny
 
@@ -295,13 +374,13 @@ sub spy {
 
 =head2 spyStatic
 
-Provides the possibility to spy static functions inside the mock/sut.
+Provides the possibility to spy static functions around the mock/sut.
 
   package SUT;
-  use Magic::Tools qw ( Rabbit ); # Rabbit could use a webservice
+
   sub pullCylinder {
       shift;
-      if(Rabbit('white') && not Magic::Tools::Rabbit('black')){ # imported && full path
+      if(Magic::Tools::Rabbit('black')){
           return 1;
       }else{
           return 0;
@@ -312,12 +391,14 @@ Provides the possibility to spy static functions inside the mock/sut.
 In the Test it can be mocked
 
   package Test_SUT;
-  my $MockObjectBuilder = Test::Mockify->new( 'SUT', [] );
-  $MockObjectBuilder->spyStatic('Magic::Tools::Rabbit')->whenAny();
-  my $SUT = $MockObjectBuilder->getMockObject();
+  use Magic::Tools;
+  my $Mockify = Test::Mockify->new( 'SUT', [] );
+  $Mockify->spyStatic('Magic::Tools::Rabbit')->whenAny();
+  my $SUT = $Mockify->getMockObject();
 
   $SUT->pullCylinder();
-  is(GetCallCount($SUT, 'pullCylinder), 1);
+  Magic::Tools::Rabbit('black');
+  is(GetCallCount($SUT, 'Magic::Tools::Rabbit'), 2); # count as long as $Mockify is valid
 
   1;
 

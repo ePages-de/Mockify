@@ -27,6 +27,8 @@ Test::Mockify - minimal mocking framework for perl
 Use [Test::Mockify](https://metacpan.org/pod/Test::Mockify) to create and configure mock objects. Use [Test::Mockify::Verify](https://metacpan.org/pod/Test::Mockify::Verify) to
 verify the interactions with your mocks.
 
+You can find a Example Project in [ExampleProject](#t-exampleproject)
+
 # METHODS
 
 ## getMockObject
@@ -68,14 +70,54 @@ For possible return types please look in [Test::Mockify::ReturnValue](https://me
 
 ## mockStatic
 
-Sometimes it is not possible to inject the dependencies from the outside. This is especially the case when the package uses imports of static functions.
+Sometimes it is not possible to inject the dependencies from the outside. This is especially the case when the system-under-test uses functions with a fully qualified path.
 `mockStatic` provides the possibility to mock static functions inside the mock/sut.
 
+Attention: The mocked function is valid as long as the $Mockify is defined. If You leave the scope or set the $Mockify to undef the injeted method will be released.
+
     package SUT;
-    use Magic::Tools qw ( Rabbit ); # Rabbit could use a webservice
+    use Magic::Tools;
     sub pullCylinder {
         shift;
-        if(Rabbit('white') && not Magic::Tools::Rabbit('black')){ # imported && full path
+        if(Magic::Tools::Rabbit('black')){
+            return 1;
+        }else{
+            return 0;
+        }
+    }
+    1;
+
+In the Test it can be mocked like:
+
+    package Test_SUT;
+    { # start scope
+        my $Mockify = Test::Mockify->new( 'SUT', [] );
+        $Mockify->mockStatic('Magic::Tools::Rabbit')->when(String('black'))->thenReturn(1);
+        $Mockify->spy('log')->when(String());
+        my $SUT = $Mockify->getMockObject();
+
+        is($SUT->pullCylinder('black'), 1);
+        is(Magic::Tools::Rabbit('black'), 1); 
+    } # end scope
+    is(Magic::Tools::Rabbit('black'), 'someValue'); # The orignal method in in place again
+
+It can be mixed with normal `spy` and `mock`
+
+#### ACKNOWLEDGEMENTS
+Thanks to @dbucky for this amazing idea
+
+## mockImported
+
+Sometimes it is not possible to inject the dependencies from the outside. This is especially the case when the package uses imports of static functions.
+`mockImported` provides the possibility to mock imported functions inside the mock/sut.
+
+Unlike `mockStatic` is the injection with `mockImported` only in the mock valid.
+
+    package SUT;
+    use Magic::Tools qw ( Rabbit );
+    sub pullCylinder {
+        shift;
+        if(Rabbit('white')){
             return 1;
         }else{
             return 0;
@@ -86,18 +128,48 @@ Sometimes it is not possible to inject the dependencies from the outside. This i
 In the Test it can be mocked
 
     package Test_SUT;
-    my $MockObjectBuilder = Test::Mockify->new( 'SUT', [] );
-    $MockObjectBuilder->mockStatic('Magic::Tools::Rabbit')->when(String('white'))->thenReturn(1);
-    $MockObjectBuilder->mockStatic('Magic::Tools::Rabbit')->when(String('black'))->thenReturn(0);
+    use Magic::Tools qw ( Rabbit );
+    my $Mockify = Test::Mockify->new( 'SUT', [] );
+    $Mockify->mockImported('Magic::Tools','Rabbit')->when(String('white'))->thenReturn(1);
 
-    my $SUT = $MockObjectBuilder->getMockObject();
+    my $SUT = $Mockify->getMockObject();
     is($SUT->pullCylinder(), 1);
+    Rabbit('white');# return original result
     1;
 
 It can be mixed with normal `spy` and `mock`
 
-#### Thx
-to @dbucky for this amazing idea
+## spyImported
+
+`spyImported` provides the possibility to spy imported functions inside the mock/sut.
+
+Unlike `spyStatic` is the injection with `spyImported` only in the mock valid.
+
+    package SUT;
+    use Magic::Tools qw ( Rabbit );
+    sub pullCylinder {
+        shift;
+        if(Rabbit('white')){
+            return 1;
+        }else{
+            return 0;
+        }
+    }
+    1;
+
+In the Test it can be mocked
+
+    package Test_SUT;
+    use Magic::Tools qw ( Rabbit );
+    my $Mockify = Test::Mockify->new( 'SUT', [] );
+    $Mockify->spyImported('Magic::Tools','Rabbit')->when(String());
+
+    my $SUT = $Mockify->getMockObject();
+    is($SUT->pullCylinder(), 'SomeValue');
+    is(GetCallCount($SUT, 'Rabbit'), 1);
+    1;
+
+It can be mixed with normal `spy` and `mock`
 
 ## spy
 
@@ -131,13 +203,13 @@ It is not possible to mix `whenAny` and `when` for the same method.
 
 ## spyStatic
 
-Provides the possibility to spy static functions inside the mock/sut.
+Provides the possibility to spy static functions around the mock/sut.
 
     package SUT;
-    use Magic::Tools qw ( Rabbit ); # Rabbit could use a webservice
+
     sub pullCylinder {
         shift;
-        if(Rabbit('white') && not Magic::Tools::Rabbit('black')){ # imported && full path
+        if(Magic::Tools::Rabbit('black')){
             return 1;
         }else{
             return 0;
@@ -148,61 +220,18 @@ Provides the possibility to spy static functions inside the mock/sut.
 In the Test it can be mocked
 
     package Test_SUT;
-    my $MockObjectBuilder = Test::Mockify->new( 'SUT', [] );
-    $MockObjectBuilder->spyStatic('Magic::Tools::Rabbit')->whenAny();
-    my $SUT = $MockObjectBuilder->getMockObject();
+    use Magic::Tools;
+    my $Mockify = Test::Mockify->new( 'SUT', [] );
+    $Mockify->spyStatic('Magic::Tools::Rabbit')->whenAny();
+    my $SUT = $Mockify->getMockObject();
 
     $SUT->pullCylinder();
-    is(GetCallCount($SUT, 'pullCylinder), 1);
+    Magic::Tools::Rabbit('black');
+    is(GetCallCount($SUT, 'Magic::Tools::Rabbit'), 2); # count as long as $Mockify is valid
 
     1;
 
 It can be mixed with normal `spy` and `mock`. For more options see, `mockStatic`
-
-## addMethodSpy _(deprecated)_
-
-With this method it is possible to observe a method. That means, you keep the original functionality but you can get meta data from the mockify-framework.
-
-    $MockObjectBuilder->addMethodSpy('myMethodName');
-
-## addMethodSpyWithParameterCheck _(deprecated)_
-
-With this method it is possible to observe a method and check the parameters. That means, you keep the original functionality, but you can get meta data from the mockify- framework and use the parameter check, like **addMockWithReturnValueAndParameterCheck**.
-
-    my $aParameterTypes = [String(),String(abcd)];
-    $MockObjectBuilder->addMethodSpyWithParameterCheck('myMethodName', $aParameterTypes);
-
-To define it in a nice way the signature you must use the [Test::Mockify::Matcher;](https://metacpan.org/pod/Test::Mockify::Matcher;).
-
-## addMock _(deprecated)_
-
-This is the simplest case. It works like the mock-method from [Test::MockObject](https://metacpan.org/pod/Test::MockObject).
-
-Only handover the **name** and a **method pointer**. Mockify will automatically check if the method exists in the original object.
-
-    $MockObjectBuilder->addMock('myMethodName', sub {
-                                      # Your implementation
-                                   }
-    );
-
-## addMockWithReturnValue _(deprecated)_
-
-Does the same as `addMock`, but here you can handover a **value** which will be returned if you call the mocked method.
-
-    $MockObjectBuilder->addMockWithReturnValue('myMethodName','the return value');
-
-## addMockWithReturnValueAndParameterCheck _(deprecated)_
-
-This method is an extension of **addMockWithReturnValue**. Here you can also check the parameters which will be passed.
-
-You can check if they have a specific **data type** or even check if they have a given **value**.
-
-In the following example two strings will be expected, and the second one has to have the value "abcd".
-
-    my $aParameterTypes = [String(),String('abcd')];
-    $MockObjectBuilder->addMockWithReturnValueAndParameterCheck('myMethodName','the return value',$aParameterTypes);
-
-To define it in a nice way the signature you must use the [Test::Mockify::Matcher;](https://metacpan.org/pod/Test::Mockify::Matcher;).
 
 # LICENSE
 
@@ -214,3 +243,7 @@ it under the same terms as Perl itself.
 # AUTHOR
 
 Christian Breitkreutz <christianbreitkreutz@gmx.de>
+
+# ACKNOWLEDGEMENTS
+
+Thanks to Dustin Buckenmeyer <dustin.buckenmeyer@gmail.com> and [ECS Tuning](https://www.ecstuning.com/) for giving Dustin the opportunity to pursue this idea and ultimately give it back to the community!
