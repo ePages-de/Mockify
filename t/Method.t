@@ -1,5 +1,5 @@
 package Method;
-## no critic (ProhibitComplexRegexes ProhibitMagicNumbers ProhibitEmptyQuotes)
+## no critic (ProhibitComplexRegexes ProhibitMagicNumbers)
 use Test::Mockify::Matcher qw (
         String
         Number

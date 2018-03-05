@@ -1,4 +1,3 @@
-## no critic (RequirePodSections )
 # Copy&Paste template for yourTest.t
 =head1
 package yourTest;

@@ -6,7 +6,7 @@ Test::Mockify::Matcher - To define parameter matchers
 
 =head1 DESCRIPTION
 
-Use L<Test::Mockify::Matcher> to define different types of expected parameters. See method description for more details.
+Use L<Test::Mockify::Matcher|Test::Mockify::Matcher> to define different types of expected parameters. See method description for more details.
 
 =head1 METHODS
 
@@ -43,7 +43,7 @@ The C<SupportedTypes> will return all supported matcher types as an array ref.
 
 =cut
 sub SupportedTypes{
-    return [ 
+    return [
         'string',
         'number',
         'hashref',
@@ -134,7 +134,7 @@ If called with parameter, it will be proved that this value is actually an strin
 =cut
 sub Object(;$) {
     my ($Value) = @_;
-    die('NotAnModulPath') if $Value && !($Value =~ /^\w+(::\w+)*$/);
+    die('NotAnModulPath') if $Value && !($Value =~ /^\w+(::\w+)*$/sm);
     return _Type('object',$Value);
 }
 =pod
