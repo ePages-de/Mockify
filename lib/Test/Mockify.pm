@@ -55,8 +55,12 @@ sub new {
     my $self = bless {}, $class;
 
     LoadPackage( $FakeModulePath );
-    if(defined $aFakeParams && !$FakeModulePath->can('new')){
-        Error("'$FakeModulePath' have no constructor. If you like to create a mock of a package without constructor please use it without parameter list");
+    if(!$FakeModulePath->can('new')){
+        if(defined $aFakeParams ){
+            Error("'$FakeModulePath' have no constructor. If you like to create a mock of a package without constructor please use it without parameter list");
+        }else{
+            $self->{'MockStaticModule'} = 1;
+        }
     }
     my $FakeClass = $aFakeParams ? $FakeModulePath->new( @{$aFakeParams} ) : $FakeModulePath;
     $self->_mockedModulePath($FakeModulePath);
@@ -460,15 +464,19 @@ sub _addMock {
     $self->_mockedSelf()->{'__MethodCallCounter'}->addMethod( $MethodName );
     if(not $self->{'MethodStore'}{$MethodName}){
         $self->{'MethodStore'}{$MethodName} //= $Method;
-        $self->_mockedSelf()->mock($MethodName, sub {
-            my $MockedSelf = shift;
-            $MockedSelf->{'__MethodCallCounter'}->increment( $MethodName );
-            my @MockedParameters = @_;
-            push @{$MockedSelf->{$MethodName.'_MockifyParams'}}, \@MockedParameters;
-            my $WantAList = wantarray ? 1 : 0;
-            return _callInjectedMethod($Method, \@MockedParameters, $WantAList, $MethodName);
-
-        });
+        if($self->{'MockStaticModule'}){
+            my $FullyQualifiedMethodName = sprintf('%s::%s', $self->_mockedModulePath(), $MethodName);
+            return $self->_addStaticMock($FullyQualifiedMethodName, Test::Mockify::Method->new());
+        }else{
+            $self->_mockedSelf()->mock($MethodName, sub {
+                my $MockedSelf = shift;
+                $MockedSelf->{'__MethodCallCounter'}->increment( $MethodName );
+                my @MockedParameters = @_;
+                push @{$MockedSelf->{$MethodName.'_MockifyParams'}}, \@MockedParameters;
+                my $WantAList = wantarray ? 1 : 0;
+                return _callInjectedMethod($Method, \@MockedParameters, $WantAList, $MethodName);
+            });
+        }
     }
     return $self->{'MethodStore'}{$MethodName};
 }

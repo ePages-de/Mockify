@@ -38,7 +38,6 @@ sub test_InjectionOfStaticedMethod_scopes {
     {#beginn scope
         my $Mockify = Test::Mockify->new('t::TestDummies::DummyStaticToolsUser_Static');
         $Mockify->mockStatic('t::TestDummies::DummyStaticTools::Tripler')->when(Number(2))->thenReturn('InjectedReturnValueOfTripler');
-        my $DummyStaticToolsUser = $Mockify->getMockObject();
         is(
             t::TestDummies::DummyStaticToolsUser_Static::useDummyStaticTools(2),
             'In useDummyStaticTools, result Tripler call: "InjectedReturnValueOfTripler"',
@@ -66,7 +65,6 @@ sub test_InjectionOfStaticedMethod_scopes_spy {
     {#beginn scope
         my $Mockify = Test::Mockify->new('t::TestDummies::DummyStaticToolsUser_Static');
         $Mockify->spyStatic('t::TestDummies::DummyStaticTools::Tripler')->when(Number(2));
-        my $DummyStaticToolsUser = $Mockify->getMockObject();
         is(
             t::TestDummies::DummyStaticToolsUser_Static::useDummyStaticTools(2),
             'In useDummyStaticTools, result Tripler call: "6"',
@@ -91,7 +89,6 @@ sub test_InjectionOfStaticedMethod_SetMockifyToUndef {
     );
     my $Mockify = Test::Mockify->new('t::TestDummies::DummyStaticToolsUser_Static');
     $Mockify->mockStatic('t::TestDummies::DummyStaticTools::Tripler')->when(Number(2))->thenReturn('InjectedReturnValueOfTripler');
-    my $DummyStaticToolsUser = $Mockify->getMockObject();
     is(
         t::TestDummies::DummyStaticToolsUser_Static::useDummyStaticTools(2),
         'In useDummyStaticTools, result Tripler call: "InjectedReturnValueOfTripler"',
