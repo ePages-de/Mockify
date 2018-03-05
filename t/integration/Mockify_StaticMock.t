@@ -13,6 +13,7 @@ use Test::Mockify::Matcher qw (
     );
 use t::TestDummies::DummyStaticToolsUser;
 use Test::Mockify::Verify qw (GetParametersFromMockifyCall GetCallCount);
+use t::TestDummies::DummyStaticTools;
 #----------------------------------------------------------------------------------------
 sub testPlan{
     my $self = shift;
@@ -44,12 +45,14 @@ sub test_InjectionOfStaticedMethod_scopes {
             'In useDummyStaticTools, result Tripler call: "InjectedReturnValueOfTripler"',
             "$SubTestName - Prove that the injection works out"
         );
+        is(t::TestDummies::DummyStaticTools::Tripler(2), 'InjectedReturnValueOfTripler', "$SubTestName - Prove injected mock result (direct call)");
     } # end scope
     is(
         t::TestDummies::DummyStaticToolsUser->new()->useDummyStaticTools(2),
         'In useDummyStaticTools, result Tripler call: "6"',
         "$SubTestName - prove the unmocked Result"
     );
+    is(t::TestDummies::DummyStaticTools::Tripler(2), 6, "$SubTestName - Prove released original method result (direct call)");
 }
 #----------------------------------------------------------------------------------------
 sub test_InjectionOfStaticedMethod_scopes_spy {
@@ -95,8 +98,9 @@ sub test_InjectionOfStaticedMethod_SetMockifyToUndef {
         'In useDummyStaticTools, result Tripler call: "InjectedReturnValueOfTripler"',
         "$SubTestName - Prove that the injection works out"
     );
+    is(t::TestDummies::DummyStaticTools::Tripler(2), 'InjectedReturnValueOfTripler', "$SubTestName - Prove injected mock result (direct call)");
     $Mockify = undef;
-    $DummyStaticToolsUser = undef;
+    is(t::TestDummies::DummyStaticTools::Tripler(2), 6, "$SubTestName - Prove released original method result (direct call)");
     is(
         t::TestDummies::DummyStaticToolsUser->new()->useDummyStaticTools(2),
         'In useDummyStaticTools, result Tripler call: "6"',
@@ -116,10 +120,15 @@ sub test_InjectionOfStaticedMethod_Verify {
         'In useDummyStaticTools, result Tripler call: "InjectedReturnValueOfTripler"',
         "$SubTestName - Prove that the injection works out"
     );
+    is(
+        t::TestDummies::DummyStaticTools::Tripler(2),
+        'InjectedReturnValueOfTripler',
+        "$SubTestName - Prove injected mock result will increase the counter (direct call) "
+    );
     my $aParams =  GetParametersFromMockifyCall($DummyStaticToolsUser, 't::TestDummies::DummyStaticTools::Tripler');
     is(scalar @{$aParams} ,1 , "$SubTestName - prove amount of parameters");
     is($aParams->[0] ,2 , "$SubTestName - get parameter of first call");
-    is(  GetCallCount($DummyStaticToolsUser, 't::TestDummies::DummyStaticTools::Tripler'), 1, "$SubTestName - prove that the the Tripler only get called once.");
+    is(  GetCallCount($DummyStaticToolsUser, 't::TestDummies::DummyStaticTools::Tripler'), 2, "$SubTestName - prove that the the Tripler only get called twice.");
 
 }
 #----------------------------------------------------------------------------------------
@@ -135,10 +144,15 @@ sub test_InjectionOfStaticedMethod_Verify_spy {
         'In useDummyStaticTools, result Tripler call: "6"',
         "$SubTestName - Prove that the spy works out"
     );
+    is(
+        t::TestDummies::DummyStaticTools::Tripler(2),
+        6,
+        "$SubTestName - Prove injected spy result will increase the counter (direct call) "
+    );
     my $aParams =  GetParametersFromMockifyCall($DummyStaticToolsUser, 't::TestDummies::DummyStaticTools::Tripler');
     is(scalar @{$aParams} ,1 , "$SubTestName - prove amount of parameters");
     is($aParams->[0] ,2 , "$SubTestName - get parameter of first call");
-    is(  GetCallCount($DummyStaticToolsUser, 't::TestDummies::DummyStaticTools::Tripler'), 1, "$SubTestName - prove that the the Tripler only get called once.");
+    is(  GetCallCount($DummyStaticToolsUser, 't::TestDummies::DummyStaticTools::Tripler'), 2, "$SubTestName - prove that the the Tripler only get called twice.");
 
 }
 
