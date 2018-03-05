@@ -13,7 +13,7 @@ sub testPlan{
     my $self = shift;
 
     my $KilocaloriesForBreakfast = 30_000;
-    is(t::ExampleProject::KidsShow::OldClown::BeHavy($KilocaloriesForBreakfast), 30, 'Prove old clown weight calculation');
+    is(t::ExampleProject::KidsShow::OldClown::BeHeavy($KilocaloriesForBreakfast), 30, 'Prove old clown weight calculation');
 }
 
 __PACKAGE__->RunTest();
