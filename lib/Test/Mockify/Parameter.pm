@@ -42,7 +42,7 @@ sub matchWithExpectedParameters {
     my @Params = @_;
     return 0 unless (scalar @Params == scalar @{$self->{'ExpectedParams'}});
 
-    for(my $i=0; $i < scalar @Params; $i++){
+    for(my $i=0; $i < scalar @Params; $i++){## no critic (ProhibitCStyleForLoops) i need the counter
         if(not $self->{'ExpectedParams'}->[$i]->{'Value'}){ #No Value no Match
             next;
         }elsif(blessed($Params[$i]) && $Params[$i]->isa($self->{'ExpectedParams'}->[$i]->{'Value'})){# map package name

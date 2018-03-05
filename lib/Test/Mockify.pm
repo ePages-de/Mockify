@@ -405,8 +405,8 @@ sub _callInjectedMethod {
         }
     };
     # $@ -> current error
-    if ($@) { ## no critic (Magic punctuation variable)
-        die("\nError when calling method '$MethodName'\n".$@) ## no critic (Magic punctuation variable)
+    if ($@) {
+        die("\nError when calling method '$MethodName'\n".$@)
     }
     if($WantAList){
         return @ReturnValue;

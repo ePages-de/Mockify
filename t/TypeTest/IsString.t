@@ -1,5 +1,4 @@
 package IsString;
-## no critic (ProhibitEmptyQuotes)
 use strict;
 
 use FindBin;

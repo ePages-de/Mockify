@@ -6,7 +6,7 @@ Test::Mockify::ReturnValue - To define return values
 
 =head1 DESCRIPTION
 
-Use L<Test::Modify::ReturnValue> to define different types of return values. See method description for more details.
+Use L<Test::Modify::ReturnValue | Test::Modify::ReturnValue> to define different types of return values. See method description for more details.
 
 =head1 METHODS
 

@@ -6,7 +6,7 @@ Test::Mockify::Method - chained setup
 
 =head1 DESCRIPTION
 
-L<Test::Mockify::Method> is used to provide the chained mock setup
+L<Test::Mockify::Method|Test::Mockify::Method> is used to provide the chained mock setup
 
 =head1 METHODS
 
@@ -45,7 +45,7 @@ sub new {
 
 =head2 when
 
-C<when> have to be called with a L<Test::Mockify::Matcher> to specify the expected parameter list (signature).
+C<when> have to be called with a L<Test::Mockify::Matcher|Test::Mockify::Matcher> to specify the expected parameter list (signature).
 This will create for every signature a Parameter Object which will stored and also returned. So it is possible to create multiple signatures for one Method.
 It is not possible to mix C<when> with C<whenAny>.
 
@@ -93,7 +93,7 @@ sub _checkExpectedParameters{
     my $self = shift;
     my ( $NewExpectedParameters) = @_;
     my $SignatureKey = '';
-    for(my $i = 0; $i < scalar @$NewExpectedParameters; $i++){
+    for(my $i = 0; $i < scalar @{$NewExpectedParameters}; $i++){ ## no critic (ProhibitCStyleForLoops) i need the counter
         my $Type = $NewExpectedParameters->[$i]->{'Type'};
         $SignatureKey .= $Type;
         my $NewExpectedParameter = $NewExpectedParameters->[$i];
@@ -143,7 +143,7 @@ sub _testAnyStore {
 sub _addToTypeStore {
     my $self = shift;
     my ($Signature, $NewExpectedParameters) = @_;
-    my $SignatureKey = join('',@$Signature);
+    my $SignatureKey = join('',@{$Signature});
     my $Parameter = Test::Mockify::Parameter->new($NewExpectedParameters);
     push(@{$self->{'TypeStore'}{$SignatureKey}}, $Parameter );
     return $Parameter->buildReturn();
@@ -161,7 +161,7 @@ sub call {
     my $self = shift;
     my @Parameters = @_;
     my $SignatureKey = '';
-    for(my $i = 0; $i < scalar @Parameters; $i++){
+    for(my $i = 0; $i < scalar @Parameters; $i++){ ## no critic (ProhibitCStyleForLoops) i need the counter
         if($self->{'AnyStore'}->[$i] && $self->{'AnyStore'}->[$i] eq 'any'){
             $SignatureKey .= 'any';
         }else{

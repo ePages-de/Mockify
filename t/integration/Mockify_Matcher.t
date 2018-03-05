@@ -193,7 +193,7 @@ sub test_ExpectedObject {
         sub {
             $MockedFakeModule->DummyMethodForTestOverriding($WrongTestObject);
         },
-        qr/Error when calling method 'DummyMethodForTestOverriding'.*No matching found for signatur type 'object'.*bless\( \{\}, 'Wrong::Test::Object' \)/sm,## no critic (ProhibitEscapedMetacharacters)
+        qr/Error when calling method 'DummyMethodForTestOverriding'.*No matching found for signatur type 'object'.*bless\( \{\}, 'Wrong::Test::Object' \)/sm, ## no critic (ProhibitEscapedMetacharacters)
         "$SubTestName - test if a wrong value will be found."
     );
 
