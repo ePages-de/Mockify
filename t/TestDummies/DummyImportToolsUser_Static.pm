@@ -10,4 +10,13 @@ sub useDummyImportTools {
     my $Doubled = Doubler($Value);
     return "In useDummyImportTools, result Doubler call: \"$Doubled\"";
 }
+sub OverrideDummyFunctionUser {
+    my ($Value) = @_;
+    return '('._OverrideDummyFunction($Value)." with '$Value')";
+}
+
+sub _OverrideDummyFunction {
+    my ($Value) = @_;
+    return "(_OverrideDummyFunction: '$Value')";
+}
 1;

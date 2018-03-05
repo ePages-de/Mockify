@@ -23,4 +23,15 @@ sub upAndDown {
     return;
 }
 
+sub getSecurityLevel {
+    my $self = shift;
+    my $Procent = $self->_getAge() * 10;## no critic (ProhibitMagicNumbers)
+    return "The SeeSaw is $Procent% ok";
+}
+
+sub _getAge {
+    my $self = shift;
+    return 5;
+}
+
 1;
