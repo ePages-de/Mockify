@@ -73,7 +73,7 @@ For possible return types please look in [Test::Mockify::ReturnValue](https://me
 Sometimes it is not possible to inject the dependencies from the outside. This is especially the case when the system-under-test uses functions with a fully qualified path.
 `mockStatic` provides the possibility to mock static functions inside the mock/sut.
 
-Attention: The mocked function is valid as long as the $Mockify is defined. If You leave the scope or set the $Mockify to undef the injeted method will be released.
+Attention: The mocked function is valid as long as the $Mockify is defined. If You leave the scope or set the $Mockify to undef the injected method will be released.
 
     package SUT;
     use Magic::Tools;

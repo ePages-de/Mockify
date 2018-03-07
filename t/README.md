@@ -5,6 +5,6 @@
     prove -rl -j9
 
 ## helper for development
-Run first all the tests and perlcritic on severity level 3 for t and lib
+Run first all the tests and perlcritic on severity level 1(brutal) for t and lib
 
-    prove -rl -j9; perlcritic -3  t lib/
+    prove -rl -j9; perlcritic -1 t lib/

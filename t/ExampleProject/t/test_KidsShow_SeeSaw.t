@@ -9,6 +9,7 @@ use Test::More;
 use Test::Mockify;
 use Test::Mockify::Matcher qw (Number);
 use t::ExampleProject::KidsShow::SeeSaw;
+use Test::Mockify::Verify qw (WasCalled GetCallCount);
 #------------------------------------------------------------------------
 sub testPlan{
     my $self = shift;
@@ -29,6 +30,9 @@ sub testPlan{
     is($SeeSaw->upAndDown(20, 10),'New clown wins', 'prove if the seesaw can toss to the left');
     is($SeeSaw->getSecurityLevel(),'The SeeSaw is 70% ok', 'prove the Security level');
 
+    is(GetCallCount($SeeSaw, 'ShowOfWeight'), 3,'Prove that imported ShowOfWeight was triggerd three times');
+    is(GetCallCount($SeeSaw, 't::ExampleProject::KidsShow::OldClown::BeHeavy'), 3,'Prove that static injected Functions BeHeavy was triggerd three times');
+    ok(WasCalled($SeeSaw, '_getAge'),'Prove that _getAge was triggerd');
     return;
 }
 

@@ -524,7 +524,7 @@ sub _addStaticMock {
     ExistsMethod( $self->_mockedModulePath(), $MethodName );
     $self->_mockedSelf()->{'__MethodCallCounter'}->addMethod( $MethodName );
     if(not $self->{'MethodStore'}{$MethodName}){
-        $self->{'MethodStore'}{$MethodName} //= $Method;
+        $self->{'MethodStore'}{$MethodName} = $Method;
         my $MockedSelf = $self->_mockedSelf();
          my $MockedMethodBody = $self->_buildMockSub($MockedSelf, $MethodName, $Method);
         $self->{'override'}->replace($MethodName, $MockedMethodBody);
@@ -543,7 +543,7 @@ sub _addImportedMock {
     );
     $self->_mockedSelf()->{'__MethodCallCounter'}->addMethod( $MethodName );
     if(not $self->{'MethodStore'}{$MethodName}){
-        $self->{'MethodStore'}{$MethodName} //= $Method;
+        $self->{'MethodStore'}{$MethodName} = $Method;
         my $MockedSelf = $self->_mockedSelf();
         my $MockedMethodBody = $self->_buildMockSub($MockedSelf, $MethodName, $Method);
         $self->{'override'}->replace(
