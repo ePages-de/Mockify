@@ -7,6 +7,7 @@ use parent 'TestBase';
 use Test::More;
 use Test::Mockify;
 use t::ExampleProject::MagicShow::Magician;
+use Test::Mockify::Verify qw (WasCalled);
 #------------------------------------------------------------------------
 sub testPlan{
     my $self = shift;
@@ -28,6 +29,7 @@ sub test_HappyPath {
     my $Magician = t::ExampleProject::MagicShow::Magician->new($Rabbit);
 
     is($Magician->pullRabbit(), 'Tada!' ,"$SubTestName - Prove that a rabit could be pulled.");
+    ok(WasCalled($Rabbit, 'isSnappyToday'),"$SubTestName - Prove that isSnappyToday was triggerd");
 }
 #----------------------------------------------------------------------------------------
 sub test_DisasterPath {
@@ -42,6 +44,7 @@ sub test_DisasterPath {
     my $Magician = t::ExampleProject::MagicShow::Magician->new($Rabbit);
 
     is($Magician->pullRabbit(), 'Tada! ouch' ,"$SubTestName - Prove that a rabit couldn't be pulled.");
+    ok(WasCalled($Rabbit, 'isSnappyToday'),"$SubTestName - Prove that isSnappyToday was triggerd");
 }
 
 __PACKAGE__->RunTest();
