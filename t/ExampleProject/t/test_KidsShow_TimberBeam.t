@@ -40,7 +40,7 @@ sub test_OverrideMockifyToRemoveStaticMocks {
 
     is(GetCallCount($TimberBeam, 'ShowOfWeight'), 3,"$SubTestName - Prove that imported ShowOfWeight was triggerd three times");
     is(GetCallCount($TimberBeam, 't::ExampleProject::KidsShow::OldClown::BeHeavy'), 3, "$SubTestName - Prove that static injected Functions BeHeavy was triggerd three times");
-    ok(WasCalled($TimberBeam, 't::ExampleProject::KidsShow::TimberBeam::_GetAge'),"$SubTestName - Prove that _GetAge was triggerd");
+    ok(WasCalled($TimberBeam, '_GetAge'),"$SubTestName - Prove that _GetAge was triggerd");
     is(t::ExampleProject::KidsShow::TimberBeam::GetSecurityLevel(),'The TimberBeam is 50% ok', " $SubTestName - prove the Security level (out of scope)");
     is(t::ExampleProject::KidsShow::TimberBeam::UpAndDown(1, 1_000_000), 'balanced', " $SubTestName - prove that the mock is active as long as the Mockify is defined / in scope");
 
@@ -68,7 +68,7 @@ sub test_LeaveScopeToRemoveStaticMocks {
 
     is(GetCallCount($TimberBeam, 'ShowOfWeight'), 3,"$SubTestName - Prove that imported ShowOfWeight was triggerd three times");
     is(GetCallCount($TimberBeam, 't::ExampleProject::KidsShow::OldClown::BeHeavy'), 3, "$SubTestName - Prove that static injected Functions BeHeavy was triggerd three times");
-    ok(WasCalled($TimberBeam, 't::ExampleProject::KidsShow::TimberBeam::_GetAge'),"$SubTestName - Prove that _GetAge was triggerd");
+    ok(WasCalled($TimberBeam, '_GetAge'),"$SubTestName - Prove that _GetAge was triggerd");
     is(t::ExampleProject::KidsShow::TimberBeam::GetSecurityLevel(),'The TimberBeam is 50% ok', " $SubTestName - prove the Security level (out of scope)");
     is(t::ExampleProject::KidsShow::TimberBeam::UpAndDown(1, 1_000_000), 'balanced', " $SubTestName -prove that the mock is active as long as the Mockify is defined / in scope");
 }

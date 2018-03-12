@@ -27,5 +27,8 @@ sub _GetAge {
     return 5;
 }
 
-
+sub GetLineUpName {
+    my $self = shift;
+    return 'The historical lake chopper';
+}
 1;

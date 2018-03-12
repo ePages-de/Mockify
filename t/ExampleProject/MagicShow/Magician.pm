@@ -19,4 +19,9 @@ sub pullRabbit {
     return $Say;
 }
 
+sub getLineUpName {
+    my $self = shift;
+    return 'Pulled bunny';
+}
+
 1;
