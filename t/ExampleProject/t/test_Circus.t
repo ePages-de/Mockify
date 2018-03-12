@@ -24,7 +24,8 @@ sub test_WithoutMock {
     my $Sut = $Mockify->getMockObject();
     is_deeply($Sut->getLineUp(), [
         'Pulled bunny',
-        'The historical lake chopper'
+        'The historical lake chopper',
+        'The mighty seesaw',
     ], "$SubTestName - Prove unmocked result");
 }
 #----------------------------------------------------------------------------------------
@@ -35,13 +36,18 @@ sub test_WithMock {
     $Mockify
         ->mockStatic('t::ExampleProject::KidsShow::TimberBeam::GetLineUpName')
         ->when()
-        ->thenReturn('Clown test show name');
+        ->thenReturn('TimberBeam test show name');
+
+    $Mockify->overridePackageContruction($self->_createSeeSaw(), 't::ExampleProject::KidsShow::SeeSaw');
+
     my $Sut = $Mockify->getMockObject();
     is_deeply($Sut->getLineUp(), [
         'Magician test show name',
-        'Clown test show name'
+        'TimberBeam test show name',
+        'Seesaw test show name',
     ], "$SubTestName - Prove mocked result");
 }
+#----------------------------------------------------------------------------------------
 sub test_ErrorShowCase {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
@@ -62,6 +68,18 @@ sub _createMagican {
        $aParameterList
     );
     $Mockify->mock('getLineUpName')->when()->thenReturn('Magician test show name');
+    return $Mockify->getMockObject();
+}
+#----------------------------------------------------------------------------------------
+sub _createSeeSaw {
+    my $self = shift;
+
+    my $aParameterList = [];
+    my $Mockify = Test::Mockify->new(
+       't::ExampleProject::KidsShow::SeeSaw',
+       $aParameterList
+    );
+    $Mockify->mock('getLineUpName')->when()->thenReturn('Seesaw test show name');
     return $Mockify->getMockObject();
 }
 

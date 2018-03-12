@@ -3,6 +3,7 @@ use strict;
 
 use t::ExampleProject::MagicShow::Magician;
 use t::ExampleProject::KidsShow::TimberBeam;
+use t::ExampleProject::KidsShow::SeeSaw;
 
 sub new {
     my $class = shift;
@@ -19,6 +20,7 @@ sub getLineUp {
     my $aLineUpList = [];
     push(@{$aLineUpList}, $self->{'Magician'}->getLineUpName());
     push(@{$aLineUpList}, t::ExampleProject::KidsShow::TimberBeam::GetLineUpName());
+    push(@{$aLineUpList}, t::ExampleProject::KidsShow::SeeSaw->new()->getLineUpName() );
     return $aLineUpList;
 }
 

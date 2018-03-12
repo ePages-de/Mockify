@@ -18,15 +18,6 @@ sub UpAndDown {
     return;
 }
 
-sub GetSecurityLevel {
-    my $Procent = _GetAge() * 10;## no critic (ProhibitMagicNumbers)
-    return "The TimberBeam is $Procent% ok";
-}
-
-sub _GetAge {
-    return 5;
-}
-
 sub GetLineUpName {
     my $self = shift;
     return 'The historical lake chopper';

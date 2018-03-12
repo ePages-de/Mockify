@@ -17,11 +17,59 @@ use t::TestDummies::DummyImportTools qw (Doubler);
 #----------------------------------------------------------------------------------------
 sub testPlan{
     my $self = shift;
+    $self->test_InjectionOfConstructor_Static();
+    $self->test_InjectionOfConstructor();
+    $self->test_InjectionOfConstructor_Error();
     $self->test_InjectionOfImportedMethod();
     $self->test_InjectionOfStaticMethod();
     $self->test_ErrorOnMockSutMethod();
 }
 
+#----------------------------------------------------------------------------------------
+sub test_InjectionOfConstructor_Static {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+        my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser_Static');
+        $Mockify->overridePackageContruction($self->_createFakeModuleForMockifyTest(),'TestDummies::FakeModuleForMockifyTest');
+        my $VerificationObject = $Mockify->getVerificationObject();
+        is(
+            t::TestDummies::DummyImportToolsUser_Static::CallAConstructor('hello'),
+            'mockedValue',
+            "$SubTestName - Prove that the constructor injection works out"
+        );
+        is(GetCallCount($VerificationObject, 'TestDummies::FakeModuleForMockifyTest::new'),1,"$SubTestName - prove the verify output");
+}
+#----------------------------------------------------------------------------------------
+sub test_InjectionOfConstructor {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+        my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser');
+        $Mockify->overridePackageContruction($self->_createFakeModuleForMockifyTest(),'TestDummies::FakeModuleForMockifyTest');
+        my $DummyImportToolsUser = $Mockify->getMockObject();
+        is(
+            $DummyImportToolsUser->callAConstructor('hello'),
+            'mockedValue',
+            "$SubTestName - Prove that the constructor injection works out"
+        );
+        is(GetCallCount($DummyImportToolsUser, 'TestDummies::FakeModuleForMockifyTest::new'),1,"$SubTestName - prove the verify output");
+}
+#----------------------------------------------------------------------------------------
+sub test_InjectionOfConstructor_Error {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+        my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser');
+        throws_ok( sub { $Mockify->overridePackageContruction('TestDummies::FakeModuleForMockifyTest'); },
+                       qr/Wrong or missing parameter list. Please call it like: \$Mockify->overridePackageContruction\(\$Obejct,'Path::To::Package',\[\]\)/sm,
+                       "$SubTestName - somehow called wrong error."
+             );
+        throws_ok( sub { $Mockify->overridePackageContruction('returnValue','TestDummies::FakeModuleForMockifyTest','NotAnArray'); },
+                       qr/The parameter list must be passed as an arrar reference./sm,
+                       "$SubTestName - Wrong parameter list type."
+             );
+}
 #----------------------------------------------------------------------------------------
 sub test_InjectionOfImportedMethod {
     my $self = shift;
@@ -65,6 +113,22 @@ sub test_ErrorOnMockSutMethod {
                        "$SubTestName - Prove the error when try to mock a method of the SUT"
              );
         ;
+}
+#----------------------------------------------------------------------------------------
+sub _createFakeModuleForMockifyTest {
+    my $self = shift;
+
+    my $aParameterList = [];
+    my $Mockify = Test::Mockify->new(
+                   'TestDummies::FakeModuleForMockifyTest',
+                   $aParameterList
+              );
+    $Mockify
+        ->mock('returnParameterListNew')
+        ->when()
+        ->thenReturn('mockedValue');
+
+    return $Mockify->getMockObject();
 }
 __PACKAGE__->RunTest();
 1;
