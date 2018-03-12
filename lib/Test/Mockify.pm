@@ -463,11 +463,10 @@ sub _addMock {
     ExistsMethod( $self->_mockedModulePath(), $MethodName );
     $self->_mockedSelf()->{'__MethodCallCounter'}->addMethod( $MethodName );
     if(not $self->{'MethodStore'}{$MethodName}){
-        $self->{'MethodStore'}{$MethodName} //= $Method;
         if($self->{'MockStaticModule'}){
-            my $FullyQualifiedMethodName = sprintf('%s::%s', $self->_mockedModulePath(), $MethodName);
-            return $self->_addStaticMock($FullyQualifiedMethodName, Test::Mockify::Method->new());
+            return $self->_addStaticMock($MethodName, Test::Mockify::Method->new());
         }else{
+            $self->{'MethodStore'}{$MethodName} //= $Method;
             $self->_mockedSelf()->mock($MethodName, sub {
                 my $MockedSelf = shift;
                 $MockedSelf->{'__MethodCallCounter'}->increment( $MethodName );
@@ -527,9 +526,30 @@ sub _addStaticMock {
         $self->{'MethodStore'}{$MethodName} = $Method;
         my $MockedSelf = $self->_mockedSelf();
          my $MockedMethodBody = $self->_buildMockSub($MockedSelf, $MethodName, $Method);
-        $self->{'override'}->replace($MethodName, $MockedMethodBody);
+         if(!($MethodName =~ qr/::/sm)){
+             $self->_overrideInternalFunction($MethodName, $MockedMethodBody);
+         }else{
+             $self->_overrideExternalFunction($MethodName, $MockedMethodBody);
+         }
     }
     return $self->{'MethodStore'}{$MethodName};
+}
+#----------------------------------------------------------------------------------------
+sub _overrideInternalFunction {
+    my $self = shift;
+    my ($MethodName, $MockedMethodBody) = @_;
+
+    my $FullyQualifiedMethodName = sprintf('%s::%s', $self->_mockedModulePath(), $MethodName);
+    $self->{'override'}->replace($FullyQualifiedMethodName, $MockedMethodBody);
+
+    return;
+}
+#----------------------------------------------------------------------------------------
+sub _overrideExternalFunction {
+    my $self = shift;
+    my ($FullyQualifiedMethodName, $MockedMethodBody) = @_;
+    $self->{'override'}->replace($FullyQualifiedMethodName, $MockedMethodBody);
+    return;
 }
 #----------------------------------------------------------------------------------------
 sub _addImportedMock {
@@ -541,6 +561,7 @@ sub _addImportedMock {
         $self->{'IsImportedMockStore'}{$MethodName}->{'MethodName'},
         {'Mock Imported In' => $self->_mockedModulePath()}
     );
+
     $self->_mockedSelf()->{'__MethodCallCounter'}->addMethod( $MethodName );
     if(not $self->{'MethodStore'}{$MethodName}){
         $self->{'MethodStore'}{$MethodName} = $Method;
