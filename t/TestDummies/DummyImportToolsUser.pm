@@ -19,4 +19,8 @@ sub callAConstructor {
     my ($Parameter) = @_;
     return TestDummies::FakeModuleForMockifyTest->new($Parameter)->returnParameterListNew();
 }
+sub callAlternativConstructor {
+    my ($Parameter) = @_;
+    return TestDummies::FakeModuleForMockifyTest->create($Parameter)->returnParameterListCreate();
+}
 1;

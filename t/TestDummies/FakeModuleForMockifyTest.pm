@@ -11,6 +11,15 @@ sub new {
     return $self;
 }
 
+sub create {
+    my $class = shift;
+    my @ParameterList = @_;
+    my $self  = bless {
+        'ParameterListNew_create' => \@ParameterList
+    }, $class;
+    return $self;
+}
+
 sub DummyMethodForTestOverriding {
     my $self = shift;
     return 'A dummy method';
@@ -30,6 +39,10 @@ sub dummyMethodWithParameterReturn {
 sub returnParameterListNew {
     my $self = shift;
     return $self->{'ParameterListNew'};
+}
+sub returnParameterListCreate {
+    my $self = shift;
+    return $self->{'ParameterListNew_create'};
 }
 
 1;
