@@ -46,17 +46,19 @@ The `TimberBeam.pm` is a perl package with functions. It uses both, the OldClown
 # Summary
 
 * You can control with Mockify packages and classes
+
   Package:
   ```
   Test::Mockify->new('t::ExampleProject::KidsShow::TimberBeam');
   ```
+
   Class:
   ``` 
   Test::Mockify->new('t::ExampleProject::KidsShow::SeeSaw',['ConstructorParams']);
   ```
 * You can mock methods and functions.
   ```
-  Mockify->mock('getAge')->when()->thenReturn('hello'); # method
+  Mockify->mock('_getAge')->when()->thenReturn('hello'); # method
   Mockify->mock('_GetAge')->when()->thenReturn('hello');# function
   ```
 * You can inject static functions
