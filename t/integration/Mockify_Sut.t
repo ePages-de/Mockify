@@ -19,6 +19,7 @@ sub testPlan{
     my $self = shift;
     $self->test_InjectionOfConstructor_Static();
     $self->test_InjectionOfConstructor();
+    $self->test_InjectionOfConstructor_alternativConstructorName();
     $self->test_InjectionOfConstructor_Error();
     $self->test_InjectionOfImportedMethod();
     $self->test_InjectionOfStaticMethod();
@@ -31,7 +32,7 @@ sub test_InjectionOfConstructor_Static {
     my $SubTestName = (caller(0))[3];
 
         my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser_Static');
-        $Mockify->overridePackageContruction($self->_createFakeModuleForMockifyTest(),'TestDummies::FakeModuleForMockifyTest');
+        $Mockify->overrideConstructor('TestDummies::FakeModuleForMockifyTest', $self->_createFakeModuleForMockifyTest());
         my $VerificationObject = $Mockify->getVerificationObject();
         is(
             t::TestDummies::DummyImportToolsUser_Static::CallAConstructor('hello'),
@@ -46,14 +47,29 @@ sub test_InjectionOfConstructor {
     my $SubTestName = (caller(0))[3];
 
         my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser');
-        $Mockify->overridePackageContruction($self->_createFakeModuleForMockifyTest(),'TestDummies::FakeModuleForMockifyTest');
+        $Mockify->overrideConstructor('TestDummies::FakeModuleForMockifyTest', $self->_createFakeModuleForMockifyTest());
         my $DummyImportToolsUser = $Mockify->getMockObject();
         is(
             $DummyImportToolsUser->callAConstructor('hello'),
             'mockedValue',
             "$SubTestName - Prove that the constructor injection works out"
         );
-        is(GetCallCount($DummyImportToolsUser, 'TestDummies::FakeModuleForMockifyTest::new'),1,"$SubTestName - prove the verify output");
+        is(GetCallCount($DummyImportToolsUser, 'TestDummies::FakeModuleForMockifyTest::new'),1,"$SubTestName - prove the verify output - new");
+}
+#----------------------------------------------------------------------------------------
+sub test_InjectionOfConstructor_alternativConstructorName {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+        my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser');
+        $Mockify->overrideConstructor('TestDummies::FakeModuleForMockifyTest', $self->_createFakeModuleForMockifyTest(), 'create');
+        my $DummyImportToolsUser = $Mockify->getMockObject();
+        is(
+            $DummyImportToolsUser->callAlternativConstructor('hello'),
+            'alternativMockedValue',
+            "$SubTestName - Prove that the constructor injection works out"
+        );
+        is(GetCallCount($DummyImportToolsUser, 'TestDummies::FakeModuleForMockifyTest::create'),1,"$SubTestName - prove the verify output - create");
 }
 #----------------------------------------------------------------------------------------
 sub test_InjectionOfConstructor_Error {
@@ -61,13 +77,9 @@ sub test_InjectionOfConstructor_Error {
     my $SubTestName = (caller(0))[3];
 
         my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser');
-        throws_ok( sub { $Mockify->overridePackageContruction('TestDummies::FakeModuleForMockifyTest'); },
-                       qr/Wrong or missing parameter list. Please call it like: \$Mockify->overridePackageContruction\(\$Obejct,'Path::To::Package',\[\]\)/sm,
+        throws_ok( sub { $Mockify->overrideConstructor( ); },
+                       qr/Wrong or missing parameter list. Please use it like: \$Mockify->overridePackageConstruction\('Path::To::Package', \$Object\)/sm, ## no critic (ProhibitEscapedMetacharacters)
                        "$SubTestName - somehow called wrong error."
-             );
-        throws_ok( sub { $Mockify->overridePackageContruction('returnValue','TestDummies::FakeModuleForMockifyTest','NotAnArray'); },
-                       qr/The parameter list must be passed as an arrar reference./sm,
-                       "$SubTestName - Wrong parameter list type."
              );
 }
 #----------------------------------------------------------------------------------------
@@ -127,6 +139,10 @@ sub _createFakeModuleForMockifyTest {
         ->mock('returnParameterListNew')
         ->when()
         ->thenReturn('mockedValue');
+    $Mockify
+        ->mock('returnParameterListCreate')
+        ->when()
+        ->thenReturn('alternativMockedValue');
 
     return $Mockify->getMockObject();
 }

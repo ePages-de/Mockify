@@ -4,7 +4,7 @@ use warnings;
 use parent 'Test::Mockify';
 use Test::Mockify::Matcher qw (String);
 use Test::Mockify::Tools qw (Error);
-use Test::Mockify::TypeTests qw ( IsString IsArrayReference);
+use Test::Mockify::TypeTests qw ( IsString );
 
 sub new {
     my $class = shift;
@@ -23,18 +23,16 @@ sub mock {
     );
 }
 #----------------------------------------------------------------------------------------
-sub overridePackageContruction {
+sub overrideConstructor {
     my $self = shift;
-    my ($Object, $PackageName, $ParameterList) = @_;
+    my ($PackageName, $Object, $ConstructorName) = @_;
+    $ConstructorName //= 'new';
     if($PackageName && IsString($PackageName)){
-            if($ParameterList && !IsArrayReference($ParameterList)){
-                Error('The parameter list must be passed as an arrar reference.');
-            }
-            $self->mockStatic( $PackageName.'::new' )
+            $self->mockStatic( sprintf('%s::%s', $PackageName, $ConstructorName) )
                 ->whenAny()
                 ->thenReturn($Object);
     }else{
-        Error('Wrong or missing parameter list. Please call it like: $Mockify->overridePackageContruction($Obejct,\'Path::To::Package\',[])'); ## no critic (CriticPolicy)
+        Error('Wrong or missing parameter list. Please use it like: $Mockify->overridePackageConstruction(\'Path::To::Package\', $Object)'); ## no critic (RequireInterpolationOfMetachars)
     }
 }
 #----------------------------------------------------------------------------------------

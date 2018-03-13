@@ -10,7 +10,6 @@ sub new {
     my ($Magician)  = @_;
     my $self  = bless {
         'Magician' => $Magician ? $Magician :  t::ExampleProject::MagicShow::Magician->new(),
-        'Counter' => 0,
     }, $class;
     return $self;
 }
@@ -18,9 +17,16 @@ sub new {
 sub getLineUp {
     my $self = shift;
     my $aLineUpList = [];
+
+    # Usecase: Lazy constructor injection and method call
     push(@{$aLineUpList}, $self->{'Magician'}->getLineUpName());
+
+    # Usecase: Static fully qualified path function call
     push(@{$aLineUpList}, t::ExampleProject::KidsShow::TimberBeam::GetLineUpName());
+
+    # Usecase: create instance and method call
     push(@{$aLineUpList}, t::ExampleProject::KidsShow::SeeSaw->new()->getLineUpName() );
+
     return $aLineUpList;
 }
 
