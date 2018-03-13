@@ -25,7 +25,7 @@ Test::Mockify - minimal mocking framework for perl
 # DESCRIPTION
 
 Use [Test::Mockify](https://metacpan.org/pod/Test::Mockify) to create and configure mock objects. Use [Test::Mockify::Verify](https://metacpan.org/pod/Test::Mockify::Verify) to
-verify the interactions with your mocks.
+verify the interactions with your mocks. Use [Test::Mockify::Sut](https://metacpan.org/pod/Test::Mockify::Sut) to inject dependencies into your Sut.
 
 You can find a Example Project in [ExampleProject](https://github.com/ChristianBreitkreutz/Mockify/tree/master/t/ExampleProject)
 
@@ -70,12 +70,12 @@ For possible return types please look in [Test::Mockify::ReturnValue](https://me
 
 ## mockStatic
 
-Sometimes it is not possible to inject the dependencies from the outside. This is especially the case when the system-under-test uses functions with a fully qualified path.
-`mockStatic` provides the possibility to mock static functions inside the mock/sut.
+Sometimes it is not possible to inject the dependencies from the outside.
+`mockStatic` provides the possibility to mock static functions inside the mock.
 
 Attention: The mocked function is valid as long as the $Mockify is defined. If You leave the scope or set the $Mockify to undef the injected method will be released.
 
-    package SUT;
+    package Show::Magician;
     use Magic::Tools;
     sub pullCylinder {
         shift;
@@ -89,14 +89,14 @@ Attention: The mocked function is valid as long as the $Mockify is defined. If Y
 
 In the Test it can be mocked like:
 
-    package Test_SUT;
+    package Test_Magician;
     { # start scope
-        my $Mockify = Test::Mockify->new( 'SUT', [] );
+        my $Mockify = Test::Mockify->new( 'Show::Magician', [] );
         $Mockify->mockStatic('Magic::Tools::Rabbit')->when(String('black'))->thenReturn(1);
         $Mockify->spy('log')->when(String());
-        my $SUT = $Mockify->getMockObject();
+        my $Magician = $Mockify->getMockObject();
 
-        is($SUT->pullCylinder('black'), 1);
+        is($Magician->pullCylinder('black'), 1);
         is(Magic::Tools::Rabbit('black'), 1); 
     } # end scope
     is(Magic::Tools::Rabbit('black'), 'someValue'); # The orignal method in in place again
@@ -109,11 +109,11 @@ Thanks to @dbucky for this amazing idea
 ## mockImported
 
 Sometimes it is not possible to inject the dependencies from the outside. This is especially the case when the package uses imports of static functions.
-`mockImported` provides the possibility to mock imported functions inside the mock/sut.
+`mockImported` provides the possibility to mock imported functions inside the mock.
 
 Unlike `mockStatic` is the injection with `mockImported` only in the mock valid.
 
-    package SUT;
+    package Show::Magician;
     use Magic::Tools qw ( Rabbit );
     sub pullCylinder {
         shift;
@@ -127,13 +127,13 @@ Unlike `mockStatic` is the injection with `mockImported` only in the mock valid.
 
 In the Test it can be mocked
 
-    package Test_SUT;
+    package Test_Magician;
     use Magic::Tools qw ( Rabbit );
-    my $Mockify = Test::Mockify->new( 'SUT', [] );
+    my $Mockify = Test::Mockify->new( 'Show::Magician', [] );
     $Mockify->mockImported('Magic::Tools','Rabbit')->when(String('white'))->thenReturn(1);
 
-    my $SUT = $Mockify->getMockObject();
-    is($SUT->pullCylinder(), 1);
+    my $Magician = $Mockify->getMockObject();
+    is($Magician ->pullCylinder(), 1);
     Rabbit('white');# return original result
     1;
 
@@ -141,11 +141,11 @@ It can be mixed with normal `spy` and `mock`
 
 ## spyImported
 
-`spyImported` provides the possibility to spy imported functions inside the mock/sut.
+`spyImported` provides the possibility to spy imported functions inside the mock.
 
 Unlike `spyStatic` is the injection with `spyImported` only in the mock valid.
 
-    package SUT;
+    package Show::Magician;
     use Magic::Tools qw ( Rabbit );
     sub pullCylinder {
         shift;
@@ -159,14 +159,14 @@ Unlike `spyStatic` is the injection with `spyImported` only in the mock valid.
 
 In the Test it can be mocked
 
-    package Test_SUT;
+    package Test_Magician;
     use Magic::Tools qw ( Rabbit );
-    my $Mockify = Test::Mockify->new( 'SUT', [] );
+    my $Mockify = Test::Mockify->new( 'Show::Magician', [] );
     $Mockify->spyImported('Magic::Tools','Rabbit')->when(String());
 
-    my $SUT = $Mockify->getMockObject();
-    is($SUT->pullCylinder(), 'SomeValue');
-    is(GetCallCount($SUT, 'Rabbit'), 1);
+    my $Magician = $Mockify->getMockObject();
+    is($Magician->pullCylinder(), 'SomeValue');
+    is(GetCallCount($Magician, 'Rabbit'), 1);
     1;
 
 It can be mixed with normal `spy` and `mock`
@@ -203,10 +203,9 @@ It is not possible to mix `whenAny` and `when` for the same method.
 
 ## spyStatic
 
-Provides the possibility to spy static functions around the mock/sut.
+Provides the possibility to spy static functions around the mock.
 
-    package SUT;
-
+    package Show::Magician;
     sub pullCylinder {
         shift;
         if(Magic::Tools::Rabbit('black')){
@@ -219,15 +218,15 @@ Provides the possibility to spy static functions around the mock/sut.
 
 In the Test it can be mocked
 
-    package Test_SUT;
+    package Test_Magician;
     use Magic::Tools;
-    my $Mockify = Test::Mockify->new( 'SUT', [] );
+    my $Mockify = Test::Mockify->new( 'Show::Magician', [] );
     $Mockify->spyStatic('Magic::Tools::Rabbit')->whenAny();
-    my $SUT = $Mockify->getMockObject();
+    my $Magician = $Mockify->getMockObject();
 
-    $SUT->pullCylinder();
+    $Magician->pullCylinder();
     Magic::Tools::Rabbit('black');
-    is(GetCallCount($SUT, 'Magic::Tools::Rabbit'), 2); # count as long as $Mockify is valid
+    is(GetCallCount($Magician, 'Magic::Tools::Rabbit'), 2); # count as long as $Mockify is valid
 
     1;
 
