@@ -5,7 +5,7 @@ use lib ($FindBin::Bin.'/..'); # point to test base
 use lib ($FindBin::Bin.'/../..'); # point to project base
 use parent 'TestBase';
 use Test::More;
-use Test::Mockify;
+use Test::Mockify::Sut;
 use Test::Exception;
 use Test::Mockify::Matcher qw (
         String
@@ -37,14 +37,8 @@ sub test_InjectionOfStaticedMethod_scopes {
         "$SubTestName - prove the unmocked Result"
     );
     {#beginn scope
-        my $Mockify = Test::Mockify->new('t::TestDummies::DummyStaticToolsUser_Static');
+        my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyStaticToolsUser_Static');
         $Mockify->mockStatic('t::TestDummies::DummyStaticTools::Tripler')->when(Number(2))->thenReturn('InjectedReturnValueOfTripler');
-        $Mockify->mock('_OverrideDummyFunction')->when(String('hello'))->thenReturn('InjectedReturnValueOf_OverrideDummyFunction');
-        is(
-            t::TestDummies::DummyStaticToolsUser_Static::OverrideDummyFunctionUser('hello'),
-            '(InjectedReturnValueOf_OverrideDummyFunction with \'hello\')',
-            "$SubTestName - Prove that the injection works out"
-        );
         is(
             t::TestDummies::DummyStaticToolsUser_Static::useDummyStaticTools(2),
             'In useDummyStaticTools, result Tripler call: "InjectedReturnValueOfTripler"',
@@ -72,14 +66,8 @@ sub test_InjectionOfImportedMethod_scopes {
         "$SubTestName - prove the unmocked Result"
     );
     {#beginn scope
-        my $Mockify = Test::Mockify->new('t::TestDummies::DummyImportToolsUser_Static');
+        my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser_Static');
         $Mockify->mockImported('t::TestDummies::DummyImportTools', 'Doubler')->when(Number(2))->thenReturn('InjectedReturnValueOfDoubler');
-        $Mockify->mock('_OverrideDummyFunction')->when(String('hello'))->thenReturn('InjectedReturnValueOf_OverrideDummyFunction');
-        is(
-            t::TestDummies::DummyImportToolsUser_Static::OverrideDummyFunctionUser('hello'),
-            '(InjectedReturnValueOf_OverrideDummyFunction with \'hello\')',
-            "$SubTestName - Prove that the injection works out"
-        );
         is(
             t::TestDummies::DummyImportToolsUser_Static::useDummyImportTools(2),
             'In useDummyImportTools, result Doubler call: "InjectedReturnValueOfDoubler"',
@@ -105,14 +93,8 @@ sub test_InjectionOfImportedMethod_scopes_spy {
         "$SubTestName - prove the unmocked Result"
     );
     {#beginn scope
-        my $Mockify = Test::Mockify->new('t::TestDummies::DummyImportToolsUser_Static');
+        my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser_Static');
         $Mockify->spyImported('t::TestDummies::DummyImportTools', 'Doubler')->when(Number(2));
-        $Mockify->mock('_OverrideDummyFunction')->when(String('hello'))->thenReturn('InjectedReturnValueOf_OverrideDummyFunction');
-        is(
-            t::TestDummies::DummyImportToolsUser_Static::OverrideDummyFunctionUser('hello'),
-            '(InjectedReturnValueOf_OverrideDummyFunction with \'hello\')',
-            "$SubTestName - Prove that the injection works out"
-        );
         is(
             t::TestDummies::DummyImportToolsUser_Static::useDummyImportTools(2),
             'In useDummyImportTools, result Doubler call: "4"',
@@ -136,14 +118,8 @@ sub test_InjectionOfStaticedMethod_scopes_spy {
         "$SubTestName - prove the unmocked Result"
     );
     {#beginn scope
-        my $Mockify = Test::Mockify->new('t::TestDummies::DummyStaticToolsUser_Static');
+        my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyStaticToolsUser_Static');
         $Mockify->spyStatic('t::TestDummies::DummyStaticTools::Tripler')->when(Number(2));
-        $Mockify->mock('_OverrideDummyFunction')->when(String('hello'))->thenReturn('InjectedReturnValueOf_OverrideDummyFunction');
-        is(
-            t::TestDummies::DummyStaticToolsUser_Static::OverrideDummyFunctionUser('hello'),
-            '(InjectedReturnValueOf_OverrideDummyFunction with \'hello\')',
-            "$SubTestName - Prove that the injection works out"
-        );
         is(
             t::TestDummies::DummyStaticToolsUser_Static::useDummyStaticTools(2),
             'In useDummyStaticTools, result Tripler call: "6"',

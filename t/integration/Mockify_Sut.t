@@ -32,7 +32,7 @@ sub test_InjectionOfConstructor_Static {
     my $SubTestName = (caller(0))[3];
 
         my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser_Static');
-        $Mockify->overrideConstructor('TestDummies::FakeModuleForMockifyTest', $self->_createFakeModuleForMockifyTest());
+        $Mockify->mockConstructor('TestDummies::FakeModuleForMockifyTest', $self->_createFakeModuleForMockifyTest());
         my $VerificationObject = $Mockify->getVerificationObject();
         is(
             t::TestDummies::DummyImportToolsUser_Static::CallAConstructor('hello'),
@@ -47,7 +47,7 @@ sub test_InjectionOfConstructor {
     my $SubTestName = (caller(0))[3];
 
         my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser');
-        $Mockify->overrideConstructor('TestDummies::FakeModuleForMockifyTest', $self->_createFakeModuleForMockifyTest());
+        $Mockify->mockConstructor('TestDummies::FakeModuleForMockifyTest', $self->_createFakeModuleForMockifyTest());
         my $DummyImportToolsUser = $Mockify->getMockObject();
         is(
             $DummyImportToolsUser->callAConstructor('hello'),
@@ -62,7 +62,7 @@ sub test_InjectionOfConstructor_alternativConstructorName {
     my $SubTestName = (caller(0))[3];
 
         my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser');
-        $Mockify->overrideConstructor('TestDummies::FakeModuleForMockifyTest', $self->_createFakeModuleForMockifyTest(), 'create');
+        $Mockify->mockConstructor('TestDummies::FakeModuleForMockifyTest', $self->_createFakeModuleForMockifyTest(), 'create');
         my $DummyImportToolsUser = $Mockify->getMockObject();
         is(
             $DummyImportToolsUser->callAlternativConstructor('hello'),
@@ -77,8 +77,8 @@ sub test_InjectionOfConstructor_Error {
     my $SubTestName = (caller(0))[3];
 
         my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser');
-        throws_ok( sub { $Mockify->overrideConstructor( ); },
-                       qr/Wrong or missing parameter list. Please use it like: \$Mockify->overridePackageConstruction\('Path::To::Package', \$Object\)/sm, ## no critic (ProhibitEscapedMetacharacters)
+        throws_ok( sub { $Mockify->mockConstructor( ); },
+                       qr/Wrong or missing parameter list. Please use it like: \$Mockify->mockConstructor\('Path::To::Package', \$Object, 'new'\)/sm, ## no critic (ProhibitEscapedMetacharacters)
                        "$SubTestName - somehow called wrong error."
              );
 }

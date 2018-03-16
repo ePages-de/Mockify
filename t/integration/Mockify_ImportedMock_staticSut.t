@@ -6,7 +6,7 @@ use lib ($FindBin::Bin.'/..'); # point to test base
 use lib ($FindBin::Bin.'/../..'); # point to project base
 use parent 'TestBase';
 use Test::More;
-use Test::Mockify;
+use Test::Mockify::Sut;
 use Test::Exception;
 use Test::Mockify::Matcher qw (
         Number
@@ -37,7 +37,7 @@ sub test_InjectionOfImportedMethod_scopes {
         "$SubTestName - prove the unmocked Result"
     );
     {#beginn scope
-        my $Mockify = Test::Mockify->new('t::TestDummies::DummyImportToolsUser_Static');
+        my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser_Static');
         $Mockify->mockImported('t::TestDummies::DummyImportTools', 'Doubler')->when(Number(2))->thenReturn('InjectedReturnValueOfDoubler');
         my $DummyImportToolsUser = $Mockify->getMockObject();
         is(
@@ -65,7 +65,7 @@ sub test_InjectionOfImportedMethod_scopes_spy {
         "$SubTestName - prove the unmocked Result"
     );
     {#beginn scope
-        my $Mockify = Test::Mockify->new('t::TestDummies::DummyImportToolsUser_Static');
+        my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser_Static');
         $Mockify->spyImported('t::TestDummies::DummyImportTools', 'Doubler')->when(Number(2));
         my $DummyImportToolsUser = $Mockify->getMockObject();
         is(
@@ -90,7 +90,7 @@ sub test_InjectionOfImportedMethod_SetMockifyToUndef {
         'In useDummyImportTools, result Doubler call: "4"',
         "$SubTestName - prove the unmocked Result"
     );
-    my $Mockify = Test::Mockify->new('t::TestDummies::DummyImportToolsUser_Static');
+    my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser_Static');
     $Mockify->mockImported('t::TestDummies::DummyImportTools', 'Doubler')->when(Number(2))->thenReturn('InjectedReturnValueOfDoubler');
     my $DummyImportToolsUser = $Mockify->getMockObject();
     is(
@@ -112,7 +112,7 @@ sub test_InjectionOfImportedMethod_Verify {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $Mockify = Test::Mockify->new('t::TestDummies::DummyImportToolsUser_Static');
+    my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser_Static');
     $Mockify->mockImported('t::TestDummies::DummyImportTools', 'Doubler')->when(Number(2))->thenReturn('InjectedReturnValueOfDoubler');
     my $DummyImportToolsUser = $Mockify->getMockObject();
     is(
@@ -132,7 +132,7 @@ sub test_InjectionOfImportedMethod_Verify_spy {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
-    my $Mockify = Test::Mockify->new('t::TestDummies::DummyImportToolsUser_Static');
+    my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser_Static');
     $Mockify->spyImported('t::TestDummies::DummyImportTools', 'Doubler')->when(Number(2));
     my $DummyImportToolsUser = $Mockify->getMockObject();
     is(
@@ -151,7 +151,7 @@ sub test_InjectionOfImportedMethod_Verify_spy {
 sub test_functionNameFormatingErrorHandling_mock {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
-    my $Mockify = Test::Mockify->new('t::TestDummies::DummyImportToolsUser_Static');
+    my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser_Static');
     throws_ok( sub { $Mockify->mockImported() },
                    qr/"mockImported" Needs to be called with two Parameters which need to be a fully qualified path as String and the Function name. e.g. "Path::To::Your", "Function"/sm,
                    "$SubTestName - prove no parameters in mockImported error handling"
@@ -165,7 +165,7 @@ sub test_functionNameFormatingErrorHandling_mock {
 sub test_functionNameFormatingErrorHandling_spy {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
-    my $Mockify = Test::Mockify->new('t::TestDummies::DummyImportToolsUser_Static');
+    my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser_Static');
     throws_ok( sub { $Mockify->spyImported() },
                    qr/"spyImported" Needs to be called with two Parameters which need to be a fully qualified path as String and the Function name. e.g. "Path::To::Your", "Function"/sm,
                    "$SubTestName - prove no parameters in spyImported error handling"
