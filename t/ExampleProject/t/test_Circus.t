@@ -38,7 +38,7 @@ sub test_WithMock {
         ->when()
         ->thenReturn('TimberBeam test show name');
 
-    $Mockify->overrideConstructor( 't::ExampleProject::KidsShow::SeeSaw', $self->_createSeeSaw() );
+    $Mockify->mockConstructor('t::ExampleProject::KidsShow::SeeSaw', $self->_createSeeSaw());
 
     my $Sut = $Mockify->getMockObject();
     is_deeply($Sut->getLineUp(), [
