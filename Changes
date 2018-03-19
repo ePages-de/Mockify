@@ -1,6 +1,7 @@
 Revision history for Perl extension Devel-Mockify
 
 {{$NEXT}}
+    - fix typo in docu
 
 2 2018-03-19T13:26:56Z
     - fix problems with static mocks

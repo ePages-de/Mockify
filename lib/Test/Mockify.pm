@@ -30,8 +30,6 @@ verify the interactions with your mocks. Use L<Test::Mockify::Sut|Test::Mockify:
 
 You can find a Example Project in L<ExampleProject|https://github.com/ChristianBreitkreutz/Mockify/tree/master/t/ExampleProject>
 
-Also have a look to L<Test::Mockify::Sut|Test::Mockify::SUT>. This Module provides multiple options to inject mocks into your Sut (System Under Test).
-
 =head1 METHODS
 
 =cut
