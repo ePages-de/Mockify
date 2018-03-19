@@ -142,7 +142,7 @@ sub test_overrideNotExistingMethod {
     my $Mockify = Test::Mockify->new('TestDummies::FakeModuleForMockifyTest', []);
     throws_ok(
         sub { $Mockify->mock('aNotExistingMethod'); },
-        qr/FakeModuleForMockifyTest donsn't have a method like: aNotExistingMethod/sm,
+        qr/FakeModuleForMockifyTest doesn't have a method like: aNotExistingMethod/sm,
         "$SubTestName - test if the mocked method throw an Error if the method don't exists in the module"
     );
 

@@ -67,7 +67,7 @@ sub mock {
 }
 =pod
 
-	=head2 mockImported
+=head2 mockImported
 
 Sometimes it is not possible to inject the dependencies from the outside. This is especially the case when the package uses imports of static functions.
 C<mockImported> provides the possibility to mock imported functions inside the mock.

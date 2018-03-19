@@ -18,13 +18,13 @@ sub getLineUp {
     my $self = shift;
     my $aLineUpList = [];
 
-    # Usecase: Lazy constructor injection and method call
+    # Use case: Lazy constructor injection and method call
     push(@{$aLineUpList}, $self->{'Magician'}->getLineUpName());
 
-    # Usecase: Static fully qualified path function call
+    # Use case: Static fully qualified path function call
     push(@{$aLineUpList}, t::ExampleProject::KidsShow::TimberBeam::GetLineUpName());
 
-    # Usecase: create instance and method call
+    # Use case: create instance and method call
     push(@{$aLineUpList}, t::ExampleProject::KidsShow::SeeSaw->new()->getLineUpName() );
 
     return $aLineUpList;

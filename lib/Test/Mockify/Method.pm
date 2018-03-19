@@ -106,7 +106,7 @@ sub _checkExpectedParameters{
 
     foreach my $ExistingParameter (@{$self->{'TypeStore'}{$SignatureKey}}){
         if($ExistingParameter->compareExpectedParameters($NewExpectedParameters)){
-            Error('It is not possible two add two times the same method Signature.');
+            Error('You can use a method signature only once.');
         }
     }
 }
