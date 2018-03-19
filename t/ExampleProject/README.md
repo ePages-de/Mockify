@@ -16,17 +16,17 @@ The `rabbit.pm` and the `Magician.pm` are both classes. So they have a construct
 * `t/test_MagicShow_Magician.t`
   * The `rabbit.pm` is mocked in order to control the snappy behavior when testing the `Magician.pm`.
   * This mock is injected into the `Magician.pm`.
-  * Unit test the behavior of the code in `Magician.pm`.
+  * Tests the behavior of the code in `Magician.pm`.
 
 # The !! KIDS SHOW !!
 
-Summary: They are two clowns, an old and a new one. Both are sitting on a seesaw and the heaviest will win.
+Summary: On the stage are two clowns, an old and a new one. Both are sitting on a seesaw and the heaviest will win.
 The seesaw is a very modern one, but both of them remember the good old times when they used a timber beam for the kids show.
 
 ### lib
 
-The `OldClown.pm` is a perl package with a function. The function have to be called with a fully qualified path. Here `t::ExampleProject::KidsShow::OldClown::BeHeavy`
-The `NewClown.pm` is a perl package with a exported function. The function have to be called with the imported function name. Here `ShowOfWeight`
+The `OldClown.pm` is a perl package with a function. The function has to be called with a fully qualified path. In this case: `t::ExampleProject::KidsShow::OldClown::BeHeavy`
+The `NewClown.pm` is a perl package with a exported function. The function has to be called with the imported function name. Here `ShowOfWeight`
 The `SeeSaw.pm` is a class with a constructor and methods with a `$self` context. It uses both, the OldClown and the NewClown.
 The `TimberBeam.pm` is a perl package with functions. It uses both, the OldClown and the NewClown.
 

@@ -60,7 +60,7 @@ sub when {
     my @Signature;
     foreach my $Signature (keys %{$self->{'TypeStore'}}){
         if($Signature eq 'UsedWithWhenAny'){
-            Error('It is not possible to use a mixture between "when" and "whenAny"');
+            Error('It is not possible to mix "when" and "whenAny" for the same method.');
         }
     }
     foreach my $hParameter ( @Parameters ){
@@ -82,9 +82,9 @@ It is not possible to mix C<whenAny> with C<when>.
 =cut
 sub whenAny {
     my $self = shift;
-    Error ('"whenAny" don`t allow any parameters' ) if (@_);
+    Error ('"whenAny" doesn\'t allow any parameters' ) if (@_);
     if((scalar keys %{$self->{'TypeStore'}})){
-        Error('"whenAny" can only used once. Also it is not possible to use a mixture between "when" and "whenAny"');
+        Error('You can use "whenAny" only once. Additionaly, it is not possible to mix "when" and "whenAny" for the same method.');
     }
     return $self->_addToTypeStore(['UsedWithWhenAny']);
 }
