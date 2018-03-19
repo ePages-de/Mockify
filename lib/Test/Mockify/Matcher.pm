@@ -70,7 +70,7 @@ Use the Matcher Number() to Check for the string '0' (perl cannot differ that)
 sub String(;$) {
     my ($Value) = @_;
     Error('NotAString') if $Value && !IsString($Value);
-    Error("Please use the Matcher Number($Value) to Check for the string '$Value' (perl can not differ numbers and strings)") if defined $Value && IsFloat($Value);
+    Error("Please use the Matcher Number($Value) to check for the string '$Value' (perl can not distinguish between numbers and strings)") if defined $Value && IsFloat($Value);
     return _Type('string',$Value);
 }
 =pod

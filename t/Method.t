@@ -101,22 +101,22 @@ sub _AnyParameter {
     is($Method->call(123),'helloWorld' , 'proves that "whenAny" works one parameter.');;
     is($Method->call('abc',['abc']),'helloWorld' , 'proves that the same"whenAny" works with two parameter.');
     throws_ok( sub { $Method->whenAny()->thenReturn('WaterWorld') },
-               qr/"whenAny" can only used once. Also it is not possible to use a mixture between "when" and "whenAny"/sm,
+               qr/You can use "whenAny" only once. Additionaly, it is not possible to mix "when" and "whenAny" for the same method./sm,
                'proves that it is not possible to use "whenAny" two times.'
      );
     throws_ok( sub { $Method->when(String('abc'))->thenReturn('WaterWorld') },
-               qr/It is not possible to use a mixture between "when" and "whenAny"/sm,
+               qr/It is not possible to mix "when" and "whenAny" for the same method./sm,
                'proves that it is not possible to use "when" when "whenAny" was used before.'
      );
      $Method = Test::Mockify::Method->new();
     throws_ok( sub { $Method->whenAny('param')->thenReturn('WaterWorld') },
-               qr/"whenAny" don`t allow any parameters/sm,
+               qr/"whenAny" doesn't allow any parameters/sm,
                'proves that it is not possible to use "whenAny" two times.'
      );
      $Method = Test::Mockify::Method->new();
      $Method->when(String())->thenReturn('helloWorld');
     throws_ok( sub { $Method->whenAny()->thenReturn('WaterWorld') },
-               qr/"whenAny" can only used once. Also it is not possible to use a mixture between "when" and "whenAny"/sm,
+               qr/You can use "whenAny" only once. Additionaly, it is not possible to mix "when" and "whenAny" for the same method./sm,
                'proves that it is not possible to use "whenAny" when "when" was used before.'
      );
 }
@@ -153,7 +153,7 @@ sub _NullProblems {
     $Method->when(Undef())->thenReturn('Result for undef.');
 
     throws_ok( sub { $Method->when(String('0')) },
-       qr/Please use the Matcher Number\(0\) to Check for the string '0' \(perl can not differ numbers and strings\)/sm, ## no critic (ProhibitEscapedMetacharacters)
+       qr/Please use the Matcher Number\(0\) to check for the string '0' \(perl can not distinguish between numbers and strings\)/sm, ## no critic (ProhibitEscapedMetacharacters)
        'proves that an Error is thrown if mockify is used wrongly'
     );
 

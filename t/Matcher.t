@@ -36,7 +36,7 @@ sub test_String {
     is_deeply(String(), $self->_buildExpectedHash('string',undef) , 'proves that the any matcher for string, returns a hash with type and NoExpectedParameter-flag');
     is_deeply(String('abc'), $self->_buildExpectedHash('string','abc'), 'proves that the expected matcher for string, returns a hash with type and value');
     throws_ok( sub { String(123) },
-       qr/Please use the Matcher Number\(123\) to Check for the string '123' \(perl can not differ numbers and strings\)/sm, ## no critic (ProhibitEscapedMetacharacters)
+       qr/Please use the Matcher Number\(123\) to check for the string '123' \(perl can not distinguish between numbers and strings\)/sm, ## no critic (ProhibitEscapedMetacharacters)
        'proves that an Error is thrown if mockify is used wrongly'
     );
     throws_ok( sub { String(['abc']) },
