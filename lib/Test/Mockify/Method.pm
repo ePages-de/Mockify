@@ -47,7 +47,7 @@ sub new {
 =head2 when
 
 C<when> have to be called with a L<Test::Mockify::Matcher|Test::Mockify::Matcher> to specify the expected parameter list (signature).
-This will create for every signature a Parameter Object which will stored and also returned. So it is possible to create multiple signatures for one Method.
+This will create for every signature a L<Test::Mockify::Parameter> Object which will stored and also returned. So it is possible to create multiple signatures for one Method.
 It is not possible to mix C<when> with C<whenAny>.
 
   when(String())
@@ -74,7 +74,7 @@ sub when {
 
 =head2 whenAny
 
-C<whenAny> have to be called without parameter, when called it will accept any type and amount of parameter. It will return a Parameter Object.
+C<whenAny> have to be called without parameter, when called it will accept any type and amount of parameter. It will return a L<Test::Mockify::Parameter> Object.
 It is not possible to mix C<whenAny> with C<when>.
 
   whenAny()
