@@ -4,7 +4,7 @@ This is the circus example. On the stage are two shows. A magician and some clow
 
 ## The !! MAGIC SHOW !!
 
-Summary: You can see a magician who pulls a rabbit out of a cylinder. But sometimes its a bit snappy.
+Summary: You can see a magician who pulls a rabbit out of a cylinder. But sometimes it's a bit snappy.
 
 ### lib
 
@@ -12,7 +12,7 @@ The `rabbit.pm` and the `Magician.pm` are both classes. So they have a construct
 
 ### test
 
-* `t/test_MagicShow_Rabbit.t` Prove that the `rabbit.pm` behaves as expected.
+* `t/test_MagicShow_Rabbit.t` Proves that the `rabbit.pm` behaves as expected.
 * `t/test_MagicShow_Magician.t`
   * The `rabbit.pm` is mocked in order to control the snappy behavior when testing the `Magician.pm`.
   * This mock is injected into the `Magician.pm`.
@@ -59,7 +59,7 @@ The `TimberBeam.pm` is a perl package with functions. It uses both, the OldClown
 * You can mock methods and functions.
   ```
   Mockify->mock('_getAge')->when()->thenReturn('hello'); # method
-  Mockify->mock('_GetAge')->when()->thenReturn('hello');# function
+  Mockify->mock('_GetAge')->when()->thenReturn('hello'); # function
   ```
 * You can inject static functions
 Attention: The mocked function is valid as long as the $Mockify is defined. If You leave the scope or set the $Mockify to undef the injected method will be released. 

@@ -78,7 +78,7 @@ sub _AnyMatcher {
     is($Method->call(sub{}), 'Result for one any.', 'single any parameter type sub');
     is($Method->call(undef), 'Result for one any.', 'single any parameter type undef');
     throws_ok( sub { $Method->when( Any() )->thenReturn('Hello World'); },
-               qr/It is not possible two add two times the same method Signature./sm,
+               qr/You can use a method signature only once./sm,
                'proves that it is not possbible to create two expectations for any'
      );
     throws_ok( sub { $Method->when( String() )->thenReturn('Hello World'); },
@@ -234,13 +234,13 @@ sub _DefineSignatureTwice_Error{
     my $Method = Test::Mockify::Method->new();
     $Method->when(String('FirstString'))->thenReturn('Result for two strings.');
     throws_ok( sub { $Method->when( String('FirstString') )->thenReturn('Hello World'); },
-               qr/It is not possible two add two times the same method Signature./sm,
+               qr/You can use a method signature only once./sm,
                'define signatur twice - expected matcher'
      );
     $Method = Test::Mockify::Method->new();
     $Method->when(String())->thenReturn('Result for two strings.');
     throws_ok( sub { $Method->when( String() )->thenReturn('Hello World'); },
-               qr/It is not possible two add two times the same method Signature./sm,
+               qr/You can use a method signature only once./sm,
                'define signatur twice - any matcher'
      );
 }

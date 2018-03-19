@@ -29,6 +29,8 @@ verify the interactions with your mocks. Use [Test::Mockify::Sut](https://metacp
 
 You can find a Example Project in [ExampleProject](https://github.com/ChristianBreitkreutz/Mockify/tree/master/t/ExampleProject)
 
+Also have a look to [Test::Mockify::Sut](https://metacpan.org/pod/Test::Mockify::SUT). This Module provides multiple options to inject mocks into your Sut (System Under Test).
+
 # METHODS
 
 ## getMockObject
