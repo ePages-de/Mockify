@@ -14,7 +14,7 @@ Test::Mockify::Sut - injection options for your System under test (Sut) based on
   my $MockifySut = Test::Mockify::Sut->new('Package::I::Like::To::Test', []);
   $MockifySut->mockImported('Package::Name', 'ImportedFunctionName')->when(String())->thenReturn('Hello');
   $MockifySut->mockStatic('Fully::Qualified::FunctionName')->when(String())->thenReturn('Hello');
-  $MockifySut->overrideConstructor('Package::Name', $Object);#  hint: build this object also with Mockify
+  $MockifySut->mockConstructor('Package::Name', $Object);#  hint: build this object also with Mockify
   my $PackageILikeToTest = $MockifySut->getMockObject();
 
   $PackageILikeToTest->do_something();# all injections are used here
