@@ -17,9 +17,10 @@ use t::TestDummies::DummyImportTools qw (Doubler);
 #----------------------------------------------------------------------------------------
 sub testPlan{
     my $self = shift;
+
     $self->test_InjectionOfImportedMethod_scopes();
+    $self->test_InjectionOfImportedMethod_CreatorMethod();
     $self->test_InjectionOfImportedMethod_scopes_spy();
-    $self->test_InjectionOfImportedMethod_SetMockifyToUndef();
     $self->test_InjectionOfImportedMethod_Verify();
     $self->test_InjectionOfImportedMethod_Verify_spy();
     $self->test_functionNameFormatingErrorHandling_mock();
@@ -55,6 +56,33 @@ sub test_InjectionOfImportedMethod_scopes {
     );
 }
 #----------------------------------------------------------------------------------------
+sub test_InjectionOfImportedMethod_CreatorMethod {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+        my $DummyImportToolsUser = $self->_createDummyImportToolsUser();
+        is(
+            $DummyImportToolsUser->useDummyImportTools(2),
+            'In useDummyImportTools, result Doubler call: "InjectedReturnValueOfDoubler"',
+            "$SubTestName - Prove that the injection works out"
+        );
+        is(Doubler(2), 4, "$SubTestName - Prove that the mock is only injected in the mock (inside scope of \$Mockify)");
+}
+#----------------------------------------------------------------------------------------
+sub _createDummyImportToolsUser {
+    my $self = shift;
+
+    my $aParameterList = [];
+    my $Mockify = Test::Mockify::Sut->new(
+                   't::TestDummies::DummyImportToolsUser',
+                   $aParameterList
+              );
+    $Mockify->mockImported('t::TestDummies::DummyImportTools', 'Doubler')->when(Number(2))->thenReturn('InjectedReturnValueOfDoubler');
+
+    return $Mockify->getMockObject();
+}
+
+#----------------------------------------------------------------------------------------
 sub test_InjectionOfImportedMethod_scopes_spy {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
@@ -74,33 +102,6 @@ sub test_InjectionOfImportedMethod_scopes_spy {
             "$SubTestName - Prove that the injection works out"
         );
     } # end scope
-    is(
-        t::TestDummies::DummyImportToolsUser->new()->useDummyImportTools(2),
-        'In useDummyImportTools, result Doubler call: "4"',
-        "$SubTestName - prove the unmocked Result"
-    );
-}
-#----------------------------------------------------------------------------------------
-sub test_InjectionOfImportedMethod_SetMockifyToUndef {
-    my $self = shift;
-    my $SubTestName = (caller(0))[3];
-
-    is(
-        t::TestDummies::DummyImportToolsUser->new()->useDummyImportTools(2),
-        'In useDummyImportTools, result Doubler call: "4"',
-        "$SubTestName - prove the unmocked Result"
-    );
-    my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyImportToolsUser',[]);
-    $Mockify->mockImported('t::TestDummies::DummyImportTools', 'Doubler')->when(Number(2))->thenReturn('InjectedReturnValueOfDoubler');
-    my $DummyImportToolsUser = $Mockify->getMockObject();
-    is(
-        $DummyImportToolsUser->useDummyImportTools(2),
-        'In useDummyImportTools, result Doubler call: "InjectedReturnValueOfDoubler"',
-        "$SubTestName - Prove that the injection works out"
-    );
-    is(Doubler(2), 4, "$SubTestName - Prove that the mock is only injected in the mock (inside scope of \$Mockify)");
-    $Mockify = undef;
-    is(Doubler(2), 4, "$SubTestName - Prove that the mock is only injected in the mock (left scope of \$Mockify)");
     is(
         t::TestDummies::DummyImportToolsUser->new()->useDummyImportTools(2),
         'In useDummyImportTools, result Doubler call: "4"',

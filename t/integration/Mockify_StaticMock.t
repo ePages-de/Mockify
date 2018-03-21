@@ -17,17 +17,17 @@ use t::TestDummies::DummyStaticTools;
 #----------------------------------------------------------------------------------------
 sub testPlan{
     my $self = shift;
-    $self->test_InjectionOfStaticedMethod_scopes();
-    $self->test_InjectionOfStaticedMethod_scopes_spy();
-    $self->test_InjectionOfStaticedMethod_SetMockifyToUndef();
-    $self->test_InjectionOfStaticedMethod_Verify();
-    $self->test_InjectionOfStaticedMethod_Verify_spy();
+    $self->test_InjectionOfStaticMethod_scopes();
+    $self->test_InjectionOfStaticMethod_CreatorMethod();
+    $self->test_InjectionOfStaticMethod_scopes_spy();
+    $self->test_InjectionOfStaticMethod_Verify();
+    $self->test_InjectionOfStaticMethod_Verify_spy();
     $self->test_functionNameFormatingErrorHandling_mock ();
     $self->test_functionNameFormatingErrorHandling_spy ();
 }
 
 #----------------------------------------------------------------------------------------
-sub test_InjectionOfStaticedMethod_scopes {
+sub test_InjectionOfStaticMethod_scopes {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
@@ -55,7 +55,29 @@ sub test_InjectionOfStaticedMethod_scopes {
     is(t::TestDummies::DummyStaticTools::Tripler(2), 6, "$SubTestName - Prove released original method result (direct call)");
 }
 #----------------------------------------------------------------------------------------
-sub test_InjectionOfStaticedMethod_scopes_spy {
+sub test_InjectionOfStaticMethod_CreatorMethod {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+        my $DummyStaticToolsUser = $self->_createDummyStaticToolsUser();
+        is(
+            $DummyStaticToolsUser->useDummyStaticTools(2),
+            'In useDummyStaticTools, result Tripler call: "InjectedReturnValueOfTripler"',
+            "$SubTestName - Prove that the injection works out"
+        );
+        is(t::TestDummies::DummyStaticTools::Tripler(2), 'InjectedReturnValueOfTripler', "$SubTestName - Prove injected mock result (direct call)");
+}
+#----------------------------------------------------------------------------------------
+sub _createDummyStaticToolsUser {
+    my $self = shift;
+
+    my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyStaticToolsUser',[] );
+    $Mockify->mockStatic('t::TestDummies::DummyStaticTools::Tripler')->when(Number(2))->thenReturn('InjectedReturnValueOfTripler');
+
+   return $Mockify->getMockObject();
+}
+#----------------------------------------------------------------------------------------
+sub test_InjectionOfStaticMethod_scopes_spy {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
@@ -81,34 +103,7 @@ sub test_InjectionOfStaticedMethod_scopes_spy {
     );
 }
 #----------------------------------------------------------------------------------------
-sub test_InjectionOfStaticedMethod_SetMockifyToUndef {
-    my $self = shift;
-    my $SubTestName = (caller(0))[3];
-
-    is(
-        t::TestDummies::DummyStaticToolsUser->new()->useDummyStaticTools(2),
-        'In useDummyStaticTools, result Tripler call: "6"',
-        "$SubTestName - prove the unmocked Result"
-    );
-    my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyStaticToolsUser',[]);
-    $Mockify->mockStatic('t::TestDummies::DummyStaticTools::Tripler')->when(Number(2))->thenReturn('InjectedReturnValueOfTripler');
-    my $DummyStaticToolsUser = $Mockify->getMockObject();
-    is(
-        $DummyStaticToolsUser->useDummyStaticTools(2),
-        'In useDummyStaticTools, result Tripler call: "InjectedReturnValueOfTripler"',
-        "$SubTestName - Prove that the injection works out"
-    );
-    is(t::TestDummies::DummyStaticTools::Tripler(2), 'InjectedReturnValueOfTripler', "$SubTestName - Prove injected mock result (direct call)");
-    $Mockify = undef;
-    is(t::TestDummies::DummyStaticTools::Tripler(2), 6, "$SubTestName - Prove released original method result (direct call)");
-    is(
-        t::TestDummies::DummyStaticToolsUser->new()->useDummyStaticTools(2),
-        'In useDummyStaticTools, result Tripler call: "6"',
-        "$SubTestName - prove the unmocked Result"
-    );
-}
-#----------------------------------------------------------------------------------------
-sub test_InjectionOfStaticedMethod_Verify {
+sub test_InjectionOfStaticMethod_Verify {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 
@@ -132,7 +127,7 @@ sub test_InjectionOfStaticedMethod_Verify {
 
 }
 #----------------------------------------------------------------------------------------
-sub test_InjectionOfStaticedMethod_Verify_spy {
+sub test_InjectionOfStaticMethod_Verify_spy {
     my $self = shift;
     my $SubTestName = (caller(0))[3];
 

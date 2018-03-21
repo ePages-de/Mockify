@@ -92,7 +92,8 @@ sub _initMockedModule {
     $self->_mockedSelf()->{'__isMockified'} = 1;
     $self->_addGetParameterFromMockifyCall();
 
-    $self->{'override'} = Sub::Override->new();
+    $self->{'__override'} = Sub::Override->new();
+    $self->_mockedSelf()->{'__override'} = $self->{'__override'};
     $self->{'IsStaticMockStore'} = undef;
     $self->{'IsImportedMockStore'} = undef;
     return;
@@ -287,10 +288,14 @@ sub _callInjectedMethod {
 sub _buildMockSub{
     my $self = shift;
     my ($MockedSelf, $MethodName, $Method) = @_;
+    # The Sub::Override lexical scope don't get released if there is any Mockify var is pointing to it.
+    # So the $MockedSelf needs to be resolved outside of the sub lexical scope.
+    my $MethodCallCounter = \$MockedSelf->{'__MethodCallCounter'};
+    my $MockifyParamsStore = \$MockedSelf->{$MethodName.'_MockifyParams'};
     return sub {
-            $MockedSelf->{'__MethodCallCounter'}->increment( $MethodName );
+            ${$MethodCallCounter}->increment( $MethodName );
             my @MockedParameters = @_;
-            push( @{$MockedSelf->{$MethodName.'_MockifyParams'}}, \@MockedParameters );
+            push( @{${$MockifyParamsStore}}, \@MockedParameters );
             my $WantAList = wantarray ? 1 : 0;
             return _callInjectedMethod($Method, \@MockedParameters, $WantAList, $MethodName);
         };
@@ -320,7 +325,7 @@ sub _overrideInternalFunction {
     my ($MethodName, $MockedMethodBody) = @_;
 
     my $FullyQualifiedMethodName = sprintf('%s::%s', $self->_mockedModulePath(), $MethodName);
-    $self->{'override'}->replace($FullyQualifiedMethodName, $MockedMethodBody);
+    $self->{'__override'}->replace($FullyQualifiedMethodName, $MockedMethodBody);
 
     return;
 }
@@ -328,7 +333,7 @@ sub _overrideInternalFunction {
 sub _overrideExternalFunction {
     my $self = shift;
     my ($FullyQualifiedMethodName, $MockedMethodBody) = @_;
-    $self->{'override'}->replace($FullyQualifiedMethodName, $MockedMethodBody);
+    $self->{'__override'}->replace($FullyQualifiedMethodName, $MockedMethodBody);
     return;
 }
 #----------------------------------------------------------------------------------------
@@ -347,7 +352,7 @@ sub _addImportedMock {
         $self->{'MethodStore'}{$MethodName} = $Method;
         my $MockedSelf = $self->_mockedSelf();
         my $MockedMethodBody = $self->_buildMockSub($MockedSelf, $MethodName, $Method);
-        $self->{'override'}->replace(
+        $self->{'__override'}->replace(
             sprintf ('%s::%s', $self->_mockedModulePath(), $self->{'IsImportedMockStore'}{$MethodName}->{'MethodName'}),
             $MockedMethodBody
         );

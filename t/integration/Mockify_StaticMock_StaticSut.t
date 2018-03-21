@@ -17,6 +17,7 @@ use Test::Mockify::Verify qw (GetParametersFromMockifyCall GetCallCount);
 sub testPlan{
     my $self = shift;
     $self->test_InjectionOfStaticedMethod_scopes();
+    $self->test_InjectionOfStaticMethod_CreatorMethod();
     $self->test_InjectionOfStaticedMethod_scopes_spy();
     $self->test_InjectionOfStaticedMethod_SetMockifyToUndef();
     $self->test_InjectionOfStaticedMethod_Verify();
@@ -43,7 +44,7 @@ sub test_InjectionOfStaticedMethod_scopes {
             'In useDummyStaticTools, result Tripler call: "InjectedReturnValueOfTripler"',
             "$SubTestName - Prove that the injection works out"
         );
-    is(t::TestDummies::DummyStaticTools::Tripler(2), 'InjectedReturnValueOfTripler', "$SubTestName - Prove injected mock result (direct call)");
+        is(t::TestDummies::DummyStaticTools::Tripler(2), 'InjectedReturnValueOfTripler', "$SubTestName - Prove injected mock result (direct call)");
     } # end scope
     is(
         t::TestDummies::DummyStaticToolsUser_Static::useDummyStaticTools(2),
@@ -51,6 +52,28 @@ sub test_InjectionOfStaticedMethod_scopes {
         "$SubTestName - prove the unmocked Result"
     );
     is(t::TestDummies::DummyStaticTools::Tripler(2), 6, "$SubTestName - Prove released original method result (direct call)");
+}
+#----------------------------------------------------------------------------------------
+sub test_InjectionOfStaticMethod_CreatorMethod {
+    my $self = shift;
+    my $SubTestName = (caller(0))[3];
+
+        my $DummyStaticToolsUser = $self->_createDummyStaticToolsUser();
+        is(
+            t::TestDummies::DummyStaticToolsUser_Static::useDummyStaticTools(2),
+            'In useDummyStaticTools, result Tripler call: "InjectedReturnValueOfTripler"',
+            "$SubTestName - Prove that the injection works out"
+        );
+        is(t::TestDummies::DummyStaticTools::Tripler(2), 'InjectedReturnValueOfTripler', "$SubTestName - Prove injected mock result (direct call)");
+}
+#----------------------------------------------------------------------------------------
+sub _createDummyStaticToolsUser {
+    my $self = shift;
+
+    my $Mockify = Test::Mockify::Sut->new('t::TestDummies::DummyStaticToolsUser_Static');
+    $Mockify->mockStatic('t::TestDummies::DummyStaticTools::Tripler')->when(Number(2))->thenReturn('InjectedReturnValueOfTripler');
+
+   return $Mockify->getMockObject();
 }
 #----------------------------------------------------------------------------------------
 sub test_InjectionOfStaticedMethod_scopes_spy {
