@@ -46,7 +46,7 @@ use Sub::Override;
 
 use strict;
 
-our $VERSION = '2.1';
+our $VERSION = '2.2';
 
 sub new {
     my $class = shift;
