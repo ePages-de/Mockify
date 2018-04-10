@@ -1,6 +1,7 @@
 Revision history for Perl extension Devel-Mockify
 
 {{$NEXT}}
+    - fix issue with alternative constructor name
 
 2.2 2018-03-26T21:49:15Z
     - fix issue #34 Prototype mismatch warning when running tests
